@@ -3,39 +3,36 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
-use Spatie\Permission\Traits\HasRoles;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
-class User extends Authenticatable
+class ManufacturingUnit extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles, SoftDeletes, LogsActivity;
+    use HasFactory, SoftDeletes, LogsActivity;
 
     protected $fillable = [
         'organization_id',
-        'manufacturing_unit_id',
         'name',
-        'email',
-        'password',
+        'code',
+        'type',
+        'address',
+        'city',
+        'state',
+        'country',
+        'postal_code',
         'phone',
-        'avatar',
+        'email',
+        'capacity_per_day',
+        'capacity_unit',
         'status',
-        'last_login_at',
-    ];
-
-    protected $hidden = [
-        'password',
-        'remember_token',
+        'settings',
     ];
 
     protected $casts = [
-        'email_verified_at' => 'datetime',
-        'last_login_at' => 'datetime',
-        'password' => 'hashed',
+        'capacity_per_day' => 'decimal:2',
+        'settings' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
@@ -44,7 +41,7 @@ class User extends Authenticatable
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['name', 'email', 'status'])
+            ->logOnly(['name', 'code', 'status', 'capacity_per_day'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
     }
@@ -55,9 +52,9 @@ class User extends Authenticatable
         return $this->belongsTo(Organization::class);
     }
 
-    public function manufacturingUnit()
+    public function users()
     {
-        return $this->belongsTo(ManufacturingUnit::class);
+        return $this->hasMany(User::class);
     }
 
     // Scopes
@@ -71,21 +68,19 @@ class User extends Authenticatable
         return $query->where('organization_id', $organizationId);
     }
 
+    public function scopeProduction($query)
+    {
+        return $query->where('type', 'production');
+    }
+
     // Accessors
     public function getIsActiveAttribute()
     {
         return $this->status === 'active';
     }
 
-    public function getFullNameAttribute()
+    public function getFullAddressAttribute()
     {
-        return $this->name;
-    }
-
-    // Methods
-    public function updateLastLogin()
-    {
-        $this->update(['last_login_at' => now()]);
+        return trim("{$this->address}, {$this->city}, {$this->state} {$this->postal_code}");
     }
 }
-
