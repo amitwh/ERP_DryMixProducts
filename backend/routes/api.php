@@ -3,18 +3,25 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\OrganizationController;
 use App\Http\Controllers\Api\ManufacturingUnitController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\SupplierController;
 use App\Http\Controllers\Api\ProjectController;
+use App\Http\Controllers\Api\QualityDocumentController;
 use App\Http\Controllers\Api\InspectionController;
+use App\Http\Controllers\Api\NcrController;
 use App\Http\Controllers\Api\SalesOrderController;
 use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\PurchaseOrderController;
 use App\Http\Controllers\Api\GoodsReceiptNoteController;
 use App\Http\Controllers\Api\InventoryController;
 use App\Http\Controllers\Api\StockTransactionController;
+use App\Http\Controllers\Api\ProductionOrderController;
+use App\Http\Controllers\Api\BillOfMaterialController;
 
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -24,9 +31,15 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/health', function () {
     return response()->json([
         'success' => true,
-        'message' => 'ERP DryMix API is running',
+        'message' => 'ERP DryMix API - All Modules Active',
         'version' => '1.0.0',
         'timestamp' => now()->toDateTimeString(),
+        'modules' => [
+            'Core Foundation', 'Product Management', 'Customer/Supplier Management',
+            'Project Management', 'QA/QC', 'Sales', 'Procurement', 'Inventory', 'Production'
+        ],
+        'endpoints' => 100,
+        'status' => 'operational',
     ]);
 });
 
@@ -36,23 +49,37 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
     
-    // Organizations
+    // Dashboard & Analytics
+    Route::get('dashboard/overview', [DashboardController::class, 'overview']);
+    Route::get('dashboard/sales-trend', [DashboardController::class, 'salesTrend']);
+    Route::get('dashboard/top-customers', [DashboardController::class, 'topCustomers']);
+    Route::get('dashboard/top-products', [DashboardController::class, 'topProducts']);
+    Route::get('dashboard/quality-metrics', [DashboardController::class, 'qualityMetrics']);
+    Route::get('dashboard/production-metrics', [DashboardController::class, 'productionMetrics']);
+    
+    // Core Management
     Route::apiResource('organizations', OrganizationController::class);
-    
-    // Manufacturing Units
     Route::apiResource('manufacturing-units', ManufacturingUnitController::class);
-    
-    // Users
     Route::apiResource('users', UserController::class);
     
-    // Products
+    // Product & Business Entities
     Route::apiResource('products', ProductController::class);
+    Route::apiResource('customers', CustomerController::class);
+    Route::get('customers/{customer}/ledger', [CustomerController::class, 'ledger']);
+    Route::apiResource('suppliers', SupplierController::class);
+    Route::get('suppliers/{supplier}/performance', [SupplierController::class, 'performance']);
     
-    // Projects
+    // Project Management
     Route::apiResource('projects', ProjectController::class);
     
-    // Inspections
+    // QA/QC Module
+    Route::apiResource('quality-documents', QualityDocumentController::class);
+    Route::post('quality-documents/{qualityDocument}/approve', [QualityDocumentController::class, 'approve']);
+    Route::post('quality-documents/{qualityDocument}/reject', [QualityDocumentController::class, 'reject']);
     Route::apiResource('inspections', InspectionController::class);
+    Route::apiResource('ncrs', NcrController::class);
+    Route::post('ncrs/{ncr}/close', [NcrController::class, 'close']);
+    Route::get('ncrs-statistics', [NcrController::class, 'statistics']);
     
     // Sales Module
     Route::apiResource('sales-orders', SalesOrderController::class);
@@ -63,7 +90,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('purchase-orders/{purchaseOrder}/approve', [PurchaseOrderController::class, 'approve']);
     Route::apiResource('goods-receipt-notes', GoodsReceiptNoteController::class);
     
+    // Inventory Module
+    Route::apiResource('inventory', InventoryController::class);
+    Route::get('inventory-alerts', [InventoryController::class, 'alerts']);
+    Route::apiResource('stock-transactions', StockTransactionController::class);
+    Route::get('stock-transactions-summary', [StockTransactionController::class, 'summary']);
+    
     // Production Module
-    Route::apiResource('production-orders', \App\Http\Controllers\Api\ProductionOrderController::class);
-    Route::post('production-orders/{productionOrder}/complete', [\App\Http\Controllers\Api\ProductionOrderController::class, 'complete']);
+    Route::apiResource('production-orders', ProductionOrderController::class);
+    Route::post('production-orders/{productionOrder}/complete', [ProductionOrderController::class, 'complete']);
+    Route::apiResource('bill-of-materials', BillOfMaterialController::class);
+    Route::post('bill-of-materials/{billOfMaterial}/activate', [BillOfMaterialController::class, 'activate']);
+    Route::get('bill-of-materials/{billOfMaterial}/cost-analysis', [BillOfMaterialController::class, 'costAnalysis']);
 });
