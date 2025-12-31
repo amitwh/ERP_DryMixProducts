@@ -63,9 +63,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('purchase-orders/{purchaseOrder}/approve', [PurchaseOrderController::class, 'approve']);
     Route::apiResource('goods-receipt-notes', GoodsReceiptNoteController::class);
     
-    // Inventory Module
-    Route::apiResource('inventory', InventoryController::class);
-    Route::get('inventory-alerts', [InventoryController::class, 'alerts']);
-    Route::apiResource('stock-transactions', StockTransactionController::class);
-    Route::get('stock-transactions-summary', [StockTransactionController::class, 'summary']);
+    // Production Module
+    Route::apiResource('production-orders', \App\Http\Controllers\Api\ProductionOrderController::class);
+    Route::post('production-orders/{productionOrder}/complete', [\App\Http\Controllers\Api\ProductionOrderController::class, 'complete']);
 });
