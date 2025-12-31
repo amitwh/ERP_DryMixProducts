@@ -5,6 +5,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\OrganizationController;
 use App\Http\Controllers\Api\ManufacturingUnitController;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\ProjectController;
+use App\Http\Controllers\Api\InspectionController;
 
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -32,5 +36,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('manufacturing-units', ManufacturingUnitController::class);
     
     // Users
-    Route::apiResource('users', \App\Http\Controllers\Api\UserController::class);
+    Route::apiResource('users', UserController::class);
+    
+    // Products
+    Route::apiResource('products', ProductController::class);
+    
+    // Projects
+    Route::apiResource('projects', ProjectController::class);
+    
+    // Inspections
+    Route::apiResource('inspections', InspectionController::class);
 });
