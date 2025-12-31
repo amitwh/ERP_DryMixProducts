@@ -1,0 +1,55 @@
+# IDE
+.idea/
+.vscode/
+*.log
+*.tmp
+*.temp
+*.DS_Store
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build files
+*.log
+
+# Test coverage
+.nyc_output/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Configuration
+.env.local
+.env.production
+*.bak
+*.swp
+
+# Dependencies
+node_modules/
+
+# Keep important files
+!.gitkeep
+!.env.example
+
+# Laravel specific
+/storage/
+bootstrap/cache/
+bootstrap/storage/
+
+# Database files
+*.sqlite
+*.db
+*.sql
+
+# Frontend build output
+dist/
+build/
+.cache/
+
+# NPM
+package-lock.json
