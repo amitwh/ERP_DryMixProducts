@@ -229,3 +229,40 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('balance-sheet', [PrintController::class, 'balanceSheet']);
         Route::get('profit-loss', [PrintController::class, 'profitAndLoss']);
     });
+
+    // Test Pages Module
+    Route::prefix('test-pages')->group(function () {
+        Route::get('/', [TestPageController::class, 'index']);
+
+        // Dry Mix Product Tests
+        Route::get('dry-mix-product-tests', [TestPageController::class, 'dryMixProductTests']);
+        Route::post('dry-mix-product-tests', [TestPageController::class, 'storeDryMixProductTest']);
+        Route::get('dry-mix-product-tests/{test}', [TestPageController::class, 'showDryMixProductTest']);
+        Route::put('dry-mix-product-tests/{test}', [TestPageController::class, 'updateDryMixProductTest']);
+        Route::delete('dry-mix-product-tests/{test}', [TestPageController::class, 'deleteDryMixProductTest']);
+        Route::post('dry-mix-product-tests/{test}/test', [TestPageController::class, 'testDryMixProductTest']);
+        Route::post('dry-mix-product-tests/{test}/verify', [TestPageController::class, 'verifyDryMixProductTest']);
+        Route::post('dry-mix-product-tests/{test}/approve', [TestPageController::class, 'approveDryMixProductTest']);
+
+        // Raw Material Tests
+        Route::get('raw-material-tests', [TestPageController::class, 'rawMaterialTests']);
+        Route::post('raw-material-tests', [TestPageController::class, 'storeRawMaterialTest']);
+        Route::get('raw-material-tests/{test}', [TestPageController::class, 'showRawMaterialTest']);
+        Route::put('raw-material-tests/{test}', [TestPageController::class, 'updateRawMaterialTest']);
+        Route::delete('raw-material-tests/{test}', [TestPageController::class, 'deleteRawMaterialTest']);
+
+        // Test Parameters
+        Route::get('test-parameters', [TestPageController::class, 'testParameters']);
+        Route::post('test-parameters', [TestPageController::class, 'storeTestParameter']);
+
+        // Test Standards
+        Route::get('test-standards', [TestPageController::class, 'testStandards']);
+        Route::post('test-standards', [TestPageController::class, 'storeTestStandard']);
+
+        // Test Templates
+        Route::get('test-templates', [TestPageController::class, 'testTemplates']);
+        Route::post('test-templates', [TestPageController::class, 'storeTestTemplate']);
+
+        // Statistics
+        Route::get('statistics', [TestPageController::class, 'statistics']);
+    });
