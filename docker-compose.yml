@@ -8,23 +8,25 @@ services:
       dockerfile: Dockerfile
     container_name: erp_backend
     ports:
-      - "8000:8000"
+      - "8100:8000"
     volumes:
       - ./backend:/app
       - ./backend/storage:/app/storage
     environment:
       - APP_ENV=local
       - APP_DEBUG=true
-      - DB_HOST=mariadb
+      - DB_HOST=general_server_configs
       - DB_PORT=3306
-      - DB_DATABASE=erp_drymix
-      - DB_USERNAME=erp_user
-      - DB_PASSWORD=erp_secret
-      - REDIS_HOST=redis
+      - DB_DATABASE=db_erp_drymix_prod
+      - DB_USERNAME=amit
+      - DB_PASSWORD=angles
+      - REDIS_HOST=general_server_configs
       - REDIS_PORT=6379
+      - REDIS_PASSWORD=angles
+    external_links:
+      - general_server_configs
     depends_on:
-      - mariadb
-      - redis
+      - general_server_configs
     networks:
       - erp_network
 
@@ -35,7 +37,7 @@ services:
       dockerfile: Dockerfile
     container_name: erp_frontend
     ports:
-      - "3000:80"
+      - "3100:80"
     volumes:
       - ./frontend:/app
     depends_on:
@@ -43,46 +45,55 @@ services:
     networks:
       - erp_network
 
-  # MariaDB Database
-  mariadb:
-    image: mariadb:10.11
-    container_name: erp_mariadb
-    ports:
-      - "3306:3306"
+  # Grafana for Dashboard (connected to external Grafana)
+  grafana-connector:
+    image: python:3.11-slim
+    container_name: erp_grafana_connector
     volumes:
-      - mariadb_data:/var/lib/mysql
-      - ./docker/mariadb/init:/docker-entrypoint-initdb.d
+      - ./docker/grafana:/app
+    working_dir: /app
+    command: >
+      bash -c "pip install -r requirements.txt && python connector.py"
     environment:
-      - MYSQL_ROOT_PASSWORD=root_secret
-      - MYSQL_DATABASE=erp_drymix
-      - MYSQL_USER=erp_user
-      - MYSQL_PASSWORD=erp_secret
+      - GRAFANA_URL=http://general_server_configs:3000
+      - GRAFANA_USER=admin
+      - GRAFANA_PASSWORD=angles
+      - DB_HOST=general_server_configs
+      - DB_PORT=3306
+      - DB_NAME=db_erp_drymix_prod
+      - DB_USER=amit
+      - DB_PASSWORD=angles
+    external_links:
+      - general_server_configs
+    depends_on:
+      - general_server_configs
     networks:
       - erp_network
 
-  # Redis Cache
-  redis:
-    image: redis:7-alpine
-    container_name: erp_redis
-    ports:
-      - "6379:6379"
+  # Python for Data Processing
+  python-worker:
+    build:
+      context: ./docker/python
+      dockerfile: Dockerfile
+    container_name: erp_python_worker
     volumes:
-      - redis_data:/data
-    networks:
-      - erp_network
-
-  # RabbitMQ Message Queue
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    container_name: erp_rabbitmq
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
+      - ./backend/app/Services/Python:/app/services
+      - ./backend/storage:/app/storage
+    command: >
+      bash -c "pip install -r /app/requirements.txt && python worker.py"
     environment:
-      - RABBITMQ_DEFAULT_USER=erp_user
-      - RABBITMQ_DEFAULT_PASS=erp_secret
+      - REDIS_HOST=general_server_configs
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=angles
+      - DB_HOST=general_server_configs
+      - DB_PORT=3306
+      - DB_NAME=db_erp_drymix_prod
+      - DB_USER=amit
+      - DB_PASSWORD=angles
+    external_links:
+      - general_server_configs
+    depends_on:
+      - general_server_configs
     networks:
       - erp_network
 
@@ -91,8 +102,8 @@ services:
     image: nginx:alpine
     container_name: erp_nginx
     ports:
-      - "80:80"
-      - "443:443"
+      - "8080:80"
+      - "8443:443"
     volumes:
       - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./docker/nginx/ssl:/etc/nginx/ssl
@@ -102,11 +113,7 @@ services:
     networks:
       - erp_network
 
-volumes:
-  mariadb_data:
-  redis_data:
-  rabbitmq_data:
-
 networks:
   erp_network:
     driver: bridge
+    external: false
