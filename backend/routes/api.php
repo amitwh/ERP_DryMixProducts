@@ -205,3 +205,27 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('scheduled-tasks/{task}/resume', [SystemAdminController::class, 'resumeScheduledTask']);
     Route::get('system/health', [SystemAdminController::class, 'systemHealth']);
     Route::get('system/statistics', [SystemAdminController::class, 'statistics']);
+
+    // Print & Export
+    Route::prefix('print')->group(function () {
+        Route::get('sales-order/{order}', [PrintController::class, 'salesOrder']);
+        Route::get('invoice/{invoice}', [PrintController::class, 'invoice']);
+        Route::get('purchase-order/{order}', [PrintController::class, 'purchaseOrder']);
+        Route::get('grn/{grn}', [PrintController::class, 'goodsReceiptNote']);
+        Route::get('production-order/{order}', [PrintController::class, 'productionOrder']);
+        Route::get('bom', [PrintController::class, 'billOfMaterials']);
+        Route::get('inspection/{inspection}', [PrintController::class, 'inspectionReport']);
+        Route::get('ncr/{ncr}', [PrintController::class, 'ncrReport']);
+        Route::get('customer-ledger', [PrintController::class, 'customerLedger']);
+        Route::get('stock-report', [PrintController::class, 'stockReport']);
+        Route::get('credit-control/{creditControl}', [PrintController::class, 'creditControlReport']);
+        Route::get('collection/{collection}', [PrintController::class, 'collectionReport']);
+        Route::get('aging-report', [PrintController::class, 'agingReport']);
+        Route::get('payslip/{payslip}', [PrintController::class, 'payslip']);
+        Route::get('attendance-report', [PrintController::class, 'attendanceReport']);
+        Route::get('dry-mix-product-test/{test}', [PrintController::class, 'dryMixProductTest']);
+        Route::get('raw-material-test/{test}', [PrintController::class, 'rawMaterialTest']);
+        Route::get('trial-balance', [PrintController::class, 'trialBalance']);
+        Route::get('balance-sheet', [PrintController::class, 'balanceSheet']);
+        Route::get('profit-loss', [PrintController::class, 'profitAndLoss']);
+    });
