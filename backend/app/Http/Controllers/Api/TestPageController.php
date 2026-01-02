@@ -20,11 +20,11 @@ class TestPageController extends Controller
             'data' => [
                 'message' => 'Test Pages Module',
                 'endpoints' => [
-                    '/dry-mix-product-tests' => 'Dry Mix Product Tests',
-                    '/raw-material-tests' => 'Raw Material Tests',
-                    '/test-parameters' => 'Test Parameters Configuration',
-                    '/test-standards' => 'Test Standards',
-                    '/test-templates' => 'Test Templates',
+                    '/test-pages/dry-mix-product-tests' => 'Dry Mix Product Tests',
+                    '/test-pages/raw-material-tests' => 'Raw Material Tests',
+                    '/test-pages/test-parameters' => 'Test Parameters Configuration',
+                    '/test-pages/test-standards' => 'Test Standards',
+                    '/test-pages/test-templates' => 'Test Templates',
                 ]
             ]
         ]);
@@ -36,12 +36,22 @@ class TestPageController extends Controller
         $organizationId = $request->get('organization_id');
 
         $tests = DryMixProductTest::query()
-            ->when($organizationId, fn($q) => $q->where('organization_id', $organizationId))
+            ->when($organizationId, function($q, $id) {
+                return $q->where('organization_id', $id);
+            })
             ->with(['product', 'batch', 'testedBy', 'verifiedBy', 'approvedBy'])
-            ->when($request->has('product_id'), fn($q) => $q->where('product_id', $request->product_id))
-            ->when($request->has('batch_id'), fn($q) => $q->where('batch_id', $request->batch_id))
-            ->when($request->has('status'), fn($q) => $q->where('status', $request->status))
-            ->when($request->has('test_result'), fn($q) => $q->where('test_result', $request->test_result))
+            ->when($request->has('product_id'), function($q) use ($request) {
+                return $q->where('product_id', $request->product_id);
+            })
+            ->when($request->has('batch_id'), function($q) use ($request) {
+                return $q->where('batch_id', $request->batch_id);
+            })
+            ->when($request->has('status'), function($q) use ($request) {
+                return $q->where('status', $request->status);
+            })
+            ->when($request->has('test_result'), function($q) use ($request) {
+                return $q->where('test_result', $request->test_result);
+            })
             ->orderBy('test_date', 'desc')
             ->paginate($request->get('per_page', 20));
 
@@ -200,11 +210,19 @@ class TestPageController extends Controller
         $organizationId = $request->get('organization_id');
 
         $tests = RawMaterialTest::query()
-            ->when($organizationId, fn($q) => $q->where('organization_id', $organizationId))
+            ->when($organizationId, function($q, $id) {
+                return $q->where('organization_id', $id);
+            })
             ->with(['rawMaterial', 'testedBy', 'verifiedBy', 'approvedBy'])
-            ->when($request->has('raw_material_id'), fn($q) => $q->where('raw_material_id', $request->raw_material_id))
-            ->when($request->has('status'), fn($q) => $q->where('status', $request->status))
-            ->when($request->has('test_result'), fn($q) => $q->where('test_result', $request->test_result))
+            ->when($request->has('raw_material_id'), function($q) use ($request) {
+                return $q->where('raw_material_id', $request->raw_material_id);
+            })
+            ->when($request->has('status'), function($q) use ($request) {
+                return $q->where('status', $request->status);
+            })
+            ->when($request->has('test_result'), function($q) use ($request) {
+                return $q->where('test_result', $request->test_result);
+            })
             ->orderBy('test_date', 'desc')
             ->paginate($request->get('per_page', 20));
 
@@ -289,7 +307,50 @@ class TestPageController extends Controller
 
     public function updateRawMaterialTest(Request $request, RawMaterialTest $test): JsonResponse
     {
-        $test->update($request->all());
+        $validated = $request->validate([
+            'test_date' => 'nullable|date',
+            'sample_id' => 'nullable|string',
+            // Chemical analysis
+            'sio2' => 'nullable|numeric|min:0|max:100',
+            'al2o3' => 'nullable|numeric|min:0|max:100',
+            'fe2o3' => 'nullable|numeric|min:0|max:100',
+            'cao' => 'nullable|numeric|min:0|max:100',
+            'mgo' => 'nullable|numeric|min:0|max:100',
+            'so3' => 'nullable|numeric|min:0|max:100',
+            'k2o' => 'nullable|numeric|min:0|max:100',
+            'na2o' => 'nullable|numeric|min:0|max:100',
+            'cl' => 'nullable|numeric|min:0|max:100',
+            // Physical properties
+            'moisture_content' => 'nullable|numeric|min:0|max:100',
+            'loss_on_ignition' => 'nullable|numeric|min:0|max:100',
+            'specific_gravity' => 'nullable|numeric|min:0',
+            'bulk_density' => 'nullable|numeric|min:0',
+            // Particle size
+            'particle_size_d50' => 'nullable|numeric|min:0',
+            'particle_size_d90' => 'nullable|numeric|min:0',
+            'particle_size_d98' => 'nullable|numeric|min:0',
+            'blaine_fineness' => 'nullable|numeric|min:0',
+            // Additional properties
+            'water_reducer' => 'nullable|numeric|min:0',
+            'retention_aid' => 'nullable|numeric|min:0',
+            'defoamer' => 'nullable|numeric|min:0',
+            'solid_content' => 'nullable|numeric|min:0|max:100',
+            'viscosity' => 'nullable|numeric|min:0',
+            'ph_value' => 'nullable|numeric|min:0|max:14',
+            'minimum_film_forming_temperature' => 'nullable|numeric',
+            'fineness_modulus' => 'nullable|numeric|min:0',
+            'water_absorption' => 'nullable|numeric|min:0|max:100',
+            'silt_content' => 'nullable|numeric|min:0|max:100',
+            'organic_impurities' => 'nullable|numeric|min:0|max:100',
+            'status' => 'nullable|in:pending,in_progress,completed,cancelled',
+            'remarks' => 'nullable|string',
+            'recommendations' => 'nullable|string',
+            'meets_standard' => 'nullable|boolean',
+            'standard_reference' => 'nullable|string',
+            'standard_limits' => 'nullable|array',
+        ]);
+
+        $test->update($validated);
 
         return response()->json([
             'success' => true,
@@ -314,9 +375,15 @@ class TestPageController extends Controller
         $organizationId = $request->get('organization_id');
 
         $parameters = TestParameter::query()
-            ->when($organizationId, fn($q) => $q->where('organization_id', $organizationId))
-            ->when($request->has('test_type'), fn($q) => $q->where('test_type', $request->test_type))
-            ->when($request->has('parameter_category'), fn($q) => $q->where('parameter_category', $request->parameter_category))
+            ->when($organizationId, function($q, $id) {
+                return $q->where('organization_id', $id);
+            })
+            ->when($request->has('test_type'), function($q) use ($request) {
+                return $q->where('test_type', $request->test_type);
+            })
+            ->when($request->has('parameter_category'), function($q) use ($request) {
+                return $q->where('parameter_category', $request->parameter_category);
+            })
             ->orderBy('display_order')
             ->get();
 
@@ -363,9 +430,15 @@ class TestPageController extends Controller
         $organizationId = $request->get('organization_id');
 
         $standards = TestStandard::query()
-            ->when($organizationId, fn($q) => $q->where('organization_id', $organizationId))
-            ->when($request->has('test_type'), fn($q) => $q->where('test_type', $request->test_type))
-            ->when($request->has('is_current'), fn($q) => $q->where('is_current', $request->is_current))
+            ->when($organizationId, function($q, $id) {
+                return $q->where('organization_id', $id);
+            })
+            ->when($request->has('test_type'), function($q) use ($request) {
+                return $q->where('test_type', $request->test_type);
+            })
+            ->when($request->has('is_current'), function($q) use ($request) {
+                return $q->where('is_current', $request->is_current);
+            })
             ->orderBy('effective_date', 'desc')
             ->get();
 
@@ -407,10 +480,16 @@ class TestPageController extends Controller
         $organizationId = $request->get('organization_id');
 
         $templates = TestTemplate::query()
-            ->when($organizationId, fn($q) => $q->where('organization_id', $organizationId))
+            ->when($organizationId, function($q, $id) {
+                return $q->where('organization_id', $id);
+            })
             ->with(['product', 'standard'])
-            ->when($request->has('test_type'), fn($q) => $q->where('test_type', $request->test_type))
-            ->when($request->has('is_default'), fn($q) => $q->where('is_default', $request->is_default))
+            ->when($request->has('test_type'), function($q) use ($request) {
+                return $q->where('test_type', $request->test_type);
+            })
+            ->when($request->has('is_default'), function($q) use ($request) {
+                return $q->where('is_default', $request->is_default);
+            })
             ->orderBy('created_at', 'desc')
             ->get();
 

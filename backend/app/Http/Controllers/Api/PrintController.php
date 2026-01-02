@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\SalesOrder;
 use App\Models\Invoice;
 use App\Models\PurchaseOrder;
-use App\Models\ProductionOrder;
 use App\Models\GoodsReceiptNote;
+use App\Models\ProductionOrder;
 use App\Models\Inspection;
 use App\Models\Ncr;
 use App\Models\CreditControl;
@@ -15,6 +15,14 @@ use App\Models\Collection;
 use App\Models\Payslip;
 use App\Models\DryMixProductTest;
 use App\Models\RawMaterialTest;
+use App\Models\User;
+use App\Models\Organization;
+use App\Models\ChartOfAccount;
+use App\Models\Ledger;
+use App\Models\Product;
+use App\Models\Customer;
+use App\Models\BillOfMaterial;
+use App\Models\ProductionBatch;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -112,7 +120,7 @@ class PrintController extends Controller
     public function billOfMaterials(Request $request): Response
     {
         $bomId = $request->get('bom_id');
-        $bom = \App\Models\BillOfMaterial::with(['product', 'bomItems.rawMaterial', 'organization'])->find($bomId);
+        $bom = BillOfMaterial::with(['product', 'bomItems.rawMaterial', 'organization'])->find($bomId);
 
         if (!$bom) {
             return response()->json(['message' => 'BOM not found'], 404);
@@ -168,7 +176,7 @@ class PrintController extends Controller
     public function customerLedger(Request $request): Response
     {
         $customerId = $request->get('customer_id');
-        $customer = \App\Models\Customer::with(['organization', 'salesOrders', 'invoices'])->find($customerId);
+        $customer = Customer::with(['organization', 'salesOrders', 'invoices'])->find($customerId);
 
         if (!$customer) {
             return response()->json(['message' => 'Customer not found'], 404);
@@ -263,7 +271,7 @@ class PrintController extends Controller
         $organizationId = $request->get('organization_id');
         $asOfDate = $request->get('as_of_date', today());
 
-        $customers = \App\Models\Customer::where('organization_id', $organizationId)
+        $customers = Customer::where('organization_id', $organizationId)
             ->with(['salesOrders' => function($q) use ($asOfDate) {
                 $q->where('order_date', '<=', $asOfDate);
             }])
@@ -286,11 +294,13 @@ class PrintController extends Controller
             ];
         }
 
+        $company = Organization::find($organizationId);
+
         $data = [
             'title' => 'ACCOUNTS RECEIVABLE AGING REPORT',
             'agingData' => collect($agingData)->sortByDesc('outstanding'),
             'as_of_date' => $asOfDate,
-            'company' => \App\Models\Organization::find($organizationId),
+            'company' => $company,
             'theme' => $this->getPrintTheme($organizationId),
         ];
 
@@ -334,6 +344,7 @@ class PrintController extends Controller
         }
 
         $attendances = $query->orderBy('attendance_date')->get();
+        $company = Organization::find($organizationId);
 
         $data = [
             'title' => 'ATTENDANCE REPORT',
@@ -342,7 +353,7 @@ class PrintController extends Controller
                 'start_date' => $startDate,
                 'end_date' => $endDate,
             ],
-            'company' => \App\Models\Organization::find($organizationId),
+            'company' => $company,
             'theme' => $this->getPrintTheme($organizationId),
         ];
 
@@ -392,7 +403,7 @@ class PrintController extends Controller
         $fiscalYearId = $request->get('fiscal_year_id');
         $asOfDate = $request->get('as_of_date', today());
 
-        $accounts = \App\Models\ChartOfAccount::query()
+        $accounts = ChartOfAccount::query()
             ->where('organization_id', $organizationId)
             ->with(['childAccounts'])
             ->whereNull('parent_account_id')
@@ -403,10 +414,10 @@ class PrintController extends Controller
         $totalCredit = 0;
 
         foreach ($accounts as $account) {
-            $balance = \App\Models\Ledger::query()
+            $balance = Ledger::query()
                 ->where('account_id', $account->id)
                 ->where('entry_date', '<=', $asOfDate)
-                ->sum('debit_amount') - \App\Models\Ledger::query()
+                ->sum('debit_amount') - Ledger::query()
                 ->where('account_id', $account->id)
                 ->where('entry_date', '<=', $asOfDate)
                 ->sum('credit_amount');
@@ -428,13 +439,15 @@ class PrintController extends Controller
             $totalCredit += $credit;
         }
 
+        $company = Organization::find($organizationId);
+
         $data = [
             'title' => 'TRIAL BALANCE',
             'accounts' => $trialBalance,
             'total_debit' => $totalDebit,
             'total_credit' => $totalCredit,
             'as_of_date' => $asOfDate,
-            'company' => \App\Models\Organization::find($organizationId),
+            'company' => $company,
             'theme' => $this->getPrintTheme($organizationId),
         ];
 
@@ -449,20 +462,22 @@ class PrintController extends Controller
         $organizationId = $request->get('organization_id');
         $asOfDate = $request->get('as_of_date', today());
 
-        $assets = \App\Models\ChartOfAccount::query()
+        $assets = ChartOfAccount::query()
             ->where('organization_id', $organizationId)
             ->where('account_type', 'asset')
             ->get();
 
-        $liabilities = \App\Models\ChartOfAccount::query()
+        $liabilities = ChartOfAccount::query()
             ->where('organization_id', $organizationId)
             ->where('account_type', 'liability')
             ->get();
 
-        $equity = \App\Models\ChartOfAccount::query()
+        $equity = ChartOfAccount::query()
             ->where('organization_id', $organizationId)
             ->where('account_type', 'equity')
             ->get();
+
+        $company = Organization::find($organizationId);
 
         $data = [
             'title' => 'BALANCE SHEET',
@@ -470,7 +485,7 @@ class PrintController extends Controller
             'liabilities' => $liabilities,
             'equity' => $equity,
             'as_of_date' => $asOfDate,
-            'company' => \App\Models\Organization::find($organizationId),
+            'company' => $company,
             'theme' => $this->getPrintTheme($organizationId),
         ];
 
@@ -486,15 +501,17 @@ class PrintController extends Controller
         $startDate = $request->get('start_date', now()->startOfYear()->toDateString());
         $endDate = $request->get('end_date', today()->toDateString());
 
-        $revenue = \App\Models\ChartOfAccount::query()
+        $revenue = ChartOfAccount::query()
             ->where('organization_id', $organizationId)
             ->where('account_type', 'revenue')
             ->get();
 
-        $expenses = \App\Models\ChartOfAccount::query()
+        $expenses = ChartOfAccount::query()
             ->where('organization_id', $organizationId)
             ->where('account_type', 'expense')
             ->get();
+
+        $company = Organization::find($organizationId);
 
         $data = [
             'title' => 'PROFIT AND LOSS STATEMENT',
@@ -504,7 +521,7 @@ class PrintController extends Controller
                 'start_date' => $startDate,
                 'end_date' => $endDate,
             ],
-            'company' => \App\Models\Organization::find($organizationId),
+            'company' => $company,
             'theme' => $this->getPrintTheme($organizationId),
         ];
 
@@ -526,7 +543,7 @@ class PrintController extends Controller
      */
     protected function getPrintTheme($organizationId): array
     {
-        $organization = \App\Models\Organization::find($organizationId);
+        $organization = Organization::find($organizationId);
 
         if (!$organization) {
             return $this->getDefaultTheme();
