@@ -405,4 +405,292 @@ class FinanceController extends Controller
         }
         return $result;
     }
+
+    public function accountBalance(Request $request): JsonResponse
+    {
+        $organizationId = $request->get('organization_id');
+        $accountId = $request->get('account_id');
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date', today()->toDateString());
+
+        if (!$accountId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Account ID is required',
+            ], 422);
+        }
+
+        $account = ChartOfAccount::query()
+            ->where('organization_id', $organizationId)
+            ->findOrFail($accountId);
+
+        $query = Ledger::query()
+            ->where('account_id', $accountId)
+            ->orderBy('entry_date');
+
+        if ($startDate) {
+            $query->where('entry_date', '>=', $startDate);
+        }
+
+        $ledgers = $query->where('entry_date', '<=', $endDate)->get();
+
+        $totalDebit = $ledgers->sum('debit_amount');
+        $totalCredit = $ledgers->sum('credit_amount');
+
+        $isAssetOrExpense = in_array($account->account_type, ['asset', 'expense']);
+        $currentBalance = $isAssetOrExpense ? ($totalDebit - $totalCredit) : ($totalCredit - $totalDebit);
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'account' => [
+                    'id' => $account->id,
+                    'code' => $account->account_code,
+                    'name' => $account->account_name,
+                    'type' => $account->account_type,
+                ],
+                'opening_balance' => $account->opening_balance,
+                'current_balance' => $account->current_balance,
+                'period_debit' => $totalDebit,
+                'period_credit' => $totalCredit,
+                'net_balance' => $currentBalance,
+                'balance_type' => $currentBalance >= 0 ? 'debit' : 'credit',
+                'transaction_count' => $ledgers->count(),
+            ],
+        ]);
+    }
+
+    public function runningBalance(Request $request): JsonResponse
+    {
+        $organizationId = $request->get('organization_id');
+        $accountId = $request->get('account_id');
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date', today()->toDateString());
+
+        if (!$accountId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Account ID is required',
+            ], 422);
+        }
+
+        $account = ChartOfAccount::query()
+            ->where('organization_id', $organizationId)
+            ->findOrFail($accountId);
+
+        $query = Ledger::query()
+            ->where('account_id', $accountId)
+            ->orderBy('entry_date', 'asc')
+            ->orderBy('id', 'asc');
+
+        if ($startDate) {
+            $query->where('entry_date', '>=', $startDate);
+        }
+
+        $ledgers = $query->where('entry_date', '<=', $endDate)->get();
+
+        $runningBalance = $account->opening_balance;
+        $transactions = [];
+
+        foreach ($ledgers as $ledger) {
+            $isAssetOrExpense = in_array($account->account_type, ['asset', 'expense']);
+
+            if ($ledger->entry_type === 'debit') {
+                $runningBalance = $isAssetOrExpense ? $runningBalance + $ledger->debit_amount : $runningBalance - $ledger->debit_amount;
+            } else {
+                $runningBalance = $isAssetOrExpense ? $runningBalance - $ledger->credit_amount : $runningBalance + $ledger->credit_amount;
+            }
+
+            $transactions[] = [
+                'date' => $ledger->entry_date->format('Y-m-d'),
+                'reference' => $ledger->reference,
+                'entry_type' => $ledger->entry_type,
+                'debit' => $ledger->debit_amount,
+                'credit' => $ledger->credit_amount,
+                'balance' => $runningBalance,
+                'narration' => $ledger->narration,
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'account' => [
+                    'id' => $account->id,
+                    'code' => $account->account_code,
+                    'name' => $account->account_name,
+                    'type' => $account->account_type,
+                ],
+                'opening_balance' => $account->opening_balance,
+                'closing_balance' => $runningBalance,
+                'transactions' => $transactions,
+            ],
+        ]);
+    }
+
+    public function reconcileBalance(Request $request): JsonResponse
+    {
+        $organizationId = $request->get('organization_id');
+        $accountId = $request->get('account_id');
+        $reconciledDate = $request->get('reconciled_date', today()->toDateString());
+        $statementBalance = $request->get('statement_balance');
+        $statementDate = $request->get('statement_date', today()->toDateString());
+
+        if (!$accountId || !$statementBalance) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Account ID and statement balance are required',
+            ], 422);
+        }
+
+        $account = ChartOfAccount::query()
+            ->where('organization_id', $organizationId)
+            ->findOrFail($accountId);
+
+        $bookBalance = $account->current_balance;
+        $difference = $statementBalance - $bookBalance;
+
+        $outstandingTransactions = Ledger::query()
+            ->where('account_id', $accountId)
+            ->where('entry_date', '<=', $statementDate)
+            ->orderBy('entry_date', 'desc')
+            ->take(10)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'account' => [
+                    'id' => $account->id,
+                    'code' => $account->account_code,
+                    'name' => $account->account_name,
+                ],
+                'book_balance' => $bookBalance,
+                'statement_balance' => $statementBalance,
+                'statement_date' => $statementDate,
+                'difference' => $difference,
+                'is_reconciled' => abs($difference) < 0.01,
+                'reconciled_date' => abs($difference) < 0.01 ? $reconciledDate : null,
+                'outstanding_transactions' => $outstandingTransactions,
+                'recommendations' => $difference != 0 ? $this->getReconciliationRecommendations($difference, $account->account_type) : [],
+            ],
+        ]);
+    }
+
+    public function balanceSummary(Request $request): JsonResponse
+    {
+        $organizationId = $request->get('organization_id');
+        $asOfDate = $request->get('as_of_date', today()->toDateString());
+
+        $accounts = ChartOfAccount::query()
+            ->where('organization_id', $organizationId)
+            ->get();
+
+        $summary = [
+            'assets' => ['total' => 0, 'accounts' => []],
+            'liabilities' => ['total' => 0, 'accounts' => []],
+            'equity' => ['total' => 0, 'accounts' => []],
+            'revenue' => ['total' => 0, 'accounts' => []],
+            'expenses' => ['total' => 0, 'accounts' => []],
+        ];
+
+        foreach ($accounts as $account) {
+            $balance = $account->current_balance;
+            $type = $account->account_type;
+
+            if (isset($summary[$type])) {
+                $summary[$type]['total'] += $balance;
+                $summary[$type]['accounts'][] = [
+                    'code' => $account->account_code,
+                    'name' => $account->account_name,
+                    'balance' => $balance,
+                ];
+            }
+        }
+
+        $totalAssets = $summary['assets']['total'];
+        $totalLiabilities = $summary['liabilities']['total'];
+        $totalEquity = $summary['equity']['total'];
+        $totalRevenue = $summary['revenue']['total'];
+        $totalExpenses = $summary['expenses']['total'];
+        $netIncome = $totalRevenue - $totalExpenses;
+
+        $totalLiabilitiesAndEquity = $totalLiabilities + $totalEquity + $netIncome;
+        $balanceCheck = $totalAssets - $totalLiabilitiesAndEquity;
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'summary' => $summary,
+                'totals' => [
+                    'total_assets' => $totalAssets,
+                    'total_liabilities' => $totalLiabilities,
+                    'total_equity' => $totalEquity,
+                    'total_revenue' => $totalRevenue,
+                    'total_expenses' => $totalExpenses,
+                    'net_income' => $netIncome,
+                    'total_liabilities_and_equity' => $totalLiabilitiesAndEquity,
+                ],
+                'as_of_date' => $asOfDate,
+                'is_balanced' => abs($balanceCheck) < 0.01,
+                'balance_difference' => $balanceCheck,
+            ],
+        ]);
+    }
+
+    public function updateAccountBalance(Request $request, ChartOfAccount $account): JsonResponse
+    {
+        $validated = $request->validate([
+            'opening_balance' => 'required|numeric',
+            'reason' => 'required|string',
+        ]);
+
+        $oldBalance = $account->current_balance;
+        $difference = $validated['opening_balance'] - $account->opening_balance;
+
+        $account->update([
+            'opening_balance' => $validated['opening_balance'],
+            'current_balance' => $validated['opening_balance'] + $difference,
+        ]);
+
+        Ledger::create([
+            'organization_id' => $account->organization_id,
+            'account_id' => $account->id,
+            'entry_date' => today(),
+            'reference' => 'ADJ-' . date('YmdHis'),
+            'entry_type' => $difference >= 0 ? 'debit' : 'credit',
+            'debit_amount' => $difference >= 0 ? abs($difference) : 0,
+            'credit_amount' => $difference < 0 ? abs($difference) : 0,
+            'balance' => $account->current_balance,
+            'narration' => 'Balance adjustment: ' . $validated['reason'],
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'data' => $account,
+            'message' => 'Account balance updated successfully',
+        ]);
+    }
+
+    private function getReconciliationRecommendations($difference, $accountType): array
+    {
+        $recommendations = [];
+
+        if (abs($difference) > 100) {
+            $recommendations[] = 'Large difference detected. Check for unposted transactions.';
+        }
+
+        if ($accountType === 'asset' || $accountType === 'liability') {
+            $recommendations[] = 'Review bank statements and outstanding checks.';
+            $recommendations[] = 'Check for deposits in transit.';
+        }
+
+        if ($difference > 0 && $accountType === 'asset') {
+            $recommendations[] = 'Book balance is higher than statement. Possible unrecorded withdrawals.';
+        } elseif ($difference < 0 && $accountType === 'asset') {
+            $recommendations[] = 'Statement balance is higher than book. Possible unrecorded deposits.';
+        }
+
+        return $recommendations;
+    }
 }

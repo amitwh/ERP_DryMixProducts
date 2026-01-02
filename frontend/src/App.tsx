@@ -17,6 +17,40 @@ import SalesOrdersPage from '@/pages/sales/SalesOrdersPage'
 // Quality Control
 import QualityInspectionsPage from '@/pages/quality/QualityInspectionsPage'
 
+// Products Management
+import ProductsPage from '@/pages/ProductsPage'
+
+// Customers
+import CustomersPage from '@/pages/CustomersPage'
+
+// Production
+import ProductionOrdersPage from '@/pages/ProductionOrdersPage'
+
+// Inventory
+import InventoryStockPage from '@/pages/InventoryStockPage'
+
+// Procurement
+import PurchaseOrdersPage from '@/pages/PurchaseOrdersPage'
+
+// HR & Payroll
+import EmployeesPage from '@/pages/EmployeesPage'
+
+// System
+import UsersPage from '@/pages/UsersPage'
+
+// Settings
+import SettingsProfilePage from '@/pages/SettingsProfilePage'
+
+// Finance & Accounting
+import ChartOfAccountsPage from '@/pages/finance/ChartOfAccountsPage'
+import TrialBalancePage from '@/pages/finance/TrialBalancePage'
+import BalanceSheetPage from '@/pages/finance/BalanceSheetPage'
+import ProfitLossPage from '@/pages/finance/ProfitLossPage'
+import JournalVouchersPage from '@/pages/finance/JournalVouchersPage'
+import LedgerViewPage from '@/pages/finance/LedgerViewPage'
+import FiscalYearsPage from '@/pages/finance/FiscalYearsPage'
+import FinanceDashboardPage from '@/pages/finance/FinanceDashboardPage'
+
 // Placeholder Pages (to be created)
 const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
   <div className="space-y-6">
@@ -126,27 +160,24 @@ function App() {
         <Route path="sales/projects" element={<PlaceholderPage title="Projects" />} />
 
         {/* Products Management */}
-        <Route path="products" element={<PlaceholderPage title="Products Management" />} />
+        <Route path="products" element={<ProductsPage />} />
         <Route path="products/categories" element={<PlaceholderPage title="Product Categories" />} />
         <Route path="products/attributes" element={<PlaceholderPage title="Product Attributes" />} />
 
         {/* Customers */}
-        <Route path="customers" element={<PlaceholderPage title="Customers" />} />
+        <Route path="customers" element={<CustomersPage />} />
         <Route path="customers/:id" element={<PlaceholderPage title="Customer Details" />} />
         <Route path="customers/create" element={<PlaceholderPage title="Create Customer" />} />
 
         {/* Production */}
-        <Route path="production" element={<PlaceholderPage title="Production Management" />} />
-        <Route path="production/orders" element={<PlaceholderPage title="Production Orders" />} />
+        <Route path="production" element={<ProductionOrdersPage />} />
+        <Route path="production/orders" element={<ProductionOrdersPage />} />
         <Route path="production/orders/create" element={<PlaceholderPage title="Create Production Order" />} />
-        <Route path="production/bom" element={<PlaceholderPage title="Bill of Materials" />} />
-        <Route path="production/batches" element={<PlaceholderPage title="Production Batches" />} />
-        <Route path="production/consumption" element={<PlaceholderPage title="Material Consumption" />} />
+        <Route path="production/orders/:id" element={<PlaceholderPage title="Production Order Details" />} />
 
         {/* Inventory */}
         <Route path="inventory" element={<PlaceholderPage title="Inventory & Stores" />} />
-        <Route path="inventory/stock" element={<PlaceholderPage title="Stock Overview" />} />
-        <Route path="inventory/stock/:id" element={<PlaceholderPage title="Stock Details" />} />
+        <Route path="inventory/stock" element={<InventoryStockPage />} />
         <Route path="inventory/movements" element={<PlaceholderPage title="Stock Movements" />} />
         <Route path="inventory/transfers" element={<PlaceholderPage title="Stock Transfers" />} />
         <Route path="inventory/warehouses" element={<PlaceholderPage title="Warehouses" />} />
@@ -168,18 +199,22 @@ function App() {
         <Route path="quality/raw-material-tests/:id" element={<PlaceholderPage title="Raw Material Test Details" />} />
 
         {/* Finance */}
-        <Route path="finance" element={<PlaceholderPage title="Finance & Accounting" />} />
-        <Route path="finance/dashboard" element={<PlaceholderPage title="Finance Dashboard" />} />
-        <Route path="finance/charts" element={<PlaceholderPage title="Chart of Accounts" />} />
-        <Route path="finance/vouchers" element={<PlaceholderPage title="Vouchers" />} />
+        <Route path="finance" element={<FinanceDashboardPage />} />
+        <Route path="finance/dashboard" element={<FinanceDashboardPage />} />
+        <Route path="finance/accounts" element={<ChartOfAccountsPage />} />
+        <Route path="finance/accounts/create" element={<PlaceholderPage title="Create Account" />} />
+        <Route path="finance/accounts/:id" element={<PlaceholderPage title="Account Details" />} />
+        <Route path="finance/charts" element={<ChartOfAccountsPage />} />
+        <Route path="finance/vouchers" element={<JournalVouchersPage />} />
         <Route path="finance/vouchers/create" element={<PlaceholderPage title="Create Voucher" />} />
-        <Route path="finance/journals" element={<PlaceholderPage title="Journals" />} />
-        <Route path="finance/ledgers" element={<PlaceholderPage title="Ledgers" />} />
-        <Route path="finance/fiscal-years" element={<PlaceholderPage title="Fiscal Years" />} />
+        <Route path="finance/vouchers/:id" element={<PlaceholderPage title="Voucher Details" />} />
+        <Route path="finance/ledgers" element={<LedgerViewPage />} />
+        <Route path="finance/fiscal-years" element={<FiscalYearsPage />} />
+        <Route path="finance/fiscal-years/create" element={<PlaceholderPage title="Create Fiscal Year" />} />
         <Route path="finance/reports" element={<PlaceholderPage title="Financial Reports" />} />
-        <Route path="finance/reports/trial-balance" element={<PlaceholderPage title="Trial Balance" />} />
-        <Route path="finance/reports/balance-sheet" element={<PlaceholderPage title="Balance Sheet" />} />
-        <Route path="finance/reports/profit-loss" element={<PlaceholderPage title="Profit & Loss" />} />
+        <Route path="finance/reports/trial-balance" element={<TrialBalancePage />} />
+        <Route path="finance/reports/balance-sheet" element={<BalanceSheetPage />} />
+        <Route path="finance/reports/profit-loss" element={<ProfitLossPage />} /> />
 
         {/* Credit Control */}
         <Route path="credit-control" element={<PlaceholderPage title="Credit Control" />} />
@@ -204,7 +239,7 @@ function App() {
 
         {/* HR & Payroll */}
         <Route path="hr-payroll" element={<PlaceholderPage title="HR & Payroll" />} />
-        <Route path="hr-payroll/employees" element={<PlaceholderPage title="Employees" />} />
+        <Route path="hr-payroll/employees" element={<EmployeesPage />} />
         <Route path="hr-payroll/employees/create" element={<PlaceholderPage title="Create Employee" />} />
         <Route path="hr-payroll/employees/:id" element={<PlaceholderPage title="Employee Details" />} />
         <Route path="hr-payroll/departments" element={<PlaceholderPage title="Departments" />} />

@@ -144,6 +144,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('finance/trial-balance', [FinanceController::class, 'trialBalance']);
     Route::get('finance/balance-sheet', [FinanceController::class, 'balanceSheet']);
     Route::get('finance/profit-and-loss', [FinanceController::class, 'profitAndLoss']);
+    Route::get('chart-of-accounts/{chartOfAccount}/balance', [FinanceController::class, 'accountBalance']);
+    Route::get('chart-of-accounts/{chartOfAccount}/running-balance', [FinanceController::class, 'runningBalance']);
+    Route::get('chart-of-accounts/{chartOfAccount}/reconcile', [FinanceController::class, 'reconcileBalance']);
+    Route::get('finance/balance-summary', [FinanceController::class, 'balanceSummary']);
+    Route::put('chart-of-accounts/{chartOfAccount}/balance', [FinanceController::class, 'updateAccountBalance']);
 
     // HR & Payroll Module
     Route::get('hr', [HRController::class, 'index']);
