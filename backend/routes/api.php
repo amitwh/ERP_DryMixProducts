@@ -22,6 +22,8 @@ use App\Http\Controllers\Api\InventoryController;
 use App\Http\Controllers\Api\StockTransactionController;
 use App\Http\Controllers\Api\ProductionOrderController;
 use App\Http\Controllers\Api\BillOfMaterialController;
+use App\Http\Controllers\Api\CreditControlController;
+use App\Http\Controllers\Api\CollectionController;
 
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -102,4 +104,24 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('bill-of-materials', BillOfMaterialController::class);
     Route::post('bill-of-materials/{billOfMaterial}/activate', [BillOfMaterialController::class, 'activate']);
     Route::get('bill-of-materials/{billOfMaterial}/cost-analysis', [BillOfMaterialController::class, 'costAnalysis']);
+
+    // Credit Control Module
+    Route::apiResource('credit-controls', CreditControlController::class);
+    Route::post('credit-controls/{creditControl}/place-on-hold', [CreditControlController::class, 'placeOnHold']);
+    Route::post('credit-controls/{creditControl}/release-hold', [CreditControlController::class, 'releaseHold']);
+    Route::get('credit-controls/{creditControl}/transactions', [CreditControlController::class, 'transactions']);
+    Route::get('credit-controls/aging-report', [CreditControlController::class, 'agingReport']);
+    Route::get('credit-controls/credit-score-distribution', [CreditControlController::class, 'creditScoreDistribution']);
+    Route::get('credit-controls/risk-analysis', [CreditControlController::class, 'riskAnalysis']);
+    Route::post('credit-controls/{creditControl}/create-review', [CreditControlController::class, 'createReview']);
+    Route::post('credit-reviews/{review}/approve', [CreditControlController::class, 'approveReview']);
+    Route::post('credit-controls/{creditControl}/send-reminder', [CreditControlController::class, 'sendReminder']);
+    Route::get('credit-controls/statistics', [CreditControlController::class, 'statistics']);
+
+    // Collections Module
+    Route::apiResource('collections', CollectionController::class);
+    Route::post('collections/{collection}/record-payment', [CollectionController::class, 'recordPayment']);
+    Route::post('collections/{collection}/waive-amount', [CollectionController::class, 'waiveAmount']);
+    Route::post('collections/{collection}/mark-as-disputed', [CollectionController::class, 'markAsDisputed']);
+    Route::get('collections/summary', [CollectionController::class, 'summary']);
 });
