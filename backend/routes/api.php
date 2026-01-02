@@ -125,3 +125,83 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('collections/{collection}/mark-as-disputed', [CollectionController::class, 'markAsDisputed']);
     Route::get('collections/summary', [CollectionController::class, 'summary']);
 });
+
+    // Finance & Accounting Module
+    Route::get('finance', [FinanceController::class, 'index']);
+    Route::apiResource('chart-of-accounts', FinanceController::class)->parameters([
+        'chart-of-account' => 'chartOfAccount'
+    ]);
+    Route::get('chart-of-accounts/{chartOfAccount}/ledger', [FinanceController::class, 'ledgers']);
+    Route::apiResource('journal-vouchers', FinanceController::class)->parameters([
+        'journal-voucher' => 'journalVoucher'
+    ]);
+    Route::post('journal-vouchers/{journalVoucher}/post', [FinanceController::class, 'postJournalVoucher']);
+    Route::post('journal-vouchers/{journalVoucher}/cancel', [FinanceController::class, 'cancelJournalVoucher']);
+    Route::apiResource('fiscal-years', FinanceController::class)->parameters([
+        'fiscal-year' => 'fiscalYear'
+    ]);
+    Route::get('ledgers', [FinanceController::class, 'ledgers']);
+    Route::get('finance/trial-balance', [FinanceController::class, 'trialBalance']);
+    Route::get('finance/balance-sheet', [FinanceController::class, 'balanceSheet']);
+    Route::get('finance/profit-and-loss', [FinanceController::class, 'profitAndLoss']);
+
+    // HR & Payroll Module
+    Route::get('hr', [HRController::class, 'index']);
+    Route::apiResource('employees', HRController::class)->parameters([
+        'employee' => 'employee'
+    ]);
+    Route::apiResource('attendances', HRController::class)->parameters([
+        'attendance' => 'attendance'
+    ]);
+    Route::apiResource('leave-requests', HRController::class)->parameters([
+        'leave-request' => 'leaveRequest'
+    ]);
+    Route::post('leave-requests/{leaveRequest}/approve', [HRController::class, 'approveLeaveRequest']);
+    Route::post('leave-requests/{leaveRequest}/reject', [HRController::class, 'rejectLeaveRequest']);
+    Route::get('departments', [HRController::class, 'departments']);
+    Route::post('departments', [HRController::class, 'storeDepartment']);
+    Route::get('hr/statistics', [HRController::class, 'statistics']);
+
+    // Planning Module
+    Route::get('planning', [PlanningController::class, 'index']);
+    Route::apiResource('production-plans', PlanningController::class)->parameters([
+        'production-plan' => 'productionPlan'
+    ]);
+    Route::post('production-plans/{productionPlan}/approve', [PlanningController::class, 'approveProductionPlan']);
+    Route::get('material-requirements', [PlanningController::class, 'materialRequirements']);
+    Route::apiResource('demand-forecasts', PlanningController::class)->parameters([
+        'demand-forecast' => 'demandForecast'
+    ]);
+    Route::get('planning/mrp-analysis', [PlanningController::class, 'mrpAnalysis']);
+    Route::get('planning/capacity-analysis', [PlanningController::class, 'capacityAnalysis']);
+
+    // Communication Module
+    Route::get('communication', [CommunicationController::class, 'index']);
+    Route::get('communication-templates', [CommunicationController::class, 'templates']);
+    Route::post('communication-templates', [CommunicationController::class, 'storeTemplate']);
+    Route::get('communication-logs', [CommunicationController::class, 'logs']);
+    Route::post('communication/send-message', [CommunicationController::class, 'sendMessage']);
+    Route::get('notification-preferences', [CommunicationController::class, 'notificationPreferences']);
+    Route::post('notification-preferences', [CommunicationController::class, 'updateNotificationPreference']);
+    Route::get('communication/statistics', [CommunicationController::class, 'statistics']);
+    Route::post('communication/bulk-send', [CommunicationController::class, 'bulkSend']);
+
+    // System Administration Module
+    Route::get('system', [SystemAdminController::class, 'index']);
+    Route::get('modules', [SystemAdminController::class, 'modules']);
+    Route::get('modules/{module}', [SystemAdminController::class, 'showModule']);
+    Route::get('api-keys', [SystemAdminController::class, 'apiKeys']);
+    Route::post('api-keys', [SystemAdminController::class, 'storeApiKey']);
+    Route::post('api-keys/{apiKey}/revoke', [SystemAdminController::class, 'revokeApiKey']);
+    Route::get('api-logs', [SystemAdminController::class, 'apiLogs']);
+    Route::get('api-logs/statistics', [SystemAdminController::class, 'apiLogStatistics']);
+    Route::get('system-logs', [SystemAdminController::class, 'systemLogs']);
+    Route::get('system-backups', [SystemAdminController::class, 'systemBackups']);
+    Route::post('system-backups', [SystemAdminController::class, 'createBackup']);
+    Route::get('scheduled-tasks', [SystemAdminController::class, 'scheduledTasks']);
+    Route::post('scheduled-tasks', [SystemAdminController::class, 'storeScheduledTask']);
+    Route::post('scheduled-tasks/{task}/execute', [SystemAdminController::class, 'executeScheduledTask']);
+    Route::post('scheduled-tasks/{task}/pause', [SystemAdminController::class, 'pauseScheduledTask']);
+    Route::post('scheduled-tasks/{task}/resume', [SystemAdminController::class, 'resumeScheduledTask']);
+    Route::get('system/health', [SystemAdminController::class, 'systemHealth']);
+    Route::get('system/statistics', [SystemAdminController::class, 'statistics']);
