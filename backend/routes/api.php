@@ -24,6 +24,14 @@ use App\Http\Controllers\Api\ProductionOrderController;
 use App\Http\Controllers\Api\BillOfMaterialController;
 use App\Http\Controllers\Api\CreditControlController;
 use App\Http\Controllers\Api\CollectionController;
+use App\Http\Controllers\Api\FinanceController;
+use App\Http\Controllers\Api\HRController;
+use App\Http\Controllers\Api\PlanningController;
+use App\Http\Controllers\Api\CommunicationController;
+use App\Http\Controllers\Api\SystemAdminController;
+use App\Http\Controllers\Api\PrintController;
+use App\Http\Controllers\Api\TestPageController;
+use App\Http\Controllers\Api\SystemSettingsController;
 
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -124,7 +132,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('collections/{collection}/waive-amount', [CollectionController::class, 'waiveAmount']);
     Route::post('collections/{collection}/mark-as-disputed', [CollectionController::class, 'markAsDisputed']);
     Route::get('collections/summary', [CollectionController::class, 'summary']);
-});
 
     // Finance & Accounting Module
     Route::get('finance', [FinanceController::class, 'index']);
@@ -271,3 +278,4 @@ Route::middleware('auth:sanctum')->group(function () {
         // Statistics
         Route::get('statistics', [TestPageController::class, 'statistics']);
     });
+});
