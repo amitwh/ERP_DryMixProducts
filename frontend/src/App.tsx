@@ -21,19 +21,35 @@ import QualityInspectionsPage from '@/pages/quality/QualityInspectionsPage'
 import ProductsPage from '@/pages/ProductsPage'
 
 // Customers
-import CustomersPage from '@/pages/CustomersPage'
+import CustomersPage from '@/pages/customers/CustomersListPage'
+import CreateCustomerPage from '@/pages/customers/CreateCustomerPage'
 
 // Production
-import ProductionOrdersPage from '@/pages/ProductionOrdersPage'
+import ProductionOrdersPage from '@/pages/production/ProductionOrdersPage'
+import ProductionBatchesPage from '@/pages/production/ProductionBatchesPage'
 
 // Inventory
-import InventoryStockPage from '@/pages/InventoryStockPage'
+import InventoryStockPage from '@/pages/inventory/InventoryStockPage'
+import InventoryMovementsPage from '@/pages/inventory/InventoryMovementsPage'
 
 // Procurement
-import PurchaseOrdersPage from '@/pages/PurchaseOrdersPage'
+import PurchaseOrdersPage from '@/pages/procurement/PurchaseOrdersPage'
+import SuppliersPage from '@/pages/procurement/SuppliersPage'
 
 // HR & Payroll
-import EmployeesPage from '@/pages/EmployeesPage'
+import EmployeesPage from '@/pages/hr-payroll/EmployeesPage'
+import AttendancePage from '@/pages/hr-payroll/AttendancePage'
+
+// Credit Control
+import CreditCustomersPage from '@/pages/credit-control/CreditCustomersPage'
+import CreditLimitsPage from '@/pages/credit-control/CreditLimitsPage'
+
+// Planning
+import ProductionPlansPage from '@/pages/planning/ProductionPlansPage'
+import DemandForecastPage from '@/pages/planning/DemandForecastPage'
+
+// Communication
+import TemplatesPage from '@/pages/communication/TemplatesPage'
 
 // System
 import UsersPage from '@/pages/UsersPage'
@@ -166,19 +182,20 @@ function App() {
 
         {/* Customers */}
         <Route path="customers" element={<CustomersPage />} />
+        <Route path="customers/create" element={<CreateCustomerPage />} />
         <Route path="customers/:id" element={<PlaceholderPage title="Customer Details" />} />
-        <Route path="customers/create" element={<PlaceholderPage title="Create Customer" />} />
 
         {/* Production */}
         <Route path="production" element={<ProductionOrdersPage />} />
         <Route path="production/orders" element={<ProductionOrdersPage />} />
+        <Route path="production/batches" element={<ProductionBatchesPage />} />
         <Route path="production/orders/create" element={<PlaceholderPage title="Create Production Order" />} />
         <Route path="production/orders/:id" element={<PlaceholderPage title="Production Order Details" />} />
 
         {/* Inventory */}
         <Route path="inventory" element={<PlaceholderPage title="Inventory & Stores" />} />
         <Route path="inventory/stock" element={<InventoryStockPage />} />
-        <Route path="inventory/movements" element={<PlaceholderPage title="Stock Movements" />} />
+        <Route path="inventory/movements" element={<InventoryMovementsPage />} />
         <Route path="inventory/transfers" element={<PlaceholderPage title="Stock Transfers" />} />
         <Route path="inventory/warehouses" element={<PlaceholderPage title="Warehouses" />} />
         <Route path="inventory/adjustments" element={<PlaceholderPage title="Stock Adjustments" />} />
@@ -217,17 +234,17 @@ function App() {
         <Route path="finance/reports/profit-loss" element={<ProfitLossPage />} /> />
 
         {/* Credit Control */}
-        <Route path="credit-control" element={<PlaceholderPage title="Credit Control" />} />
-        <Route path="credit-control/customers" element={<PlaceholderPage title="Customer Credit" />} />
-        <Route path="credit-control/customers/:id" element={<PlaceholderPage title="Customer Credit Details" />} />
-        <Route path="credit-control/limits" element={<PlaceholderPage title="Credit Limits" />} />
+        <Route path="credit-control" element={<CreditCustomersPage />} />
+        <Route path="credit-control/customers" element={<CreditCustomersPage />} />
+        <Route path="credit-control/limits" element={<CreditLimitsPage />} />
         <Route path="credit-control/aging" element={<PlaceholderPage title="Aging Reports" />} />
         <Route path="credit-control/collections" element={<PlaceholderPage title="Collections" />} />
         <Route path="credit-control/collections/create" element={<PlaceholderPage title="Record Collection" />} />
 
         {/* Procurement */}
-        <Route path="procurement" element={<PlaceholderPage title="Procurement" />} />
-        <Route path="procurement/purchase-orders" element={<PlaceholderPage title="Purchase Orders" />} />
+        <Route path="procurement" element={<PurchaseOrdersPage />} />
+        <Route path="procurement/purchase-orders" element={<PurchaseOrdersPage />} />
+        <Route path="procurement/suppliers" element={<SuppliersPage />} />
         <Route path="procurement/purchase-orders/create" element={<PlaceholderPage title="Create Purchase Order" />} />
         <Route path="procurement/purchase-orders/:id" element={<PlaceholderPage title="Purchase Order Details" />} />
         <Route path="procurement/grns" element={<PlaceholderPage title="Goods Receipt Notes" />} />
@@ -238,13 +255,9 @@ function App() {
         <Route path="procurement/returns" element={<PlaceholderPage title="Purchase Returns" />} />
 
         {/* HR & Payroll */}
-        <Route path="hr-payroll" element={<PlaceholderPage title="HR & Payroll" />} />
+        <Route path="hr-payroll" element={<EmployeesPage />} />
         <Route path="hr-payroll/employees" element={<EmployeesPage />} />
-        <Route path="hr-payroll/employees/create" element={<PlaceholderPage title="Create Employee" />} />
-        <Route path="hr-payroll/employees/:id" element={<PlaceholderPage title="Employee Details" />} />
-        <Route path="hr-payroll/departments" element={<PlaceholderPage title="Departments" />} />
-        <Route path="hr-payroll/designations" element={<PlaceholderPage title="Designations" />} />
-        <Route path="hr-payroll/attendances" element={<PlaceholderPage title="Attendance" />} />
+        <Route path="hr-payroll/attendances" element={<AttendancePage />} />
         <Route path="hr-payroll/attendances/create" element={<PlaceholderPage title="Mark Attendance" />} />
         <Route path="hr-payroll/leave" element={<PlaceholderPage title="Leave Management" />} />
         <Route path="hr-payroll/payroll" element={<PlaceholderPage title="Payroll" />} />
@@ -252,16 +265,17 @@ function App() {
         <Route path="hr-payroll/payslips/:id" element={<PlaceholderPage title="Payslip Details" />} />
 
         {/* Planning */}
-        <Route path="planning" element={<PlaceholderPage title="Planning" />} />
-        <Route path="planning/production-plans" element={<PlaceholderPage title="Production Plans" />} />
+        <Route path="planning" element={<ProductionPlansPage />} />
+        <Route path="planning/production-plans" element={<ProductionPlansPage />} />
+        <Route path="planning/forecasts" element={<DemandForecastPage />} />
         <Route path="planning/production-plans/create" element={<PlaceholderPage title="Create Production Plan" />} />
         <Route path="planning/mrp" element={<PlaceholderPage title="Material Requirements Planning" />} />
         <Route path="planning/capacity" element={<PlaceholderPage title="Capacity Planning" />} />
         <Route path="planning/forecasts" element={<PlaceholderPage title="Forecasts" />} />
 
         {/* Communication */}
-        <Route path="communication" element={<PlaceholderPage title="Communication" />} />
-        <Route path="communication/templates" element={<PlaceholderPage title="Email Templates" />} />
+        <Route path="communication" element={<TemplatesPage />} />
+        <Route path="communication/templates" element={<TemplatesPage />} />
         <Route path="communication/templates/create" element={<PlaceholderPage title="Create Template" />} />
         <Route path="communication/sms" element={<PlaceholderPage title="SMS" />} />
         <Route path="communication/sms/create" element={<PlaceholderPage title="Send SMS" />} />
