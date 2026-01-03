@@ -52,7 +52,12 @@ import DemandForecastPage from '@/pages/planning/DemandForecastPage'
 import TemplatesPage from '@/pages/communication/TemplatesPage'
 
 // System
-import UsersPage from '@/pages/UsersPage'
+import UsersPage from '@/pages/system/UsersPage'
+import RolesPage from '@/pages/system/RolesPage'
+import OrganizationsPage from '@/pages/system/OrganizationsPage'
+import SystemLogsPage from '@/pages/system/SystemLogsPage'
+import BackupsPage from '@/pages/system/BackupsPage'
+import SystemSettingsPage from '@/pages/system/SystemSettingsPage'
 
 // Settings
 import SettingsProfilePage from '@/pages/SettingsProfilePage'
@@ -284,22 +289,24 @@ function App() {
         <Route path="communication/logs" element={<PlaceholderPage title="Communication Logs" />} />
 
         {/* System Administration */}
-        <Route path="system" element={<PlaceholderPage title="System Administration" />} />
+        <Route path="system" element={<UsersPage />} />
         <Route path="system/dashboard" element={<PlaceholderPage title="System Dashboard" />} />
-        <Route path="system/users" element={<PlaceholderPage title="Users" />} />
+        <Route path="system/users" element={<UsersPage />} />
         <Route path="system/users/create" element={<PlaceholderPage title="Create User" />} />
         <Route path="system/users/:id" element={<PlaceholderPage title="User Details" />} />
-        <Route path="system/roles" element={<PlaceholderPage title="Roles" />} />
+        <Route path="system/roles" element={<RolesPage />} />
         <Route path="system/roles/create" element={<PlaceholderPage title="Create Role" />} />
+        <Route path="system/roles/:id" element={<PlaceholderPage title="Role Details" />} />
         <Route path="system/permissions" element={<PlaceholderPage title="Permissions" />} />
-        <Route path="system/organizations" element={<PlaceholderPage title="Organizations" />} />
+        <Route path="system/organizations" element={<OrganizationsPage />} />
         <Route path="system/organizations/create" element={<PlaceholderPage title="Create Organization" />} />
+        <Route path="system/organizations/:id" element={<PlaceholderPage title="Organization Details" />} />
         <Route path="system/manufacturing-units" element={<PlaceholderPage title="Manufacturing Units" />} />
-        <Route path="system/settings" element={<PlaceholderPage title="System Settings" />} />
+        <Route path="system/settings" element={<SystemSettingsPage />} />
         <Route path="system/modules" element={<PlaceholderPage title="Modules" />} />
         <Route path="system/api-keys" element={<PlaceholderPage title="API Keys" />} />
-        <Route path="system/logs" element={<PlaceholderPage title="System Logs" />} />
-        <Route path="system/backups" element={<PlaceholderPage title="Backups" />} />
+        <Route path="system/logs" element={<SystemLogsPage />} />
+        <Route path="system/backups" element={<BackupsPage />} />
         <Route path="system/external-services" element={<PlaceholderPage title="External Services" />} />
 
         {/* Settings */}
