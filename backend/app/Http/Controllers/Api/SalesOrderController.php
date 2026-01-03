@@ -13,11 +13,7 @@ class SalesOrderController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $query = SalesOrder::query();
-
-        if ($request->has('organization_id')) {
-            $query->where('organization_id', $request->organization_id);
-        }
+        $query = SalesOrder::query()->where('organization_id', auth()->user()->organization_id);
 
         if ($request->has('customer_id')) {
             $query->where('customer_id', $request->customer_id);
@@ -36,7 +32,7 @@ class SalesOrderController extends Controller
             });
         }
 
-        $perPage = $request->get('per_page', 15);
+        $perPage = min((int) $request->get('per_page', 15), 100);
         $orders = $query->with(['customer', 'project', 'salesPerson', 'items.product'])->paginate($perPage);
 
         return response()->json([
@@ -48,7 +44,6 @@ class SalesOrderController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'organization_id' => 'required|exists:organizations,id',
             'customer_id' => 'required|exists:customers,id',
             'order_number' => 'required|string|unique:sales_orders,order_number',
             'order_date' => 'required|date',
@@ -68,7 +63,9 @@ class SalesOrderController extends Controller
 
         DB::beginTransaction();
         try {
-            $orderData = $request->except('items');
+            $orderData = array_merge($request->except('items'), [
+                'organization_id' => auth()->user()->organization_id,
+            ]);
             $orderData['subtotal'] = 0;
             $orderData['tax_amount'] = 0;
             $orderData['total_amount'] = 0;

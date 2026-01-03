@@ -12,11 +12,9 @@ class CustomerController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $query = Customer::query();
+        $query = Customer::query()->where('organization_id', auth()->user()->organization_id);
 
-        if ($request->has('organization_id')) {
-            $query->byOrganization($request->organization_id);
-        }
+        if ($request->has('status')) {
 
         if ($request->has('status')) {
             $query->where('status', $request->status);
@@ -31,7 +29,7 @@ class CustomerController extends Controller
             });
         }
 
-        $perPage = $request->get('per_page', 15);
+        $perPage = min((int) $request->get('per_page', 15), 100);
         $customers = $query->with('organization')->paginate($perPage);
 
         return response()->json([
@@ -43,7 +41,6 @@ class CustomerController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'organization_id' => 'required|exists:organizations,id',
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:50|unique:customers,code',
             'phone' => 'required|string|max:20',
@@ -61,7 +58,9 @@ class CustomerController extends Controller
             ], 422);
         }
 
-        $customer = Customer::create($request->all());
+        $customer = Customer::create(array_merge($request->all(), [
+            'organization_id' => auth()->user()->organization_id,
+        ]));
 
         return response()->json([
             'success' => true,

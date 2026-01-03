@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('organization_id')->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('code')->unique();
-            $table->string('supplier_type')->default('manufacturer'); // manufacturer, trader, importer
+            $table->string('supplier_type')->default('manufacturer');
             $table->string('contact_person')->nullable();
             $table->string('phone');
             $table->string('email')->nullable();

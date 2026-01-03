@@ -12,11 +12,9 @@ class InventoryController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $query = Inventory::query();
+        $query = Inventory::query()->where('organization_id', auth()->user()->organization_id);
 
-        if ($request->has('organization_id')) {
-            $query->where('organization_id', $request->organization_id);
-        }
+        if ($request->has('manufacturing_unit_id')) {
 
         if ($request->has('manufacturing_unit_id')) {
             $query->where('manufacturing_unit_id', $request->manufacturing_unit_id);
@@ -34,7 +32,7 @@ class InventoryController extends Controller
             $query->outOfStock();
         }
 
-        $perPage = $request->get('per_page', 15);
+        $perPage = min((int) $request->get('per_page', 15), 100);
         $inventory = $query->with(['product', 'manufacturingUnit'])->paginate($perPage);
 
         return response()->json([
@@ -46,7 +44,6 @@ class InventoryController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'organization_id' => 'required|exists:organizations,id',
             'manufacturing_unit_id' => 'required|exists:manufacturing_units,id',
             'product_id' => 'required|exists:products,id',
             'quantity_on_hand' => 'required|numeric|min:0',
@@ -62,7 +59,9 @@ class InventoryController extends Controller
             ], 422);
         }
 
-        $inventoryData = $request->all();
+        $inventoryData = array_merge($request->all(), [
+            'organization_id' => auth()->user()->organization_id,
+        ]);
         $inventoryData['quantity_available'] = $inventoryData['quantity_on_hand'] - ($inventoryData['quantity_reserved'] ?? 0);
 
         $inventory = Inventory::create($inventoryData);
@@ -129,11 +128,7 @@ class InventoryController extends Controller
 
     public function alerts(Request $request): JsonResponse
     {
-        $query = Inventory::query();
-
-        if ($request->has('organization_id')) {
-            $query->where('organization_id', $request->organization_id);
-        }
+        $query = Inventory::query()->where('organization_id', auth()->user()->organization_id);
 
         $lowStock = $query->lowStock()->with(['product', 'manufacturingUnit'])->get();
         $outOfStock = $query->outOfStock()->with(['product', 'manufacturingUnit'])->get();

@@ -14,7 +14,7 @@ return new class extends Migration
             $table->foreignId('organization_id')->constrained()->onDelete('cascade');
             $table->string('account_code')->unique();
             $table->string('account_name');
-            $table->string('account_type'); // asset, liability, equity, revenue, expense
+            $table->string('account_type');
             $table->string('sub_type')->nullable();
             $table->foreignId('parent_account_id')->nullable()->constrained('chart_of_accounts')->onDelete('set null');
             $table->decimal('opening_balance', 15, 2)->default(0);

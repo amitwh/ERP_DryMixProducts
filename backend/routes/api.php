@@ -34,8 +34,8 @@ use App\Http\Controllers\Api\TestPageController;
 use App\Http\Controllers\Api\SystemSettingsController;
 
 // Public routes
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:10,1');
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 
 // Health check
 Route::get('/health', function () {
@@ -53,8 +53,8 @@ Route::get('/health', function () {
     ]);
 });
 
-// Protected routes
-Route::middleware('auth:sanctum')->group(function () {
+// Protected routes with rate limiting
+Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
     // Auth routes
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);

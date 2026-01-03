@@ -236,7 +236,7 @@ function App() {
         <Route path="finance/reports" element={<PlaceholderPage title="Financial Reports" />} />
         <Route path="finance/reports/trial-balance" element={<TrialBalancePage />} />
         <Route path="finance/reports/balance-sheet" element={<BalanceSheetPage />} />
-        <Route path="finance/reports/profit-loss" element={<ProfitLossPage />} /> />
+        <Route path="finance/reports/profit-loss" element={<ProfitLossPage />} />
 
         {/* Credit Control */}
         <Route path="credit-control" element={<CreditCustomersPage />} />

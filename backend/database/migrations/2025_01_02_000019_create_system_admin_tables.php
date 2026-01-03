@@ -137,10 +137,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('organization_id')->nullable()->constrained()->onDelete('set null');
             $table->string('task_name');
-            $table->string('task_type'); // backup, report, email, sync, etc.
+            $table->string('task_type');
             $table->text('command')->nullable();
             $table->json('parameters')->nullable();
-            $table->string('schedule_expression'); // cron expression
+            $table->string('schedule_expression');
             $table->enum('frequency', ['once', 'daily', 'weekly', 'monthly', 'custom'])->default('daily');
             $table->dateTime('next_run_at');
             $table->dateTime('last_run_at')->nullable();

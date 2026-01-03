@@ -12,10 +12,10 @@ class ProductController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $query = Product::query();
+        $query = Product::query()->where('organization_id', auth()->user()->organization_id);
 
-        if ($request->has('organization_id')) {
-            $query->byOrganization($request->organization_id);
+        if ($request->has('type')) {
+            $query->byType($request->type);
         }
 
         if ($request->has('type')) {
@@ -34,7 +34,7 @@ class ProductController extends Controller
             });
         }
 
-        $perPage = $request->get('per_page', 15);
+        $perPage = min((int) $request->get('per_page', 15), 100);
         $products = $query->with('organization')->paginate($perPage);
 
         return response()->json([
@@ -46,7 +46,6 @@ class ProductController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'organization_id' => 'required|exists:organizations,id',
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:50|unique:products,code',
             'sku' => 'required|string|max:50|unique:products,sku',
@@ -64,7 +63,9 @@ class ProductController extends Controller
             ], 422);
         }
 
-        $product = Product::create($request->all());
+        $product = Product::create(array_merge($request->all(), [
+            'organization_id' => auth()->user()->organization_id,
+        ]));
 
         return response()->json([
             'success' => true,
