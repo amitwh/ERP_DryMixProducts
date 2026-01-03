@@ -8,22 +8,45 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
+    /**
+     * Register a new user
+     */
     public function register(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'organization_id' => 'required|exists:organizations,id',
-            'name' => 'required|string|max:255',
+            'manufacturing_unit_id' => 'nullable|exists:manufacturing_units,id',
+            'name' => 'required|string|max:255|min:2',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
-            'phone' => 'nullable|string|max:20',
+            'phone' => 'nullable|string|max:20|regex:/^[+]?[\d\s-()]+$/',
+            'password' => [
+                'required',
+                'string',
+                'min:12',
+                'confirmed',
+                Password::min(12)
+                    ->letters()
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols(),
+            ],
+        ], [
+            'password.min' => 'Password must be at least 12 characters long.',
+            'password.letters' => 'Password must contain at least one letter.',
+            'password.mixedCase' => 'Password must contain both uppercase and lowercase letters.',
+            'password.numbers' => 'Password must contain at least one number.',
+            'password.symbols' => 'Password must contain at least one special character.',
+            'phone.regex' => 'Invalid phone number format.',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
+                'message' => 'Validation failed',
                 'errors' => $validator->errors(),
             ], 422);
         }
@@ -40,19 +63,48 @@ class AuthController extends Controller
 
         $user->assignRole('user');
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        // Create token
+        $token = $user->createToken('auth_token', ['*'], now()->addDays(7))->plainTextToken;
+
+        // Return token in httpOnly cookie
+        $cookie = cookie(
+            'auth_token',
+            $token,
+            43200, // 30 days in minutes
+            '/',
+            null, // domain (default)
+            true, // secure (HTTPS only in production)
+            true, // httpOnly
+            false, // raw
+            'lax' // sameSite
+        );
+
+        // Set refresh token in separate cookie
+        $refreshToken = $user->createToken('refresh_token', ['refresh'], now()->addDays(30))->plainTextToken;
+        $refreshCookie = cookie(
+            'refresh_token',
+            $refreshToken,
+            43200,
+            '/',
+            null,
+            true,
+            true,
+            false,
+            'lax'
+        );
 
         return response()->json([
             'success' => true,
             'message' => 'User registered successfully',
             'data' => [
                 'user' => $user,
-                'token' => $token,
-                'token_type' => 'Bearer',
             ],
-        ], 201);
+        ], 201)->withCookie($cookie)->withCookie($refreshCookie);
     }
 
+    /**
+     * Login user
+     */
     public function login(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
@@ -63,13 +115,25 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
+                'message' => 'Validation failed',
                 'errors' => $validator->errors(),
             ], 422);
+        }
+
+        // Rate limiting check
+        if ($this->hasTooManyLoginAttempts($request)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Too many login attempts. Please try again later.',
+                'retry_after' => $this->limiter()->availableIn($this->throttleKey($request)),
+            ], 429);
         }
 
         $user = User::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
+            $this->incrementLoginAttempts($request);
+
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid credentials',
@@ -79,35 +143,59 @@ class AuthController extends Controller
         if ($user->status !== 'active') {
             return response()->json([
                 'success' => false,
-                'message' => 'Account is not active',
+                'message' => 'Account is not active. Please contact administrator.',
             ], 403);
         }
 
+        // Clear login attempts
+        $this->clearLoginAttempts($request);
+
+        // Update last login
         $user->updateLastLogin();
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        // Revoke all existing tokens
+        $user->tokens()->delete();
+
+        // Create new tokens
+        $token = $user->createToken('auth_token', ['*'], now()->addDays(7))->plainTextToken;
+        $refreshToken = $user->createToken('refresh_token', ['refresh'], now()->addDays(30))->plainTextToken;
+
+        // Set httpOnly cookies
+        $cookie = cookie('auth_token', $token, 43200, '/', null, true, true, false, 'lax');
+        $refreshCookie = cookie('refresh_token', $refreshToken, 43200, '/', null, true, true, false, 'lax');
 
         return response()->json([
             'success' => true,
             'message' => 'Login successful',
             'data' => [
                 'user' => $user->load(['organization', 'manufacturingUnit', 'roles']),
-                'token' => $token,
-                'token_type' => 'Bearer',
             ],
-        ]);
+        ])->withCookie($cookie)->withCookie($refreshCookie);
     }
 
+    /**
+     * Logout user
+     */
     public function logout(Request $request): JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();
+        // Revoke current access token
+        if ($request->user()) {
+            $request->user()->currentAccessToken()->delete();
+        }
+
+        // Clear cookies
+        $cookie = cookie('auth_token', null, -2628000, '/');
+        $refreshCookie = cookie('refresh_token', null, -2628000, '/');
 
         return response()->json([
             'success' => true,
             'message' => 'Logged out successfully',
-        ]);
+        ])->withCookie($cookie)->withCookie($refreshCookie);
     }
 
+    /**
+     * Get current user
+     */
     public function me(Request $request): JsonResponse
     {
         $user = $request->user()->load(['organization', 'manufacturingUnit', 'roles', 'permissions']);
@@ -116,5 +204,108 @@ class AuthController extends Controller
             'success' => true,
             'data' => $user,
         ]);
+    }
+
+    /**
+     * Refresh access token
+     */
+    public function refresh(Request $request): JsonResponse
+    {
+        $refreshToken = $request->cookie('refresh_token');
+
+        if (!$refreshToken) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Refresh token not found',
+            ], 401);
+        }
+
+        $tokenModel = \Laravel\Sanctum\PersonalAccessToken::findToken($refreshToken);
+
+        if (!$tokenModel || !$tokenModel->can('refresh')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid refresh token',
+            ], 401);
+        }
+
+        $user = $tokenModel->tokenable;
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found',
+            ], 404);
+        }
+
+        if ($user->status !== 'active') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Account is not active',
+            ], 403);
+        }
+
+        // Revoke old tokens
+        $user->tokens()->delete();
+
+        // Create new tokens
+        $newToken = $user->createToken('auth_token', ['*'], now()->addDays(7))->plainTextToken;
+        $newRefreshToken = $user->createToken('refresh_token', ['refresh'], now()->addDays(30))->plainTextToken;
+
+        // Set new httpOnly cookies
+        $cookie = cookie('auth_token', $newToken, 43200, '/', null, true, true, false, 'lax');
+        $refreshCookie = cookie('refresh_token', $newRefreshToken, 43200, '/', null, true, true, false, 'lax');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Token refreshed successfully',
+        ])->withCookie($cookie)->withCookie($refreshCookie);
+    }
+
+    /**
+     * Check if user has too many login attempts
+     */
+    protected function hasTooManyLoginAttempts(Request $request): bool
+    {
+        return $this->limiter()->tooManyAttempts(
+            $this->throttleKey($request),
+            5, // Max attempts
+            1 // Decay in minutes
+        );
+    }
+
+    /**
+     * Increment login attempts
+     */
+    protected function incrementLoginAttempts(Request $request): void
+    {
+        $this->limiter()->hit(
+            $this->throttleKey($request),
+            60 // Decay in seconds
+        );
+    }
+
+    /**
+     * Clear login attempts
+     */
+    protected function clearLoginAttempts(Request $request): void
+    {
+        $this->limiter()->clear($this->throttleKey($request));
+    }
+
+    /**
+     * Get throttle key
+     */
+    protected function throttleKey(Request $request): string
+    {
+        return $request->ip() . '|' . $request->input('email');
+    }
+
+    /**
+     * Get rate limiter
+     */
+    protected function limiter()
+    {
+        return app(\Illuminate\Cache\RateLimiter::class);
     }
 }

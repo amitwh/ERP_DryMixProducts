@@ -39,8 +39,16 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
+            // Security Headers
+            \App\Http\Middleware\SecurityHeaders::class,
+
+            // Sanctum stateful middleware for SPA
             // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+
+            // Rate limiting
             \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
+
+            // Route model binding
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
     ];
@@ -64,5 +72,6 @@ class Kernel extends HttpKernel
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        'security' => \App\Http\Middleware\SecurityHeaders::class,
     ];
 }
