@@ -1,0 +1,68 @@
+I have a centralized Docker infrastructure called "cinfo" with the following services:
+
+INFRASTRUCTURE SERVICES (already running):
+- Network: cinfo_app_network (Docker network)
+- MariaDB: mariadb (port 3306)
+- Redis: redis (port 6379)
+- PHP-FPM: php (port 9000)
+- Nginx:nginx (ports 80, 443)
+- phpMyAdmin: phpmyadmin (port 8080)
+- Grafana: grafana (port 3000)
+- MailHog: mailhog (SMTP: 1025, Web UI: 8025)
+
+RESERVED PORTS (do not use):
+- 80, 443 (Nginx)
+- 3000 (Grafana)
+- 3306 (MariaDB)
+- 6379 (Redis)
+- 8025 (MailHog UI)
+- 8080 (phpMyAdmin)
+- 1025 (MailHog SMTP)
+
+AVAILABLE PORT RANGES:
+- 3001-3999 (for Node.js apps)
+- 4000-4999 (for additional services)
+- 5000-5999 (for Python/Flask apps)
+- 8000-8999 (for Python/Django/FastAPI/php/html apps)
+- 9001-9999 (for custom services)
+
+Please create a application which considers the following requirements:
+
+REQUIREMENTS:
+1. Create a complete docker-compose.yml that:
+   - Connects to the docker "cinfo_app_network"
+   - Uses available ports (suggest appropriate ports)
+   - References services by name
+   - Includes any app-specific services needed additionally
+
+2. Create Dockerfile(s) with:
+   - Proper base images
+   - All necessary dependencies
+   - Health checks
+   - Production-ready configuration
+
+3. Provide application code that:
+   - Connects to mariadb for database operations
+   - Uses redis for caching/sessions
+   - Sends emails via -mailhog (for testing)
+   - Includes proper error handling
+   - Has environment variable configuration
+
+
+Ensure the application:
+   - Can run alongside other apps using the same cinfo infrastructure
+   - Uses non-conflicting ports
+   - Has proper container naming (prefix with app name)
+   - Includes restart policies
+
+CONNECTION DETAILS TO USE:
+- DB_HOST=mariadb
+- DB_PORT=3306
+- REDIS_HOST=redis
+- REDIS_PORT=6379
+- MAIL_HOST=mailhog
+- MAIL_PORT=1025
+
+The database is to be created / connected using root password from the cinfo.env. The db name shall be the name of the app being built
+Any celery or any services connecting to the above services also need to connect to the above ports.
+The detailed information about cinfo container and typical configuration is given in cinfo-docker-compose.yml and cinfo.env files in the current folder
