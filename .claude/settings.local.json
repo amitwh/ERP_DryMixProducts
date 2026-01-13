@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(copy \"J:\\\\apps\\\\ERP_DryMixProducts\\\\backend\\\\.env.example\" \"J:\\\\apps\\\\ERP_DryMixProducts\\\\backend\\\\.env\")",
+      "Bash(timeout:*)",
+      "Bash(python -c:*)",
+      "Bash(php -l:*)",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "mcp__plugin_playwright_playwright__browser_console_messages",
+      "mcp__plugin_playwright_playwright__browser_network_requests",
+      "mcp__plugin_playwright_playwright__browser_take_screenshot",
+      "mcp__plugin_playwright_playwright__browser_close",
+      "mcp__plugin_playwright_playwright__browser_type",
+      "mcp__plugin_playwright_playwright__browser_click",
+      "mcp__plugin_playwright_playwright__browser_fill_form",
+      "mcp__plugin_playwright_playwright__browser_wait_for",
+      "mcp__plugin_playwright_playwright__browser_snapshot",
+      "mcp__glm-4-7-subagent__glm_frontend_generate",
+      "WebFetch(domain:github.com)",
+      "mcp__glm-4-7-subagent__glm_brainstorm"
+    ]
+  }
+}

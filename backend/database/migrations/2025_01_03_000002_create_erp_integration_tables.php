@@ -81,7 +81,7 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->timestamps();
 
-            $table->unique(['integration_id', 'local_entity', 'local_field']);
+            $table->unique(['integration_id', 'local_entity', 'local_field'], 'erp_fmap_intg_loc_ent_fld_unq');
             $table->index(['integration_id', 'local_entity']);
         });
     }

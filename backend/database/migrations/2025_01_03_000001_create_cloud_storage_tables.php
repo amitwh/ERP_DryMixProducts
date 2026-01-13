@@ -40,7 +40,7 @@ return new class extends Migration
         Schema::create('cloud_storage_files', function (Blueprint $table) {
             $table->id();
             $table->foreignId('org_id')->constrained('organizations')->onDelete('cascade');
-            $table->foreignId('config_id')->constrained('cloud_storage_configs')->onDelete('set null');
+            $table->foreignId('config_id')->nullable()->constrained('cloud_storage_configs')->onDelete('set null');
             $table->string('file_name', 500)->notNull();
             $table->string('file_path', 500)->notNull();
             $table->string('file_type', 100)->notNull();
@@ -54,7 +54,7 @@ return new class extends Migration
             $table->string('cdn_url', 1000)->nullable()->comment('CDN-accelerated URL');
             $table->json('metadata')->nullable()->comment('Custom metadata');
             $table->foreignId('uploaded_by')->nullable()->constrained('users')->onDelete('set null');
-            $table->foreignId('related_type')->nullable()->comment('Polymorphic relation type');
+            $table->string('related_type', 100)->nullable()->comment('Polymorphic relation type');
             $table->unsignedBigInteger('related_id')->nullable()->comment('Polymorphic relation ID');
             $table->foreignId('parent_id')->nullable()->constrained('cloud_storage_files')->onDelete('cascade')->comment('For versioning or folder structure');
             $table->unsignedInteger('version')->nullable()->comment('File version number');

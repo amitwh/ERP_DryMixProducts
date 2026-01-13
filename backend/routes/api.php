@@ -33,11 +33,7 @@ use App\Http\Controllers\Api\PrintController;
 use App\Http\Controllers\Api\TestPageController;
 use App\Http\Controllers\Api\SystemSettingsController;
 
-// Public routes
-Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:10,1');
-Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
-
-// Health check
+// Health check (outside v1 for docker health checks)
 Route::get('/health', function () {
     return response()->json([
         'success' => true,
@@ -53,11 +49,22 @@ Route::get('/health', function () {
     ]);
 });
 
-// Protected routes with rate limiting
-Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
-    // Auth routes
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/me', [AuthController::class, 'me']);
+// API v1 Routes
+Route::prefix('v1')->group(function () {
+    // Public auth routes
+    Route::prefix('auth')->group(function () {
+        Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:10,1');
+        Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
+        Route::post('/refresh', [AuthController::class, 'refresh'])->middleware('throttle:30,1');
+    });
+
+    // Protected routes with rate limiting
+    Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
+        // Auth routes
+        Route::prefix('auth')->group(function () {
+            Route::post('/logout', [AuthController::class, 'logout']);
+            Route::get('/me', [AuthController::class, 'me']);
+        });
     
     // Dashboard & Analytics
     Route::get('dashboard/overview', [DashboardController::class, 'overview']);
@@ -277,5 +284,6 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
 
         // Statistics
         Route::get('statistics', [TestPageController::class, 'statistics']);
+    });
     });
 });

@@ -15,8 +15,6 @@ class InventoryController extends Controller
         $query = Inventory::query()->where('organization_id', auth()->user()->organization_id);
 
         if ($request->has('manufacturing_unit_id')) {
-
-        if ($request->has('manufacturing_unit_id')) {
             $query->where('manufacturing_unit_id', $request->manufacturing_unit_id);
         }
 

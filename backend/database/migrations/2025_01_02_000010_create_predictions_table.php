@@ -31,7 +31,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index('prediction_date');
-            $table->index(['prediction_type', 'entity_type', 'entity_id']);
+            $table->index(['prediction_type', 'entity_type', 'entity_id'], 'predictions_type_ent_id_idx');
             $table->index('status');
         });
     }

@@ -37,7 +37,7 @@ return new class extends Migration
 
             $table->unique(['org_id', 'unit_id', 'trial_number']);
             $table->index('status');
-            $table->index(['start_date', 'target_date', 'completion_date']);
+            $table->index(['start_date', 'target_date', 'completion_date'], 'trial_reg_dates_idx');
         });
     }
 

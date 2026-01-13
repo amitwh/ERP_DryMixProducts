@@ -54,7 +54,7 @@ return new class extends Migration
             $table->foreignId('created_by')->nullable();
             $table->timestamps();
 
-            $table->index(['organization_id', 'channel', 'status']);
+            $table->index(['organization_id', 'channel', 'status'], 'comm_logs_org_chan_stat_idx');
             $table->index('recipient_type');
             $table->index('reference_type');
             $table->index('created_at');

@@ -31,7 +31,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
             
-            $table->index(['organization_id', 'manufacturing_unit_id', 'status']);
+            $table->index(['organization_id', 'manufacturing_unit_id', 'status'], 'prod_orders_org_unit_stat_idx');
             $table->index('order_number');
             $table->index(['order_date', 'planned_completion_date']);
         });

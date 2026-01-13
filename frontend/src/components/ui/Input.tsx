@@ -36,12 +36,15 @@ export const Input: React.FC<InputProps> = ({
   // Determine Input Type
   const inputType = showPasswordToggle && type === 'password' ? (showPassword ? 'text' : 'password') : type
 
-  // Size Styles
+  // Size Styles (right padding only, left padding handled separately for icons)
   const sizeStyles: Record<string, string> = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2 text-base',
-    lg: 'px-5 py-3 text-lg',
+    sm: 'pr-3 py-1.5 text-sm',
+    md: 'pr-4 py-2 text-base',
+    lg: 'pr-5 py-3 text-lg',
   }
+
+  // Left padding based on icon presence
+  const leftPadding = leftIcon ? 'pl-12' : (size === 'sm' ? 'pl-3' : size === 'lg' ? 'pl-5' : 'pl-4')
 
   return (
     <div className="w-full">
@@ -60,7 +63,7 @@ export const Input: React.FC<InputProps> = ({
       <div className="relative">
         {/* Left Icon */}
         {leftIcon && (
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
             {leftIcon}
           </div>
         )}
@@ -77,14 +80,14 @@ export const Input: React.FC<InputProps> = ({
             'focus:outline-none focus:ring-2',
             'disabled:opacity-50 disabled:cursor-not-allowed',
 
-            // Left Icon padding
-            leftIcon && 'pl-10',
-
-            // Right Icon padding
-            (rightIcon || showPasswordToggle) && 'pr-10',
-
-            // Size styles
+            // Size styles (pr-* and py-*)
             sizeStyles[size],
+
+            // Left padding (handles icon spacing)
+            leftPadding,
+
+            // Right Icon padding override
+            (rightIcon || showPasswordToggle) && 'pr-10',
 
             // Error styles
             error

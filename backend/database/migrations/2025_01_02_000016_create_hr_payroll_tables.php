@@ -150,7 +150,7 @@ return new class extends Migration
             $table->date('approved_date')->nullable();
             $table->timestamps();
 
-            $table->index(['organization_id', 'employee_id', 'status']);
+            $table->index(['organization_id', 'employee_id', 'status'], 'leave_req_org_emp_stat_idx');
             $table->index(['organization_id', 'start_date']);
         });
 
@@ -190,7 +190,7 @@ return new class extends Migration
             $table->foreignId('created_by')->nullable();
             $table->timestamps();
 
-            $table->index(['organization_id', 'employee_id', 'payroll_period_id']);
+            $table->index(['organization_id', 'employee_id', 'payroll_period_id'], 'payslips_org_emp_period_idx');
         });
 
         // Salary Components

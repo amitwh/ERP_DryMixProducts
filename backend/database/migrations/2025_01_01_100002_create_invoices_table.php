@@ -28,7 +28,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
             
-            $table->index(['organization_id', 'customer_id', 'status']);
+            $table->index(['organization_id', 'customer_id', 'status'], 'invoices_org_cust_stat_idx');
             $table->index('invoice_number');
             $table->index(['invoice_date', 'due_date']);
         });

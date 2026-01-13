@@ -15,8 +15,6 @@ class CustomerController extends Controller
         $query = Customer::query()->where('organization_id', auth()->user()->organization_id);
 
         if ($request->has('status')) {
-
-        if ($request->has('status')) {
             $query->where('status', $request->status);
         }
 

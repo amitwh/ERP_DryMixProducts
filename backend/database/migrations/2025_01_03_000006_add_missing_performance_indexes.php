@@ -84,8 +84,8 @@ return new class extends Migration
 
         // Purchase orders - status filtering with date
         Schema::table('purchase_orders', function (Blueprint $table) {
-            if (!collect(Schema::getColumnListing('purchase_orders'))->contains('idx_status_order_date')) {
-                $table->index(['status', 'order_date'], 'idx_purchase_orders_status_order_date');
+            if (!collect(Schema::getColumnListing('purchase_orders'))->contains('idx_status_po_date')) {
+                $table->index(['status', 'po_date'], 'idx_purchase_orders_status_po_date');
             }
         });
 
@@ -124,14 +124,7 @@ return new class extends Migration
             }
         });
 
-        // Projects - organization_id + project_number
-        Schema::table('projects', function (Blueprint $table) {
-            if (Schema::hasTable('projects')) {
-                if (!collect(Schema::getColumnListing('projects'))->contains('unique_org_project_number')) {
-                    $table->unique(['organization_id', 'project_number'], 'unique_projects_org_number');
-                }
-            }
-        });
+        // Projects - organization_id + code (code is already unique globally)
 
         // ============================================
         // Numeric range queries indexes
@@ -214,10 +207,10 @@ return new class extends Migration
             }
         });
 
-        // Stock transactions - inventory_id + created_at for transaction history
+        // Stock transactions - product_id + transaction_date for transaction history
         Schema::table('stock_transactions', function (Blueprint $table) {
-            if (!collect(Schema::getColumnListing('stock_transactions'))->contains('idx_inventory_date')) {
-                $table->index(['inventory_id', 'created_at'], 'idx_stock_transactions_inventory_date');
+            if (!collect(Schema::getColumnListing('stock_transactions'))->contains('idx_product_trans_date')) {
+                $table->index(['product_id', 'transaction_date'], 'idx_stock_transactions_product_trans_date');
             }
         });
 
@@ -286,7 +279,7 @@ return new class extends Migration
 
         Schema::table('purchase_orders', function (Blueprint $table) {
             $table->dropIndex('idx_purchase_orders_created_at');
-            $table->dropIndex('idx_purchase_orders_status_order_date');
+            $table->dropIndex('idx_purchase_orders_status_po_date');
         });
 
         Schema::table('inventory', function (Blueprint $table) {
@@ -323,14 +316,8 @@ return new class extends Migration
         });
 
         Schema::table('stock_transactions', function (Blueprint $table) {
-            $table->dropIndex('idx_stock_transactions_inventory_date');
+            $table->dropIndex('idx_stock_transactions_product_trans_date');
         });
-
-        if (Schema::hasTable('projects')) {
-            Schema::table('projects', function (Blueprint $table) {
-                $table->dropUnique('unique_projects_org_number');
-            });
-        }
 
         if (Schema::hasTable('production_orders')) {
             Schema::table('production_orders', function (Blueprint $table) {

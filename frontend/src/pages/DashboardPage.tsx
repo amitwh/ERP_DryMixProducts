@@ -21,6 +21,7 @@ import {
   MoreHorizontal,
   Plus,
   RefreshCw,
+  Clock,
 } from 'lucide-react'
 import { formatCurrency, formatNumber, formatDate, formatIndianNumber } from '@/utils'
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
@@ -40,7 +41,7 @@ export const DashboardPage: React.FC = () => {
   // Fetch Dashboard Data
   const fetchDashboardData = async () => {
     try {
-      const response = await api.get<DashboardStats>('/dashboard')
+      const response = await api.get<DashboardStats>('/dashboard/overview')
       setStats(response.data)
 
       // Generate sample sales data (replace with actual API)

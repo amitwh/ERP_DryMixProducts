@@ -1,114 +1,147 @@
-version: '3.8'
+# =============================================================================
+# ERP DryMix Products - Docker Compose Configuration
+# =============================================================================
+# Connects to centralized "cinfo" Docker infrastructure
+# Shared services: MariaDB, Redis, MailHog, Grafana
+# =============================================================================
 
 services:
-  # Backend API
-  backend:
+  # ---------------------------------------------------------------------------
+  # Backend API (Laravel PHP)
+  # ---------------------------------------------------------------------------
+  erp-backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: erp_backend
+    container_name: erp_drymix_backend
+    restart: unless-stopped
     ports:
-      - "8101:8000"
+      - "8101:80"
     volumes:
-      - ./backend:/app
-      - ./backend/storage:/app/storage
+      - ./backend:/var/www/html
+      - backend_storage:/var/www/html/storage
+      - backend_cache:/var/www/html/bootstrap/cache
     environment:
-      - APP_ENV=local
-      - APP_DEBUG=true
-      - DB_HOST=general_server_configs
+      - APP_NAME=ERP DryMix Products
+      - APP_ENV=${APP_ENV:-local}
+      - APP_DEBUG=${APP_DEBUG:-true}
+      - APP_URL=http://localhost:8101
+      - DB_CONNECTION=mysql
+      - DB_HOST=mariadb
       - DB_PORT=3306
-      - DB_DATABASE=db_erp_drymix_prod
-      - DB_USERNAME=amit
-      - DB_PASSWORD=angles
-      - REDIS_HOST=general_server_configs
+      - DB_DATABASE=erp_drymix
+      - DB_USERNAME=${DB_USERNAME:-dbuser}
+      - DB_PASSWORD=${DB_PASSWORD:-dbuser123}
+      - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - REDIS_PASSWORD=angles
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-angles123}
+      - CACHE_DRIVER=redis
+      - SESSION_DRIVER=redis
+      - QUEUE_CONNECTION=redis
+      - MAIL_MAILER=smtp
+      - MAIL_HOST=mailhog
+      - MAIL_PORT=1025
+      - MAIL_FROM_ADDRESS=noreply@erpdrymix.local
+      - MAIL_FROM_NAME=ERP DryMix
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
     networks:
-      - erp_network
+      - cinfo_app_network
 
-  # Frontend
-  frontend:
+  # ---------------------------------------------------------------------------
+  # Frontend (React + TypeScript)
+  # ---------------------------------------------------------------------------
+  erp-frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: erp_frontend
+      args:
+        - VITE_API_BASE_URL=http://localhost:8101/api/v1
+    container_name: erp_drymix_frontend
+    restart: unless-stopped
     ports:
       - "3101:80"
-    volumes:
-      - ./frontend:/app
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    networks:
-      - erp_network
-
-  # Grafana for Dashboard (connected to external Grafana)
-  grafana-connector:
-    image: python:3.11-slim
-    container_name: erp_grafana_connector
-    volumes:
-      - ./docker/grafana:/app
-    working_dir: /app
-    command: >
-      bash -c "pip install -r requirements.txt && python connector.py"
     environment:
-      - GRAFANA_URL=http://general_server_configs:3000
-      - GRAFANA_USER=admin
-      - GRAFANA_PASSWORD=angles
-      - DB_HOST=general_server_configs
-      - DB_PORT=3306
-      - DB_NAME=db_erp_drymix_prod
-      - DB_USER=amit
-      - DB_PASSWORD=angles
-      - PROJECT_NAME=erp_drymix_products
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - VITE_API_BASE_URL=http://localhost:8101/api/v1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health.json"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    depends_on:
+      - erp-backend
     networks:
-      - erp_network
+      - cinfo_app_network
 
-  # Python for Data Processing
-  python-worker:
+  # ---------------------------------------------------------------------------
+  # Queue Worker (Laravel Queue)
+  # ---------------------------------------------------------------------------
+  erp-queue-worker:
     build:
-      context: ./docker/python
-      dockerfile: Dockerfile
-    container_name: erp_python_worker
+      context: ./backend
+      dockerfile: Dockerfile.worker
+    container_name: erp_drymix_queue
+    restart: unless-stopped
     volumes:
-      - ./backend/app/Services/Python:/app/services
-      - ./backend/storage:/app/storage
-    command: >
-      bash -c "pip install -r /app/requirements.txt && python worker.py"
+      - ./backend:/var/www/html
+      - backend_storage:/var/www/html/storage
     environment:
-      - REDIS_HOST=general_server_configs
-      - REDIS_PORT=6379
-      - REDIS_PASSWORD=angles
-      - DB_HOST=general_server_configs
+      - APP_ENV=${APP_ENV:-local}
+      - DB_CONNECTION=mysql
+      - DB_HOST=mariadb
       - DB_PORT=3306
-      - DB_NAME=db_erp_drymix_prod
-      - DB_USER=amit
-      - DB_PASSWORD=angles
-      - PROJECT_NAME=erp_drymix_products
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - DB_DATABASE=erp_drymix
+      - DB_USERNAME=${DB_USERNAME:-dbuser}
+      - DB_PASSWORD=${DB_PASSWORD:-dbuser123}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-angles123}
+      - QUEUE_CONNECTION=redis
+    command: php artisan queue:work --tries=3 --timeout=90
+    depends_on:
+      - erp-backend
     networks:
-      - erp_network
+      - cinfo_app_network
 
-  # Nginx Reverse Proxy
-  nginx:
+  # ---------------------------------------------------------------------------
+  # Nginx Reverse Proxy (Unified access point)
+  # ---------------------------------------------------------------------------
+  erp-nginx:
     image: nginx:alpine
-    container_name: erp_nginx
+    container_name: erp_drymix_nginx
+    restart: unless-stopped
     ports:
-      - "8081:80"
-      - "8444:443"
+      - "8100:80"
     volumes:
       - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./docker/nginx/ssl:/etc/nginx/ssl:ro
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      - erp-backend
+      - erp-frontend
     networks:
-      - erp_network
+      - cinfo_app_network
 
+# =============================================================================
+# Volumes
+# =============================================================================
+volumes:
+  backend_storage:
+  backend_cache:
+
+# =============================================================================
+# Networks
+# =============================================================================
 networks:
-  erp_network:
-    driver: bridge
-    external: false
+  cinfo_app_network:
+    external: true
+    name: cinfo_app_network

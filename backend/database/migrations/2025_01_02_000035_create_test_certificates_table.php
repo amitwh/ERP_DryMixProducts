@@ -14,10 +14,10 @@ return new class extends Migration
             $table->foreignId('unit_id')->constrained('manufacturing_units')->onDelete('cascade');
             $table->string('certificate_number', 50)->notNull();
             $table->enum('certificate_type', ['raw_material', 'finished_product', 'batch', 'third_party', 'internal'])->notNull();
-            $table->foreignId('material_id')->nullable()->constrained('raw_materials')->onDelete('set null');
+            $table->foreignId('material_id')->nullable()->constrained('products')->onDelete('set null');
             $table->foreignId('product_id')->nullable()->constrained('products')->onDelete('set null');
             $table->unsignedBigInteger('batch_id')->nullable();
-            $table->foreignId('test_result_id')->nullable()->constrained()->onDelete('set null');
+            $table->unsignedBigInteger('test_result_id')->nullable(); // Polymorphic reference to test tables
             $table->foreignId('customer_id')->nullable()->constrained('customers')->onDelete('set null');
             $table->string('po_reference', 100)->nullable();
             $table->date('issue_date')->nullable();

@@ -8,6 +8,25 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Create document_categories first (referenced by documents)
+        Schema::create('document_categories', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('org_id')->constrained('organizations')->onDelete('cascade');
+            $table->foreignId('parent_id')->nullable()->constrained('document_categories')->onDelete('cascade')->comment('For nested categories');
+            $table->string('name', 200)->notNull();
+            $table->string('slug', 255)->notNull();
+            $table->text('description')->nullable();
+            $table->string('icon', 50)->nullable()->comment('FontAwesome or similar icon name');
+            $table->string('color', 7)->nullable()->comment('Hex color code');
+            $table->integer('sort_order')->default(0);
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
+
+            $table->unique(['org_id', 'slug']);
+            $table->index('parent_id');
+            $table->index('is_active');
+        });
+
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
             $table->foreignId('org_id')->constrained('organizations')->onDelete('cascade');
@@ -39,7 +58,7 @@ return new class extends Migration
             $table->timestamp('approved_at')->nullable();
             $table->text('rejection_reason')->nullable();
             $table->timestamp('published_at')->nullable()->comment('When document was first published');
-            $table->foreignId('related_type')->nullable()->comment('Polymorphic relation type');
+            $table->string('related_type', 100)->nullable()->comment('Polymorphic relation type');
             $table->unsignedBigInteger('related_id')->nullable()->comment('Polymorphic relation ID');
             $table->json('tags')->nullable()->comment('Document tags for search');
             $table->integer('view_count')->default(0);
@@ -49,7 +68,7 @@ return new class extends Migration
             $table->softDeletes();
 
             $table->unique(['org_id', 'document_number']);
-            $table->unique(['org_id', 'parent_document_id', 'version']);
+            $table->unique(['org_id', 'parent_document_id', 'version'], 'docs_org_parent_ver_unq');
             $table->index(['document_type', 'category']);
             $table->index('status');
             $table->index('visibility');
@@ -57,24 +76,6 @@ return new class extends Migration
             $table->index(['parent_document_id', 'is_latest']);
             $table->index('created_at');
             $table->index('published_at');
-        });
-
-        Schema::create('document_categories', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('org_id')->constrained('organizations')->onDelete('cascade');
-            $table->foreignId('parent_id')->nullable()->constrained('document_categories')->onDelete('cascade')->comment('For nested categories');
-            $table->string('name', 200)->notNull();
-            $table->string('slug', 255)->notNull();
-            $table->text('description')->nullable();
-            $table->string('icon', 50)->nullable()->comment('FontAwesome or similar icon name');
-            $table->string('color', 7)->nullable()->comment('Hex color code');
-            $table->integer('sort_order')->default(0);
-            $table->boolean('is_active')->default(true);
-            $table->timestamps();
-
-            $table->unique(['org_id', 'slug']);
-            $table->index('parent_id');
-            $table->index('is_active');
         });
 
         Schema::create('document_versions', function (Blueprint $table) {
@@ -145,7 +146,7 @@ return new class extends Migration
         Schema::create('document_workflow_executions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('document_id')->constrained('documents')->onDelete('cascade');
-            $table->foreignId('workflow_id')->constrained('document_workflows')->onDelete('set null');
+            $table->foreignId('workflow_id')->nullable()->constrained('document_workflows')->onDelete('set null');
             $table->foreignId('started_by')->nullable()->constrained('users')->onDelete('set null');
             $table->enum('status', ['in_progress', 'completed', 'cancelled', 'failed'])->default('in_progress');
             $table->json('current_step')->nullable()->comment('Current workflow step');
@@ -166,7 +167,7 @@ return new class extends Migration
         Schema::dropIfExists('document_access_logs');
         Schema::dropIfExists('document_approvals');
         Schema::dropIfExists('document_versions');
-        Schema::dropIfExists('document_categories');
         Schema::dropIfExists('documents');
+        Schema::dropIfExists('document_categories');
     }
 };

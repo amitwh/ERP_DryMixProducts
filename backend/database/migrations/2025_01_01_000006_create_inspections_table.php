@@ -29,7 +29,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
             
-            $table->index(['organization_id', 'inspection_type', 'status']);
+            $table->index(['organization_id', 'inspection_type', 'status'], 'inspections_org_type_stat_idx');
             $table->index('inspection_number');
             $table->index('project_id');
         });

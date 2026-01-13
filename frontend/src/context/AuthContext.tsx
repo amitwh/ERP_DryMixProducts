@@ -32,19 +32,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Initialize Auth on Mount
   useEffect(() => {
     const initAuth = async () => {
-      const storedToken = localStorage.getItem('auth_token')
       const storedUser = localStorage.getItem('user')
 
-      if (storedToken && storedUser) {
-        setToken(storedToken)
-        setUser(JSON.parse(storedUser))
-
-        // Verify token with API
+      if (storedUser) {
+        // User was previously logged in, verify with API
         try {
-          await authService.getCurrentUser()
+          const currentUser = await authService.getCurrentUser()
+          setToken('httponly')
+          setUser(currentUser)
         } catch (error) {
-          // Token invalid, logout
-          await authService.logout()
+          // Token invalid or expired, clear local state
+          localStorage.removeItem('user')
           setUser(null)
           setToken(null)
         }
@@ -60,11 +58,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = useCallback(async (credentials: LoginRequest) => {
     setIsLoading(true)
     try {
-      const response = await authService.login(credentials)
-      const { token: newToken, user: newUser } = response
+      const loggedInUser = await authService.login(credentials)
 
-      setToken(newToken)
-      setUser(newUser)
+      // Token is in httpOnly cookie, not accessible to JavaScript
+      setToken('httponly') // Marker indicating we have a session
+      setUser(loggedInUser)
 
       toast.success('Login successful! Welcome back.')
     } catch (error) {
@@ -78,11 +76,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const register = useCallback(async (data: RegisterRequest) => {
     setIsLoading(true)
     try {
-      const response = await authService.register(data)
-      const { token: newToken, user: newUser } = response
+      const registeredUser = await authService.register(data)
 
-      setToken(newToken)
-      setUser(newUser)
+      // Token is in httpOnly cookie, not accessible to JavaScript
+      setToken('httponly') // Marker indicating we have a session
+      setUser(registeredUser)
 
       toast.success('Registration successful! Welcome to ERP.')
     } catch (error) {

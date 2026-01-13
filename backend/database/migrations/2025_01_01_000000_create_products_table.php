@@ -30,7 +30,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
             
-            $table->index(['organization_id', 'type', 'status']);
+            $table->index(['organization_id', 'type', 'status'], 'products_org_type_stat_idx');
             $table->index('code');
             $table->index('sku');
         });

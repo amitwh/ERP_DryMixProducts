@@ -23,7 +23,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
             
-            $table->index(['organization_id', 'product_id', 'status']);
+            $table->index(['organization_id', 'product_id', 'status'], 'bom_org_prod_stat_idx');
             $table->index('bom_number');
         });
     }

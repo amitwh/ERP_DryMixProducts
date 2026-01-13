@@ -32,7 +32,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
             
-            $table->index(['organization_id', 'status', 'severity']);
+            $table->index(['organization_id', 'status', 'severity'], 'ncrs_org_stat_sev_idx');
             $table->index('ncr_number');
             $table->index('project_id');
         });

@@ -25,7 +25,7 @@ return new class extends Migration
             $table->json('metadata')->nullable();
             $table->timestamps();
             
-            $table->index(['organization_id', 'product_id', 'transaction_type']);
+            $table->index(['organization_id', 'product_id', 'transaction_type'], 'stock_trans_org_prod_type_idx');
             $table->index('transaction_number');
             $table->index('transaction_date');
         });

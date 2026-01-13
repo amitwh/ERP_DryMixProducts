@@ -47,7 +47,7 @@ return new class extends Migration
             $table->text('appearance_notes')->nullable();
 
             // Results
-            $table->enum('test_result', ['pass', 'fail', 'marginal'])->default('pending');
+            $table->enum('test_result', ['pending', 'pass', 'fail', 'marginal'])->default('pending');
             $table->enum('status', ['pending', 'in_progress', 'completed', 'cancelled'])->default('pending');
             $table->text('remarks')->nullable();
             $table->text('recommendations')->nullable();
@@ -127,7 +127,7 @@ return new class extends Migration
             $table->decimal('organic_impurities', 10, 2)->nullable(); // %
 
             // Results
-            $table->enum('test_result', ['pass', 'fail', 'marginal'])->default('pending');
+            $table->enum('test_result', ['pending', 'pass', 'fail', 'marginal'])->default('pending');
             $table->enum('status', ['pending', 'in_progress', 'completed', 'cancelled'])->default('pending');
             $table->text('remarks')->nullable();
             $table->text('recommendations')->nullable();
@@ -172,7 +172,7 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->timestamps();
 
-            $table->index(['organization_id', 'test_type', 'is_active']);
+            $table->index(['organization_id', 'test_type', 'is_active'], 'test_params_org_type_active_idx');
         });
 
         // Test Standards
@@ -189,7 +189,7 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->timestamps();
 
-            $table->index(['organization_id', 'test_type', 'is_active']);
+            $table->index(['organization_id', 'test_type', 'is_active'], 'test_stds_org_type_active_idx');
         });
 
         // Test Templates
@@ -209,7 +209,7 @@ return new class extends Migration
             $table->foreignId('created_by')->nullable();
             $table->timestamps();
 
-            $table->index(['organization_id', 'test_type', 'is_active']);
+            $table->index(['organization_id', 'test_type', 'is_active'], 'test_tpls_org_type_active_idx');
         });
     }
 

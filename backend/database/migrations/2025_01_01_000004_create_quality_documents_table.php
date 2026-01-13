@@ -28,7 +28,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
             
-            $table->index(['organization_id', 'document_type', 'status']);
+            $table->index(['organization_id', 'document_type', 'status'], 'qual_docs_org_doctype_stat_idx');
             $table->index('document_number');
             $table->index('project_id');
         });

@@ -6,7 +6,7 @@ interface KPICardProps {
   data?: any;
 }
 
-export default function KPICard({ title, type, data }: KPICardProps) {
+function KPICardComponent({ title, type, data }: KPICardProps) {
   return (
     <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-6 border border-gray-100">
       <h3 className="text-lg font-bold text-gray-900 mb-4">{title}</h3>
@@ -57,3 +57,7 @@ export default function KPICard({ title, type, data }: KPICardProps) {
     </div>
   );
 }
+
+// Export both named and default for compatibility
+export { KPICardComponent as KPICard };
+export default KPICardComponent;

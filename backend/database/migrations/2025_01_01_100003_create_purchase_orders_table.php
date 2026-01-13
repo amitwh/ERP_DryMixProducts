@@ -30,7 +30,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
             
-            $table->index(['organization_id', 'supplier_id', 'status']);
+            $table->index(['organization_id', 'supplier_id', 'status'], 'purchase_orders_org_supp_stat_idx');
             $table->index('po_number');
             $table->index('po_date');
         });

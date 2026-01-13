@@ -39,7 +39,7 @@ class SecurityHeaders
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    protected function addSecurityHeaders(Response $response, Request $request): Response
+    protected function addSecurityHeaders(SymfonyResponse $response, Request $request): SymfonyResponse
     {
         // Content-Security-Policy
         // Restricts sources of content that can be loaded

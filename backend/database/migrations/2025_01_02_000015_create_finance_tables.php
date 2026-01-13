@@ -100,7 +100,7 @@ return new class extends Migration
             $table->text('narration')->nullable();
             $table->timestamps();
 
-            $table->index(['organization_id', 'account_id', 'entry_date']);
+            $table->index(['organization_id', 'account_id', 'entry_date'], 'ledgers_org_acct_date_idx');
         });
     }
 

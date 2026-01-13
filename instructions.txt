@@ -1,0 +1,218 @@
+Cementitious Dry Mix Mortar  (RMC) ERP System - Development Prompt
+Project Overview
+Project Name: Cementitious Dry Mix products Enterprise Resource Planning System
+Objective: Develop a complete, modular ERP system specifically designed for Ready-Mixed Concrete manufacturing companies, with comprehensive quality control, production management, logistics, and business intelligence capabilities.
+This App features a complete modular ERP for Cementitious Dry mix products Manufacturing Companies. The  ERP app should have modules in elaborate detail for Quality, Concrete Production, Maintenance, Logistics, Planning, Third Party Vendors, Operations, KPI / KRA related to the industry, dashboards on all aspects of business, Credit control, Detailed communication using WhatsApp, EMail, Office 365, Google Apps, apart from the detailed modules any erp has. 
+Ensure detailed individual test formats for each test, function are made for QA/QC . Refer IS Codes for detailed understanding. Use ASTM / ACI / EN codes when equivalent IS codes are unavailable;
+Technology Stack and Development phase: Read Plan folder
+Document and Report Export format: xlsx, pdf, docx, md, jpeg, html, csv
+This is a large-scale project that requires systematic, phased development. Claude Code will coordinate with multiple GLM-4.7 subagents to achieve parallel development of independent modules by delegating specific tasks and monitoring them.
+Claude Code Responsibilities
+Claude Code coordinates all subagents and handles:
+High-level architecture decisions
+Complex business logic implementation
+Code review and quality assurance
+Integration of subagent outputs
+Security-critical implementations
+Domain-specific calculations (concrete formulas)
+Final testing and validation
+Git operations and version control
+Build Material UI, Tailwind and Bootstrap frontends separately and allow the user to option to have different frontend systems
+
+
+Reference GitHub Repositories - Analysis Required
+Before implementing similar features, analyze these repositories:
+Primary References:
+frappe/erpnext (https://github.com/frappe/erpnext)
+License: GNU GPLv3
+Analyze: Module structure, API patterns, database design
+Extract: Inventory management, manufacturing workflows, reporting
+License Note: GPL requires derivative works to be open-source. Use as reference for patterns only, not direct code copying.
+
+frappe/hrms (https://github.com/frappe/hrms)
+License: GNU AGPLv3
+Analyze: Employee management, attendance, leave management
+Extract: User roles, permissions, workflow patterns
+
+frappe/crm (https://github.com/frappe/crm)
+License: GNU AGPLv3
+Analyze: Customer management, communication tracking
+Extract: Lead management, activity logging, email integration
+
+Blueprints-org/blueprints (https://github.com/Blueprints-org/blueprints)
+Analyze: Modern architecture patterns
+Extract: API design, TypeScript patterns
+
+odoo/odoo (https://github.com/odoo/odoo)
+License: LGPL v3 (Community), Proprietary (Enterprise)
+Analyze: Modular architecture, ORM patterns
+Extract: Module organization, workflow engine
+
+nocobase/nocobase (https://github.com/nocobase/nocobase)
+License: Apache 2.0 (permissive)
+Analyze: Low-code platform patterns
+Extract: Dynamic forms, plugin architecture
+
+crbnos/carbon (https://github.com/crbnos/carbon)
+Analyze: Modern web app architecture
+Extract: React patterns, state management
+
+License Compliance Strategy:
+GPL/AGPL Licensed Projects (ERPNext, Frappe):
+Use as architectural reference only
+Study patterns and approaches
+Do NOT copy code directly
+Implement our own solutions inspired by concepts
+
+Permissive Licenses (Apache, MIT):
+Can reference implementation details more closely
+Still maintain our own codebase
+Attribute if using significant patterns
+
+Reference apps for the application building to have right modules and functions available
+J:\apps\ConcreteRMCManagement (RMC related testing forms, features)
+J:\apps\concreteinfo_qc_software_construction (Functional print views)
+
+Our Implementation:
+Original codebase with RMC-specific features
+License: To be determined 
+
+Code Quality Standards
+All Code Must Follow:
+
+Python Backend (if used):
+PEP 8 style guide
+Type hints on all functions
+Docstrings (Google style) for all public methods
+Maximum line length: 100 characters
+Use Black for formatting
+Use Ruff for linting
+Minimum 80% test coverage
+
+
+TypeScript Frontend:
+
+ESLint + Prettier
+Strict TypeScript mode
+Functional components with hooks
+No any types
+Comprehensive prop types
+
+
+Database:
+
+All tables have primary keys (UUID)
+All tables have created_at, updated_at
+Proper indexes on foreign keys and frequently queried fields
+Cascading deletes defined explicitly
+Migrations are reversible
+
+
+API Design:
+
+RESTful conventions
+Proper HTTP status codes
+Consistent error response format
+Request/response validation
+API versioning (/api/v1/)
+
+
+Security:
+
+No secrets in code or version control
+SQL injection prevention (use ORM)
+XSS prevention (sanitize inputs)
+CSRF protection
+Rate limiting on all endpoints
+Audit logging for sensitive operations
+
+
+Testing:
+
+Unit tests for all business logic
+Integration tests for API endpoints
+Test coverage reports
+Fixtures for test data
+Mock external dependencie
+
+Communication Protocol
+During Development:
+Claude Code should provide updates after:
+Each major task completion
+Subagent output integration
+Encountering blockers
+Completing code reviews
+Phase milestones
+
+Code Review Checklist
+Before building Docker images, Claude Code must verify:
+Functionality:
+
+ All API endpoints respond correctly
+ Database migrations run without errors
+ Authentication and authorization work properly
+ All business logic calculations are correct
+ Error handling is comprehensive
+
+Code Quality:
+
+ No linting errors (Ruff for Python, ESLint for TypeScript)
+ All code is formatted (Black, Prettier)
+ Type hints present and correct
+ No unused imports or variables
+ No code duplication (DRY principle)
+
+Testing:
+
+ All tests pass
+ Test coverage > 80%
+ Integration tests cover critical paths
+ Edge cases tested
+ Error conditions tested
+
+Security:
+
+ No hardcoded secrets
+ Input validation on all endpoints
+ SQL injection prevention verified
+ Authentication required where needed
+ Rate limiting implemented
+
+Documentation:
+
+ README is up to date
+ API documentation complete (OpenAPI)
+ Inline code comments where needed
+ Docstrings for all public functions
+ Environment setup instructions clear
+
+Performance:
+
+ Database queries optimized
+ Proper indexing in place
+ No N+1 query problems
+ Caching strategy implemented
+ Resource limits defined
+
+Docker:
+For building docker image, refer docker_container_info.txt.
+Ensure,
+ Multi-stage builds used
+ Image size optimized (< 500MB for backend)
+ Health checks defined
+ Non-root user configured
+ .dockerignore properly configured
+ docker-compose.yml tested
+
+A phase is complete when:
+✅ Docker containers start successfully
+✅ Health check endpoint returns 200
+✅ User can register via API
+✅ User can login and receive JWT token
+✅ Protected endpoints require authentication
+✅ Database migrations run successfully
+✅ All Phase 1 tests pass (> 80% coverage)
+✅ Code review checklist completed
+✅ Documentation is clear and accurate
+✅ Environment can be replicated from README
+

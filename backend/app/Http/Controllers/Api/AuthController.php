@@ -67,13 +67,14 @@ class AuthController extends Controller
         $token = $user->createToken('auth_token', ['*'], now()->addDays(7))->plainTextToken;
 
         // Return token in httpOnly cookie
+        $isSecure = app()->environment('production');
         $cookie = cookie(
             'auth_token',
             $token,
             43200, // 30 days in minutes
             '/',
             null, // domain (default)
-            true, // secure (HTTPS only in production)
+            $isSecure, // secure (HTTPS only in production)
             true, // httpOnly
             false, // raw
             'lax' // sameSite
@@ -87,7 +88,7 @@ class AuthController extends Controller
             43200,
             '/',
             null,
-            true,
+            $isSecure,
             true,
             false,
             'lax'
@@ -161,14 +162,15 @@ class AuthController extends Controller
         $refreshToken = $user->createToken('refresh_token', ['refresh'], now()->addDays(30))->plainTextToken;
 
         // Set httpOnly cookies
-        $cookie = cookie('auth_token', $token, 43200, '/', null, true, true, false, 'lax');
-        $refreshCookie = cookie('refresh_token', $refreshToken, 43200, '/', null, true, true, false, 'lax');
+        $isSecure = app()->environment('production');
+        $cookie = cookie('auth_token', $token, 43200, '/', null, $isSecure, true, false, 'lax');
+        $refreshCookie = cookie('refresh_token', $refreshToken, 43200, '/', null, $isSecure, true, false, 'lax');
 
         return response()->json([
             'success' => true,
             'message' => 'Login successful',
             'data' => [
-                'user' => $user->load(['organization', 'manufacturingUnit', 'roles']),
+                'user' => $user->load(['organization', 'manufacturingUnit']),
             ],
         ])->withCookie($cookie)->withCookie($refreshCookie);
     }
@@ -198,7 +200,7 @@ class AuthController extends Controller
      */
     public function me(Request $request): JsonResponse
     {
-        $user = $request->user()->load(['organization', 'manufacturingUnit', 'roles', 'permissions']);
+        $user = $request->user()->load(['organization', 'manufacturingUnit']);
 
         return response()->json([
             'success' => true,
@@ -253,8 +255,9 @@ class AuthController extends Controller
         $newRefreshToken = $user->createToken('refresh_token', ['refresh'], now()->addDays(30))->plainTextToken;
 
         // Set new httpOnly cookies
-        $cookie = cookie('auth_token', $newToken, 43200, '/', null, true, true, false, 'lax');
-        $refreshCookie = cookie('refresh_token', $newRefreshToken, 43200, '/', null, true, true, false, 'lax');
+        $isSecure = app()->environment('production');
+        $cookie = cookie('auth_token', $newToken, 43200, '/', null, $isSecure, true, false, 'lax');
+        $refreshCookie = cookie('refresh_token', $newRefreshToken, 43200, '/', null, $isSecure, true, false, 'lax');
 
         return response()->json([
             'success' => true,

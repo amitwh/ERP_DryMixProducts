@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->unsignedBigInteger('project_id')->nullable();
             $table->unsignedBigInteger('batch_id')->nullable();
-            $table->foreignId('material_id')->nullable()->constrained('raw_materials')->onDelete('set null');
+            $table->foreignId('material_id')->nullable()->constrained('products')->onDelete('set null');
             $table->decimal('quantity', 15, 3)->nullable();
             $table->string('uom', 20)->nullable();
             $table->date('handover_date')->nullable();

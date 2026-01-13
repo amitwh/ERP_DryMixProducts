@@ -38,7 +38,7 @@ return new class extends Migration
             $table->foreignId('inspected_by')->constrained('users')->onDelete('cascade');
             $table->timestamps();
 
-            $table->unique(['org_id', 'project_id', 'inspection_number']);
+            $table->unique(['org_id', 'project_id', 'inspection_number'], 'work_insp_org_proj_insp_num_unq');
             $table->index('activity_id');
             $table->index('contractor_id');
         });

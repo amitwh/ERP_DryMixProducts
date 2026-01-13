@@ -9,7 +9,7 @@ import { StatusBadge } from '@/components/ui/Badge'
 import { Modal, ModalFooter, ModalBody } from '@/components/ui/Modal'
 import { FullPageLoading, LoadingOverlay } from '@/components/ui/Loading'
 import { Badge } from '@/components/ui/Badge'
-import { Loader2, Plus, Edit, Trash2, Search, Filter, Download, Printer, Eye, Check, X, FileText } from 'lucide-react'
+import { Loader2, Plus, Edit, Trash2, Search, Filter, Download, Printer, Eye, Check, X, FileText, RefreshCw } from 'lucide-react'
 import { formatCurrency, formatDate, formatIndianNumber, cn } from '@/utils'
 import { toast } from 'sonner'
 
@@ -710,8 +710,5 @@ export const SalesOrdersPage: React.FC = () => {
     </div>
   )
 }
-
-// Add missing imports
-import RefreshCw from 'lucide-react'
 
 export default SalesOrdersPage

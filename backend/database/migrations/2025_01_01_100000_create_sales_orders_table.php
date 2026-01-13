@@ -30,7 +30,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
             
-            $table->index(['organization_id', 'customer_id', 'status']);
+            $table->index(['organization_id', 'customer_id', 'status'], 'sales_orders_org_cust_stat_idx');
             $table->index('order_number');
             $table->index('order_date');
         });

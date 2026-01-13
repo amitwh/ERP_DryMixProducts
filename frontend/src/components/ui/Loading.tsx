@@ -9,7 +9,7 @@ export interface LoadingSpinnerProps {
   className?: string
 }
 
-// Loading Spinner Component
+// Loading Spinner Component (aliased as Loading for backward compatibility)
 export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   size = 'md',
   color = 'currentColor',
@@ -214,3 +214,6 @@ export const SkeletonStyles = () => (
     `}
   </style>
 )
+
+// Alias for backward compatibility
+export const Loading = LoadingSpinner

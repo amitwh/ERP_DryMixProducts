@@ -8,31 +8,8 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('system_settings', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('org_id')->nullable()->constrained('organizations')->onDelete('cascade');
-            $table->string('setting_key', 255)->notNull()->comment('Settings key name');
-            $table->text('setting_value')->nullable()->comment('Settings value (JSON, text, etc.)');
-            $table->string('setting_type', 50)->default('string')->comment('string, integer, boolean, json, array');
-            $table->string('category', 100)->default('general')->comment('General, security, email, etc.');
-            $table->string('group', 100)->nullable()->comment('For grouping settings in UI');
-            $table->string('label', 255)->notNull()->comment('Human-readable label');
-            $table->text('description')->nullable()->comment('Settings description');
-            $table->json('validation_rules')->nullable()->comment('Laravel validation rules');
-            $table->json('options')->nullable()->comment('Available options for select/enum');
-            $table->boolean('is_encrypted')->default(false)->comment('Should value be encrypted?');
-            $table->boolean('is_public')->default(false)->comment('Is setting accessible publicly?');
-            $table->boolean('is_editable')->default(true)->comment('Can users edit this setting?');
-            $table->decimal('sort_order', 5, 2)->default(0);
-            $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
-            $table->foreignId('updated_by')->nullable()->constrained('users')->onDelete('set null');
-            $table->timestamps();
-
-            $table->unique(['org_id', 'setting_key']);
-            $table->index('category');
-            $table->index('group');
-            $table->index('is_public');
-        });
+        // system_settings table already exists from 2025_01_02_000013 migration
+        // Skip creating it again
 
         Schema::create('feature_toggles', function (Blueprint $table) {
             $table->id();
@@ -46,7 +23,6 @@ return new class extends Migration
             $table->json('feature_config')->nullable()->comment('Additional configuration');
             $table->date('enabled_date')->nullable()->comment('When feature was enabled');
             $table->date('disabled_date')->nullable()->comment('When feature was disabled');
-            $table->timestamp('enabled_by')->nullable()->comment('Who enabled/disabled');
             $table->foreignId('enabled_by')->nullable()->constrained('users')->onDelete('set null');
             $table->string('version', 20)->nullable()->comment('Feature version');
             $table->timestamps();
@@ -106,6 +82,6 @@ return new class extends Migration
         Schema::dropIfExists('theme_settings');
         Schema::dropIfExists('module_configurations');
         Schema::dropIfExists('feature_toggles');
-        Schema::dropIfExists('system_settings');
+        // system_settings is managed by 2025_01_02_000013 migration
     }
 };

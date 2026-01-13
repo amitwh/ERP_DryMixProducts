@@ -18,10 +18,6 @@ class ProductController extends Controller
             $query->byType($request->type);
         }
 
-        if ($request->has('type')) {
-            $query->byType($request->type);
-        }
-
         if ($request->has('status')) {
             $query->where('status', $request->status);
         }

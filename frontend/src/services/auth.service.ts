@@ -72,13 +72,13 @@ export const authService = {
    * Login user
    */
   async login(credentials: LoginRequest): Promise<User> {
-    const response = await api.post<LoginResponse>(
+    const response = await api.post<{ user: User }>(
       '/auth/login',
       credentials
     )
 
     // Token is now in httpOnly cookie, handled by browser
-    const user = response.data.data.user
+    const user = response.data.user
 
     // Store user in localStorage (non-sensitive data only)
     localStorage.setItem('user', JSON.stringify(user))
@@ -90,12 +90,12 @@ export const authService = {
    * Register user
    */
   async register(data: RegisterRequest): Promise<User> {
-    const response = await api.post<LoginResponse>(
+    const response = await api.post<{ user: User }>(
       '/auth/register',
       data
     )
 
-    const user = response.data.data.user
+    const user = response.data.user
 
     // Store user in localStorage
     localStorage.setItem('user', JSON.stringify(user))

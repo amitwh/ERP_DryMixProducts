@@ -76,7 +76,7 @@ return new class extends Migration
             $table->boolean('bool_value')->nullable()->comment('Boolean value');
             $table->enum('quality', ['good', 'bad', 'uncertain', 'forced'])->default('good');
             $table->text('error_message')->nullable();
-            $table->index(['config_id', 'tag_id', 'logged_at']);
+            $table->index(['config_id', 'tag_id', 'logged_at'], 'auto_logs_cfg_tag_time_idx');
             $table->index('logged_at');
             $table->index('quality');
         });

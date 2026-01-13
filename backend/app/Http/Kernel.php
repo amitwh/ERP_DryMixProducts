@@ -42,8 +42,8 @@ class Kernel extends HttpKernel
             // Security Headers
             \App\Http\Middleware\SecurityHeaders::class,
 
-            // Sanctum stateful middleware for SPA
-            // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            // Extract auth token from httpOnly cookie
+            \App\Http\Middleware\AuthenticateFromCookie::class,
 
             // Rate limiting
             \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
