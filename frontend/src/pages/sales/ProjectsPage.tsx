@@ -144,8 +144,8 @@ export default function ProjectsPage() {
         </Card>
       </div>
 
-      <Card variant="bordered" padding="md">
-        <div className="flex items-center gap-4">
+      <Card variant="bordered" padding="lg">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
@@ -172,9 +172,7 @@ export default function ProjectsPage() {
             ))}
           </div>
         </div>
-      </Card>
 
-      <Card variant="bordered" padding="lg">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900">
             Projects ({filteredProjects.length})
@@ -245,11 +243,9 @@ export default function ProjectsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredProjects.map((project) => (
-              <Card
+              <div
                 key={project.id}
-                variant="bordered"
-                padding="lg"
-                className="cursor-pointer hover:border-primary-300 transition-colors"
+                className="border border-gray-200 rounded-lg hover:border-primary-300 transition-colors p-6 cursor-pointer"
                 onClick={() => navigate(`/sales/projects/${project.id}`)}
               >
                 <div className="flex items-start justify-between mb-3">
@@ -308,21 +304,21 @@ export default function ProjectsPage() {
                         {project.progress_percentage.toFixed(1)}%
                       </span>
                     </div>
-                    </div>
                   </div>
+                </div>
 
-                  <div className="grid grid-cols-2 gap-4 mb-3 pt-3 border-t border-gray-200">
-                    <div>
-                      <p className="text-sm text-gray-600 mb-1">Project Value</p>
-                      <p className="text-lg font-semibold text-primary-600">
-                        {formatCurrency(project.project_value)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600 mb-1">Manager</p>
-                      <p className="text-sm text-gray-900">{project.project_manager_name}</p>
-                    </div>
+                <div className="grid grid-cols-2 gap-4 mb-3 pt-3 border-t border-gray-200">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Project Value</p>
+                    <p className="text-lg font-semibold text-primary-600">
+                      {formatCurrency(project.project_value)}
+                    </p>
                   </div>
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Manager</p>
+                    <p className="text-sm text-gray-900">{project.project_manager_name}</p>
+                  </div>
+                </div>
                 </div>
 
                 <div className="flex items-center justify-between pt-3 border-t border-gray-200">
@@ -337,11 +333,12 @@ export default function ProjectsPage() {
                     View Details
                   </Button>
                 </div>
-              </Card>
+              </div>
             ))}
           </div>
         )}
       </Card>
+    </div>
     </div>
   )
 }

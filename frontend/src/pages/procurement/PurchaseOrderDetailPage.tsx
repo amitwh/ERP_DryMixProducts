@@ -202,30 +202,7 @@ export default function PurchaseOrderDetailPage() {
           </div>
         </div>
       </div>
-
-      <div className={`p-4 rounded-lg border mb-6 ${
-        order.status === 'draft' ? 'bg-yellow-50 border-yellow-200' :
-        order.status === 'pending_approval' ? 'bg-orange-50 border-orange-200' :
-        order.status === 'approved' ? 'bg-green-50 border-green-200' :
-        order.status === 'sent' ? 'bg-blue-50 border-blue-200' :
-        order.status === 'received' ? 'bg-purple-50 border-purple-200' :
-        'bg-gray-50 border-gray-200'
-      }`}>
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2">
-            <ShoppingCart className="w-5 h-5" />
-            <div>
-              <p className="text-sm font-medium text-gray-600">Status</p>
-              <StatusBadge status={order.status} />
-            </div>
-          </div>
-          <div>
-            <p className="text-sm text-gray-600">Supplier</p>
-            <p className="font-semibold">{order.supplier_name}</p>
-          </div>
-        </div>
-        </div>
-      </div>
+ 
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
