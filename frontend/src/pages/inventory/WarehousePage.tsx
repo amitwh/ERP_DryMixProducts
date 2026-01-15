@@ -170,7 +170,7 @@ export default function WarehousePage() {
         ? `/api/v1/inventory/warehouses/${id}`
         : '/api/v1/inventory/warehouses', {
         method: isEditing && id ? 'PUT' : 'POST',
-        headers: { { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       })
 

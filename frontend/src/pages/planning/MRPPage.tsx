@@ -403,7 +403,7 @@ export const MRPPage: React.FC = () => {
                         </span>
                       </td>
                       <td className="px-4 py-3 text-center">
-                        {material.status === 'shortage && material.suppliers && material.suppliers.length > 0 && (
+                        {material.status === 'shortage' && material.suppliers && material.suppliers.length > 0 && (
                           <Button
                             variant="outline"
                             size="sm"

@@ -197,24 +197,10 @@ export default function PurchaseOrderDetailPage() {
             Back
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              Purchase Order {order.po_number}
-            </h1>
-            <p className="text-gray-600">
-              Created on {formatDate(order.created_at)}
-            </p>
+            <p className="text-sm text-gray-600">Supplier</p>
+            <p className="font-semibold">{order.supplier_name}</p>
           </div>
         </div>
-        <QuickActions
-          onView={() => { /* Already viewing */ }}
-          onPrint={handlePrint}
-          onDownload={handleDownload}
-          extraActions={[
-            { id: 'approve', label: 'Approve', icon: CheckCircle, onClick: handleApprove, disabled: !['pending_approval', 'draft'].includes(order.status) },
-            { id: 'reject', label: 'Reject', icon: AlertTriangle, onClick: handleReject, disabled: !['pending_approval', 'draft'].includes(order.status) },
-            { id: 'grn', label: 'Create GRN', icon: Truck },
-          ]}
-        />
       </div>
 
       <div className={`p-4 rounded-lg border mb-6 ${

@@ -13,6 +13,8 @@ import {
   Search,
   Plus,
   Minus,
+  Calculator,
+  FileText,
 } from 'lucide-react'
 
 export default function CreatePurchaseOrderPage() {
@@ -62,7 +64,7 @@ export default function CreatePurchaseOrderPage() {
     { value: '5', label: 'Coarse Aggregate (Gravel)' },
     { value: '6', label: 'Fly Ash' },
     { value: '7', label: 'Silica Fume' },
-    { val: '8', label: 'Polymer Admixture' },
+    { value: '8', label: 'Polymer Admixture' },
   ]
 
   const formFields = [

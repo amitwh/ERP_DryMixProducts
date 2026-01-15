@@ -1,0 +1,359 @@
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '@/context/AuthContext'
+import { api } from '@/services/api'
+import { Card, CardContent } from '@/components/ui/Card'
+import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
+import { Skeleton } from '@/components/ui/Loading'
+import { Alert } from '@/components/ui/Alert'
+import { Search, Plus, Filter, Truck, CheckCircle, AlertTriangle, Download, Printer } from 'lucide-react'
+import { formatDate, formatNumber } from '@/utils'
+
+interface Request {
+  id: number
+  request_number: string
+  product_id: number
+  product_name: string
+  product_code: string
+  warehouse_id: number
+  warehouse_name: string
+  requested_quantity: number
+  uom: string
+  urgency: 'normal' | 'urgent' | 'critical'
+  reason: string
+  required_date?: string
+  status: 'pending' | 'approved' | 'rejected' | 'partially_fulfilled' | 'fulfilled'
+  requested_by: string
+  requested_at: string
+  approved_by?: string
+  approved_at?: string
+  fulfilled_quantity?: number
+  fulfilled_date?: string
+}
+
+export default function RequestsPage() {
+  const navigate = useNavigate()
+  const { user } = useAuth()
+  const [requests, setRequests] = useState<Request[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'approved' | 'rejected' | 'partially_fulfilled' | 'fulfilled'>('all')
+  const [urgencyFilter, setUrgencyFilter] = useState<'all' | 'normal' | 'urgent' | 'critical'>('all')
+
+  useEffect(() => {
+    fetchRequests()
+  }, [statusFilter, urgencyFilter])
+
+  const fetchRequests = async () => {
+    try {
+      setIsLoading(true)
+      const response = await api.get<{ data: Request[] }>('/procurement/requests', {
+        params: {
+          organization_id: user?.organizationId,
+          status: statusFilter === 'all' ? undefined : statusFilter,
+          urgency: urgencyFilter === 'all' ? undefined : urgencyFilter,
+        },
+      })
+      setRequests(response.data.data || [])
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to fetch requests')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const filteredRequests = requests.filter(req => {
+    const matchesSearch =
+      searchTerm === '' ||
+      req.request_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      req.product_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      req.product_code.toLowerCase().includes(searchTerm.toLowerCase())
+    return matchesSearch
+  })
+
+  const totalCount = requests.length
+  const pendingCount = requests.filter(r => r.status === 'pending').length
+  const approvedCount = requests.filter(r => r.status === 'approved').length
+  const criticalCount = requests.filter(r => r.urgency === 'critical').length
+  const totalRequestedQuantity = requests.reduce((sum, r) => sum + r.requested_quantity, 0)
+  const totalFulfilledQuantity = requests.reduce((sum, r) => sum + (r.fulfilled_quantity || 0), 0)
+
+  const getUrgencyColor = (urgency: string) => {
+    const colors: Record<string, string> = {
+      normal: 'bg-blue-100 text-blue-800',
+      urgent: 'bg-orange-100 text-orange-800',
+      critical: 'bg-red-100 text-red-800',
+    }
+    return colors[urgency] || 'bg-gray-100 text-gray-800'
+  }
+
+  const getStatusColor = (status: string) => {
+    const colors: Record<string, string> = {
+      pending: 'bg-yellow-100 text-yellow-800',
+      approved: 'bg-green-100 text-green-800',
+      rejected: 'bg-red-100 text-red-800',
+      partially_fulfilled: 'bg-blue-100 text-blue-800',
+      fulfilled: 'bg-success-100 text-success-800',
+    }
+    return colors[status] || 'bg-gray-100 text-gray-800'
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Purchase Requests</h1>
+          <p className="text-gray-600">Manage material and product requests</p>
+        </div>
+        <Button
+          variant="primary"
+          size="sm"
+          leftIcon={<Plus className="w-4 h-4" />}
+          onClick={() => navigate('/procurement/requests/create')}
+        >
+          Create Request
+        </Button>
+      </div>
+
+      {error && <Alert type="error" message={error} onDismiss={() => setError(null)} />}
+
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card variant="bordered" padding="lg">
+          <div className="text-center">
+            <Truck className="w-6 h-6 text-primary-600 mx-auto mb-2" />
+            <p className="text-sm font-medium text-gray-600 mb-1">Total Requests</p>
+            <h3 className="text-2xl font-bold text-gray-900">{totalCount}</h3>
+          </div>
+        </Card>
+        <Card variant="bordered" padding="lg">
+          <div className="text-center">
+            <AlertTriangle className="w-6 h-6 text-warning-600 mx-auto mb-2" />
+            <p className="text-sm font-medium text-gray-600 mb-1">Pending</p>
+            <h3 className="text-2xl font-bold text-warning-600">{pendingCount}</h3>
+          </div>
+        </Card>
+        <Card variant="bordered" padding="lg">
+          <div className="text-center">
+            <CheckCircle className="w-6 h-6 text-success-600 mx-auto mb-2" />
+            <p className="text-sm font-medium text-gray-600 mb-1">Approved</p>
+            <h3 className="text-2xl font-bold text-success-600">{approvedCount}</h3>
+          </div>
+        </Card>
+        <Card variant="bordered" padding="lg">
+          <div className="text-center">
+            <AlertTriangle className="w-6 h-6 text-error-600 mx-auto mb-2" />
+            <p className="text-sm font-medium text-gray-600 mb-1">Critical</p>
+            <h3 className="text-2xl font-bold text-error-600">{criticalCount}</h3>
+          </div>
+        </Card>
+      </div>
+
+      <Card variant="bordered" padding="md">
+        <div className="flex items-center gap-4">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Input
+              type="text"
+              placeholder="Search requests..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            {(['pending', 'approved', 'rejected', 'partially_fulfilled', 'fulfilled'] as const).map((status) => (
+              <button
+                key={status}
+                onClick={() => setStatusFilter(status)}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  statusFilter === status
+                    ? 'bg-primary-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {status.replace('_', ' ').toUpperCase()}
+              </button>
+            ))}
+          </div>
+        </div>
+      </Card>
+
+      <Card variant="bordered" padding="lg">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-900">
+            Requests ({filteredRequests.length})
+          </h3>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              leftIcon={<Filter className="w-4 h-4" />}
+              onClick={() => {
+                setStatusFilter('all')
+                setUrgencyFilter('all')
+              }}
+            >
+              Reset Filters
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              leftIcon={<Download className="w-4 h-4" />}
+              onClick={() => {
+                const csvContent =
+                  'data:text/csv;charset=utf-8,' +
+                  'Request,Product,Code,Quantity,UOM,Urgency,Reason,Status,Created Date,Approved Date,Fulfilled\n' +
+                  filteredRequests
+                    .map(r =>
+                      `${r.request_number},"${r.product_name}",${r.product_code},${r.requested_quantity},${r.uom},${r.urgency.toUpperCase()},"${r.reason.replace(/"/g, '""')}",${r.status},${r.requested_at},${r.approved_at || '-'},${r.fulfilled_date || '-'}`
+                    )
+                    .join('\n')
+                const link = document.createElement('a')
+                link.setAttribute('href', encodeURI(csvContent))
+                link.setAttribute('download', 'purchase-requests.csv')
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+              }}
+            >
+              Export
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              leftIcon={<Printer className="w-4 h-4" />}
+              onClick={() => window.print()}
+            />
+          </div>
+        </div>
+
+        {isLoading ? (
+          <div className="space-y-4">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <Skeleton key={i} height={120} className="rounded" />
+            ))}
+          </div>
+        ) : filteredRequests.length === 0 ? (
+          <div className="text-center py-12">
+            <Truck className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <p className="text-gray-500 mb-4">No requests found</p>
+            <Button
+              variant="primary"
+              size="sm"
+              leftIcon={<Plus className="w-4 h-4" />}
+              onClick={() => navigate('/procurement/requests/create')}
+            >
+              Create First Request
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {filteredRequests.map((req) => (
+              <div
+                key={req.id}
+                className={`p-4 border rounded-lg hover:shadow-md transition-all ${
+                  req.urgency === 'critical' ? 'border-error-300 bg-error-50' :
+                  req.urgency === 'urgent' ? 'border-warning-300 bg-warning-50' :
+                  'border-gray-200 bg-white'
+                }`}
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getUrgencyColor(req.urgency)}`}>
+                        {req.urgency.toUpperCase()}
+                      </span>
+                      <span className="text-sm text-gray-600">{req.request_number}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(req.status)}`}>
+                        {req.status.replace('_', ' ').toUpperCase()}
+                      </span>
+                      {req.required_date && (
+                        <span className={`text-sm ${
+                          new Date(req.required_date) < new Date()
+                            ? 'text-error-600 font-semibold'
+                            : 'text-gray-600'
+                        }`}>
+                          Due: {formatDate(req.required_date)}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Product</p>
+                    <p className="font-medium text-gray-900">{req.product_name}</p>
+                    <p className="text-sm text-gray-600">{req.product_code}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Warehouse</p>
+                    <p className="text-sm text-gray-900">{req.warehouse_name}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Requested</p>
+                    <p className="text-lg font-semibold text-primary-600">
+                      {formatNumber(req.requested_quantity)} {req.uom}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Fulfilled</p>
+                    <p className={`text-lg font-semibold ${
+                      req.fulfilled_quantity !== undefined
+                        ? 'text-gray-900'
+                        : 'text-warning-600'
+                    }`}>
+                      {req.fulfilled_quantity !== undefined
+                        ? `${formatNumber(req.fulfilled_quantity)} ${req.uom}`
+                        : '-'}
+                    </p>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Reason</p>
+                  <p className="text-sm text-gray-700">{req.reason}</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 mb-3 pt-3 border-t border-gray-200">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Requested By</p>
+                    <p className="text-sm text-gray-900">{req.requested_by}</p>
+                    <p className="text-xs text-gray-600">{formatDate(req.requested_at)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Requested Date</p>
+                    <p className="text-sm text-gray-900">{formatDate(req.required_date || '-')}</p>
+                  </div>
+                </div>
+
+                {req.approved_at && (
+                  <div className="pt-3 border-t border-gray-200">
+                    <p className="text-sm text-gray-600 mb-1">Approved By</p>
+                    <p className="text-sm text-gray-900">
+                      {req.approved_by} on {formatDate(req.approved_at)}
+                    </p>
+                  </div>
+                )}
+
+                <div className="flex items-center justify-end pt-3 border-t border-gray-200">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigate(`/procurement/requests/${req.id}`)}
+                  >
+                    View Details
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
+    </div>
+  )
+}
