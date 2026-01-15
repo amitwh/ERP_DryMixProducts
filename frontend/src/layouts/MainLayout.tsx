@@ -16,7 +16,6 @@ import {
   CalendarClock,
   MessageSquare,
   Settings,
-  HelpCircle,
   LogOut,
   Menu,
   X,
@@ -29,18 +28,40 @@ import {
   Link as LinkIcon,
   Printer,
   AlertOctagon,
+  Shield,
+  BarChart3,
+  Brain,
+  Cloud,
+  Network,
+  Zap,
+  CreditCard as PaymentIcon,
+  Wrench,
+  Truck,
+  Microscope,
+  Leaf,
+  Cpu,
+  Scale,
+  FileCheck,
+  Layers,
+  Gauge,
+  Activity,
+  TrendingUp,
 } from 'lucide-react'
 import { getInitials } from '@/utils'
 
-// Navigation Item Interface
 interface NavItem {
   title: string
   href: string
   icon: React.ReactNode
   badge?: number
+  category?: string
 }
 
-// Main Layout Component
+interface NavCategory {
+  title: string
+  items: NavItem[]
+}
+
 export const MainLayout: React.FC = () => {
   const { user, logout } = useAuth()
   const location = useLocation()
@@ -48,103 +69,272 @@ export const MainLayout: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
 
-  // Navigation Items
-  const navItems: NavItem[] = [
+  const navCategories: NavCategory[] = [
     {
-      title: 'Dashboard',
-      href: '/dashboard',
-      icon: <LayoutDashboard className="w-5 h-5" />,
+      title: 'Core Foundation',
+      items: [
+        {
+          title: 'Dashboard',
+          href: '/dashboard',
+          icon: <LayoutDashboard className="w-5 h-5" />,
+        },
+        {
+          title: 'Users & Access',
+          href: '/system/users',
+          icon: <UserCheck className="w-5 h-5" />,
+        },
+        {
+          title: 'Settings',
+          href: '/settings',
+          icon: <Settings className="w-5 h-5" />,
+        },
+        {
+          title: 'Documents',
+          href: '/system/documents',
+          icon: <FileText className="w-5 h-5" />,
+        },
+      ],
     },
     {
-      title: 'Sales',
-      href: '/sales',
-      icon: <ShoppingCart className="w-5 h-5" />,
+      title: 'Operations',
+      items: [
+        {
+          title: 'Quality Control',
+          href: '/quality',
+          icon: <CheckSquare className="w-5 h-5" />,
+          badge: 3,
+        },
+        {
+          title: 'Planning',
+          href: '/planning',
+          icon: <CalendarClock className="w-5 h-5" />,
+        },
+        {
+          title: 'Stores & Inventory',
+          href: '/inventory',
+          icon: <Database className="w-5 h-5" />,
+        },
+        {
+          title: 'Production',
+          href: '/production',
+          icon: <Factory className="w-5 h-5" />,
+        },
+        {
+          title: 'Sales',
+          href: '/sales',
+          icon: <ShoppingCart className="w-5 h-5" />,
+        },
+        {
+          title: 'Procurement',
+          href: '/procurement',
+          icon: <ShoppingCart className="w-5 h-5" />,
+        },
+        {
+          title: 'Products',
+          href: '/products',
+          icon: <Package className="w-5 h-5" />,
+        },
+        {
+          title: 'Customers',
+          href: '/customers',
+          icon: <Users className="w-5 h-5" />,
+        },
+      ],
     },
     {
-      title: 'Products',
-      href: '/products',
-      icon: <Package className="w-5 h-5" />,
+      title: 'Finance & HR',
+      items: [
+        {
+          title: 'Finance',
+          href: '/finance',
+          icon: <FileText className="w-5 h-5" />,
+        },
+        {
+          title: 'Credit Control',
+          href: '/credit-control',
+          icon: <CreditCard className="w-5 h-5" />,
+        },
+        {
+          title: 'HR & Payroll',
+          href: '/hr-payroll',
+          icon: <UserCheck className="w-5 h-5" />,
+        },
+      ],
     },
     {
-      title: 'Customers',
-      href: '/customers',
-      icon: <Users className="w-5 h-5" />,
+      title: 'Advanced',
+      items: [
+        {
+          title: 'Analytics',
+          href: '/analytics',
+          icon: <BarChart3 className="w-5 h-5" />,
+        },
+        {
+          title: 'AI/ML',
+          href: '/ai-ml',
+          icon: <Brain className="w-5 h-5" />,
+        },
+        {
+          title: 'Communication',
+          href: '/communication',
+          icon: <MessageSquare className="w-5 h-5" />,
+          badge: 5,
+        },
+      ],
     },
     {
-      title: 'Production',
-      href: '/production',
-      icon: <Factory className="w-5 h-5" />,
+      title: 'Integrations',
+      items: [
+        {
+          title: 'Cloud Storage',
+          href: '/cloud-storage',
+          icon: <Cloud className="w-5 h-5" />,
+        },
+        {
+          title: 'ERP Integration',
+          href: '/erp-integration',
+          icon: <Network className="w-5 h-5" />,
+        },
+        {
+          title: 'Plant Automation',
+          href: '/plant-automation',
+          icon: <Zap className="w-5 h-5" />,
+        },
+        {
+          title: 'Payment Gateway',
+          href: '/payment-gateway',
+          icon: <PaymentIcon className="w-5 h-5" />,
+        },
+      ],
     },
     {
-      title: 'Inventory',
-      href: '/inventory',
-      icon: <Database className="w-5 h-5" />,
+      title: 'Enterprise',
+      items: [
+        {
+          title: 'Maintenance',
+          href: '/maintenance',
+          icon: <Wrench className="w-5 h-5" />,
+        },
+        {
+          title: 'Transport',
+          href: '/transport',
+          icon: <Truck className="w-5 h-5" />,
+        },
+        {
+          title: 'Quality Intel',
+          href: '/quality-intel',
+          icon: <Microscope className="w-5 h-5" />,
+        },
+        {
+          title: 'Sustainability',
+          href: '/sustainability',
+          icon: <Leaf className="w-5 h-5" />,
+        },
+        {
+          title: 'Digital Twin',
+          href: '/digital-twin',
+          icon: <Cpu className="w-5 h-5" />,
+        },
+        {
+          title: 'Compliance',
+          href: '/compliance',
+          icon: <Shield className="w-5 h-5" />,
+        },
+      ],
     },
     {
-      title: 'Quality',
-      href: '/quality',
-      icon: <CheckSquare className="w-5 h-5" />,
-      badge: 3,
-    },
-    {
-      title: 'Finance',
-      href: '/finance',
-      icon: <FileText className="w-5 h-5" />,
-    },
-    {
-      title: 'Credit Control',
-      href: '/credit-control',
-      icon: <CreditCard className="w-5 h-5" />,
-    },
-    {
-      title: 'Procurement',
-      href: '/procurement',
-      icon: <ShoppingCart className="w-5 h-5" />,
-    },
-    {
-      title: 'HR & Payroll',
-      href: '/hr-payroll',
-      icon: <UserCheck className="w-5 h-5" />,
-    },
-    {
-      title: 'Planning',
-      href: '/planning',
-      icon: <CalendarClock className="w-5 h-5" />,
-    },
-    {
-      title: 'Communication',
-      href: '/communication',
-      icon: <MessageSquare className="w-5 h-5" />,
-      badge: 5,
-    },
-    {
-      title: 'System',
-      href: '/system',
-      icon: <Settings className="w-5 h-5" />,
+      title: 'Administration',
+      items: [
+        {
+          title: 'System Admin',
+          href: '/system',
+          icon: <Settings className="w-5 h-5" />,
+        },
+      ],
     },
   ]
 
-  // Get current page title
   const getPageTitle = () => {
     const path = location.pathname
-    if (path === '/dashboard') return 'Dashboard'
-    if (path.startsWith('/sales')) return 'Sales & Customer Management'
-    if (path.startsWith('/products')) return 'Products Management'
-    if (path.startsWith('/customers')) return 'Customers'
-    if (path.startsWith('/production')) return 'Production'
-    if (path.startsWith('/inventory')) return 'Inventory & Stores'
-    if (path.startsWith('/quality')) return 'Quality Control'
-    if (path.startsWith('/finance')) return 'Finance & Accounting'
-    if (path.startsWith('/credit-control')) return 'Credit Control'
-    if (path.startsWith('/procurement')) return 'Procurement'
-    if (path.startsWith('/hr-payroll')) return 'HR & Payroll'
-    if (path.startsWith('/planning')) return 'Planning'
-    if (path.startsWith('/communication')) return 'Communication'
-    if (path.startsWith('/system')) return 'System Administration'
-    return 'ERP DryMix Products'
+    const titleMap: Record<string, string> = {
+      '/dashboard': 'Dashboard & Analytics',
+      '/system/users': 'User & Access Management',
+      '/system/roles': 'Role Management',
+      '/system/permissions': 'Permissions',
+      '/settings': 'Settings & Configuration',
+      '/system/documents': 'Document Management',
+      '/quality': 'Quality Assurance & Control',
+      '/quality/inspections': 'Quality Inspections',
+      '/quality/ncrs': 'Non-Conformance Reports',
+      '/quality/dry-mix-tests': 'Dry Mix Product Tests',
+      '/quality/raw-material-tests': 'Raw Material Tests',
+      '/planning': 'Production Planning',
+      '/planning/production-plans': 'Production Plans',
+      '/planning/forecasts': 'Demand Forecasting',
+      '/planning/mrp': 'Material Requirements Planning',
+      '/planning/capacity': 'Capacity Planning',
+      '/inventory': 'Stores & Inventory',
+      '/inventory/stock': 'Stock Overview',
+      '/inventory/movements': 'Stock Movements',
+      '/inventory/transfers': 'Stock Transfers',
+      '/inventory/warehouses': 'Warehouse Management',
+      '/production': 'Production Management',
+      '/production/orders': 'Production Orders',
+      '/production/batches': 'Production Batches',
+      '/sales': 'Sales & Customer Management',
+      '/sales/orders': 'Sales Orders',
+      '/sales/invoices': 'Invoices',
+      '/sales/returns': 'Sales Returns',
+      '/sales/projects': 'Projects',
+      '/procurement': 'Procurement',
+      '/procurement/purchase-orders': 'Purchase Orders',
+      '/procurement/grns': 'Goods Receipt Notes',
+      '/procurement/suppliers': 'Suppliers',
+      '/products': 'Product Management',
+      '/customers': 'Customers',
+      '/finance': 'Finance & Accounting',
+      '/finance/dashboard': 'Finance Dashboard',
+      '/finance/accounts': 'Chart of Accounts',
+      '/finance/vouchers': 'Journal Vouchers',
+      '/finance/ledgers': 'Ledgers',
+      '/finance/reports': 'Financial Reports',
+      '/credit-control': 'Credit Control',
+      '/credit-control/customers': 'Credit Customers',
+      '/credit-control/limits': 'Credit Limits',
+      '/credit-control/aging': 'Aging Reports',
+      '/credit-control/collections': 'Collections',
+      '/hr-payroll': 'HR & Payroll',
+      '/hr-payroll/employees': 'Employees',
+      '/hr-payroll/attendances': 'Attendance',
+      '/hr-payroll/leave': 'Leave Management',
+      '/hr-payroll/payroll': 'Payroll',
+      '/analytics': 'Analytics & Reporting',
+      '/ai-ml': 'AI/ML Predictions',
+      '/communication': 'Communications',
+      '/communication/templates': 'Message Templates',
+      '/communication/sms': 'SMS Messages',
+      '/communication/whatsapp': 'WhatsApp Messages',
+      '/communication/logs': 'Communication Logs',
+      '/cloud-storage': 'Cloud Storage',
+      '/erp-integration': 'External ERP Integration',
+      '/plant-automation': 'Plant Automation',
+      '/payment-gateway': 'Payment Gateway',
+      '/maintenance': 'Maintenance Management',
+      '/transport': 'Transportation & Logistics',
+      '/quality-intel': 'Quality Intelligence',
+      '/sustainability': 'Sustainability',
+      '/digital-twin': 'Digital Transformation',
+      '/compliance': 'Compliance & Regulatory',
+      '/system': 'System Administration',
+      '/system/modules': 'Module Management',
+      '/system/api-keys': 'API Keys',
+      '/system/logs': 'System Logs',
+      '/system/backups': 'Backups',
+      '/system/external-services': 'External Services',
+    }
+    return titleMap[path] || 'ERP DryMix Products'
   }
 
-  // Handle Logout
   const handleLogout = async () => {
     try {
       await logout()
@@ -155,27 +345,23 @@ export const MainLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
       <aside
         className={cn(
           'fixed inset-y-0 left-0 z-50 bg-white border-r border-gray-200 transition-all duration-300',
-          sidebarOpen ? 'w-64' : 'w-20'
+          sidebarOpen ? 'w-72' : 'w-20'
         )}
       >
-        {/* Logo */}
         <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
-          {sidebarOpen && (
+          {sidebarOpen ? (
             <div className="flex items-center gap-3">
               <div className="flex items-center justify-center w-10 h-10 bg-primary-600 rounded-xl">
                 <Building2 className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="font-bold text-gray-900">ERP</h1>
-                <p className="text-xs text-gray-600">DryMix</p>
+                <h1 className="font-bold text-gray-900 text-lg">ERP DryMix</h1>
               </div>
             </div>
-          )}
-          {!sidebarOpen && (
+          ) : (
             <div className="flex items-center justify-center w-10 h-10 bg-primary-600 rounded-xl">
               <Building2 className="w-6 h-6 text-white" />
             </div>
@@ -192,42 +378,42 @@ export const MainLayout: React.FC = () => {
           </button>
         </div>
 
-        {/* Navigation */}
-        <nav className="p-4 space-y-1 overflow-y-auto h-[calc(100vh-4rem)]">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.href}
-              to={item.href}
-              onClick={() => setMobileMenuOpen(false)}
-              className={({ isActive }) =>
-                cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200',
-                  'hover:bg-gray-100',
-                  isActive ? 'bg-primary-50 text-primary-700 font-medium' : 'text-gray-700'
-                )
-              }
-              end={item.href === '/dashboard'}
-            >
-              {item.icon}
-              {sidebarOpen && <span>{item.title}</span>}
-              {item.badge && sidebarOpen && (
-                <span className="ml-auto bg-error-500 text-white text-xs px-2 py-0.5 rounded-full">
-                  {item.badge}
-                </span>
+        <nav className="p-4 space-y-6 overflow-y-auto h-[calc(100vh-4rem)]">
+          {navCategories.map((category) => (
+            <div key={category.title} className="space-y-1">
+              {sidebarOpen && (
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                  {category.title}
+                </p>
               )}
-            </NavLink>
+              {category.items.map((item) => (
+                <NavLink
+                  key={item.href}
+                  to={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={({ isActive }) =>
+                    cn(
+                      'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200',
+                      'hover:bg-gray-100',
+                      isActive ? 'bg-primary-50 text-primary-700 font-medium' : 'text-gray-700'
+                    )
+                  }
+                  end={item.href === '/dashboard'}
+                >
+                  {item.icon}
+                  {sidebarOpen && <span className="flex-1">{item.title}</span>}
+                  {item.badge && sidebarOpen && (
+                    <span className="bg-error-500 text-white text-xs px-2 py-0.5 rounded-full">
+                      {item.badge}
+                    </span>
+                  )}
+                </NavLink>
+              ))}
+            </div>
           ))}
         </nav>
 
-        {/* Sidebar Footer */}
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
-          <NavLink
-            to="/settings"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
-          >
-            <Settings className="w-5 h-5" />
-            {sidebarOpen && <span>Settings</span>}
-          </NavLink>
           <button
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-error-600 hover:bg-error-50 transition-colors"
@@ -238,17 +424,14 @@ export const MainLayout: React.FC = () => {
         </div>
       </aside>
 
-      {/* Main Content */}
       <div
         className={cn(
           'flex-1 min-w-0 transition-all duration-300',
-          sidebarOpen ? 'lg:ml-64' : 'lg:ml-20'
+          sidebarOpen ? 'lg:ml-72' : 'lg:ml-20'
         )}
       >
-        {/* Header */}
         <header className="sticky top-0 z-40 bg-white border-b border-gray-200">
           <div className="flex items-center justify-between h-16 px-4 lg:px-6">
-            {/* Left: Mobile Menu & Breadcrumb */}
             <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
@@ -273,9 +456,7 @@ export const MainLayout: React.FC = () => {
               </div>
             </div>
 
-            {/* Right: Search, Notifications, User */}
             <div className="flex items-center gap-4">
-              {/* Search */}
               <div className="hidden md:block">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -287,13 +468,11 @@ export const MainLayout: React.FC = () => {
                 </div>
               </div>
 
-              {/* Notifications */}
               <Button variant="ghost" size="sm" className="relative">
                 <Bell className="w-5 h-5" />
                 <span className="absolute top-1 right-1 w-2 h-2 bg-error-500 rounded-full" />
               </Button>
 
-              {/* User Menu */}
               <div className="relative">
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
@@ -308,7 +487,6 @@ export const MainLayout: React.FC = () => {
                   </div>
                 </button>
 
-                {/* User Dropdown */}
                 {userMenuOpen && (
                   <>
                     <div
@@ -348,29 +526,25 @@ export const MainLayout: React.FC = () => {
           </div>
         </header>
 
-        {/* Page Content */}
         <main className="p-4 lg:p-6">
           <Outlet />
         </main>
       </div>
 
-      {/* Mobile Sidebar Overlay */}
       {mobileMenuOpen && (
         <>
           <div
             className="fixed inset-0 bg-black/50 z-40 lg:hidden"
             onClick={() => setMobileMenuOpen(false)}
           />
-          <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 lg:hidden">
-            {/* Close Button */}
+          <aside className="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-200 lg:hidden overflow-y-auto">
             <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-10 h-10 bg-primary-600 rounded-xl">
                   <Building2 className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h1 className="font-bold text-gray-900">ERP</h1>
-                  <p className="text-xs text-gray-600">DryMix</p>
+                  <h1 className="font-bold text-gray-900 text-lg">ERP DryMix</h1>
                 </div>
               </div>
               <button
@@ -381,30 +555,36 @@ export const MainLayout: React.FC = () => {
               </button>
             </div>
 
-            {/* Mobile Navigation */}
-            <nav className="p-4 space-y-1 overflow-y-auto h-[calc(100vh-4rem)]">
-              {navItems.map((item) => (
-                <NavLink
-                  key={item.href}
-                  to={item.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={({ isActive }) =>
-                    cn(
-                      'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200',
-                      'hover:bg-gray-100',
-                      isActive ? 'bg-primary-50 text-primary-700 font-medium' : 'text-gray-700'
-                    )
-                  }
-                  end={item.href === '/dashboard'}
-                >
-                  {item.icon}
-                  <span>{item.title}</span>
-                  {item.badge && (
-                    <span className="ml-auto bg-error-500 text-white text-xs px-2 py-0.5 rounded-full">
-                      {item.badge}
-                    </span>
-                  )}
-                </NavLink>
+            <nav className="p-4 space-y-6">
+              {navCategories.map((category) => (
+                <div key={category.title} className="space-y-1">
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                    {category.title}
+                  </p>
+                  {category.items.map((item) => (
+                    <NavLink
+                      key={item.href}
+                      to={item.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={({ isActive }) =>
+                        cn(
+                          'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200',
+                          'hover:bg-gray-100',
+                          isActive ? 'bg-primary-50 text-primary-700 font-medium' : 'text-gray-700'
+                        )
+                      }
+                      end={item.href === '/dashboard'}
+                    >
+                      {item.icon}
+                      <span className="flex-1">{item.title}</span>
+                      {item.badge && (
+                        <span className="bg-error-500 text-white text-xs px-2 py-0.5 rounded-full">
+                          {item.badge}
+                        </span>
+                      )}
+                    </NavLink>
+                  ))}
+                </div>
               ))}
             </nav>
           </aside>
@@ -413,3 +593,5 @@ export const MainLayout: React.FC = () => {
     </div>
   )
 }
+
+export default MainLayout
