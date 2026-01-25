@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
+use App\Jobs\ProcessErpSyncJob;
 
 class ErpIntegrationController extends Controller
 {
@@ -206,8 +207,8 @@ class ErpIntegrationController extends Controller
             'last_sync_at' => now(),
         ]);
 
-        // TODO: Queue background job for actual sync
-        // ProcessErpSyncJob::dispatch($integration->id, $syncLog->id);
+        // Queue background job for actual sync
+        ProcessErpSyncJob::dispatch($integration->id, $syncLog->id);
 
         return response()->json([
             'message' => 'Sync triggered successfully',

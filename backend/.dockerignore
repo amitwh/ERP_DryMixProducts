@@ -1,0 +1,55 @@
+# Dependencies
+vendor
+
+# Environment files
+.env
+.env.backup
+.env.production
+
+# Storage (use Docker volumes)
+storage/app/*
+!storage/app/.gitignore
+storage/framework/cache/*
+!storage/framework/cache/.gitignore
+storage/framework/sessions/*
+!storage/framework/sessions/.gitignore
+storage/framework/views/*
+!storage/framework/views/.gitignore
+storage/logs/*
+!storage/logs/.gitignore
+
+# IDE and Editor files
+.idea
+.vscode
+*.sublime-workspace
+*.sublime-project
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Testing
+tests
+phpunit.xml
+.phpunit.result.cache
+
+# Documentation
+docs
+*.md
+
+# Development files
+docker-compose*.yml
+Dockerfile*
+
+# Logs
+*.log
+npm-debug.log*
+
+# Cache
+bootstrap/cache/*
+!bootstrap/cache/.gitignore

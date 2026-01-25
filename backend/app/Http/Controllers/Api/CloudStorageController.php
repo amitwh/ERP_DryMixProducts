@@ -263,7 +263,7 @@ class CloudStorageController extends Controller
             'config_id' => $configId,
             'file_name' => $file->getClientOriginalName(),
             'file_path' => $filePath,
-            'file_type' => 'document', // TODO: Determine from file extension
+            'file_type' => $this->getFileTypeFromExtension($file->getClientOriginalExtension()),
             'mime_type' => $file->getMimeType(),
             'file_size' => $file->getSize(),
             'extension' => $file->getClientOriginalExtension(),
@@ -406,5 +406,52 @@ class CloudStorageController extends Controller
         $sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
         $i = floor(log($bytes) / log($k));
         return round($bytes / pow($k, $i), 2) . ' ' . $sizes[$i];
+    }
+
+    /**
+     * Determines the file type category based on the provided file extension.
+     *
+     * @param string $extension The file extension (e.g., 'pdf', 'jpg', '.docx').
+     * @return string The category of the file. Defaults to 'other' if not found.
+     */
+    private function getFileTypeFromExtension(string $extension): string
+    {
+        if (empty($extension)) {
+            return 'other';
+        }
+
+        $normalizedExtension = strtolower(trim(ltrim($extension, '.')));
+
+        $extensionMap = [
+            // Documents
+            'pdf' => 'document', 'doc' => 'document', 'docx' => 'document',
+            'txt' => 'document', 'rtf' => 'document', 'odt' => 'document',
+            // Images
+            'jpg' => 'image', 'jpeg' => 'image', 'png' => 'image',
+            'gif' => 'image', 'webp' => 'image', 'svg' => 'image',
+            'bmp' => 'image', 'ico' => 'image', 'tiff' => 'image',
+            // Videos
+            'mp4' => 'video', 'avi' => 'video', 'mov' => 'video',
+            'wmv' => 'video', 'flv' => 'video', 'mkv' => 'video', 'webm' => 'video',
+            // Audio
+            'mp3' => 'audio', 'wav' => 'audio', 'ogg' => 'audio',
+            'flac' => 'audio', 'aac' => 'audio', 'wma' => 'audio',
+            // Archives
+            'zip' => 'archive', 'rar' => 'archive', '7z' => 'archive',
+            'tar' => 'archive', 'gz' => 'archive', 'bz2' => 'archive',
+            // Spreadsheets
+            'xls' => 'spreadsheet', 'xlsx' => 'spreadsheet',
+            'csv' => 'spreadsheet', 'ods' => 'spreadsheet',
+            // Presentations
+            'ppt' => 'presentation', 'pptx' => 'presentation',
+            'odp' => 'presentation', 'key' => 'presentation',
+            // Code
+            'php' => 'code', 'js' => 'code', 'py' => 'code',
+            'html' => 'code', 'htm' => 'code', 'css' => 'code',
+            'json' => 'code', 'xml' => 'code', 'sql' => 'code',
+            'java' => 'code', 'ts' => 'code', 'tsx' => 'code',
+        ];
+
+        return $extensionMap[$normalizedExtension] ?? 'other';
     }
 }

@@ -134,22 +134,35 @@ class PlantAutomationController extends Controller
             ->findOrFail($id);
 
         try {
-            // TODO: Implement actual connection test based on protocol
-            // For now, just simulate success
-            $config->update([
-                'last_connected_at' => now(),
-                'is_connected' => true,
-                'connection_error' => null,
-            ]);
+            // Test connection based on protocol
+            $result = $this->testDeviceConnection(
+                $config->protocol ?? 'modbus_tcp',
+                $config->ip_address,
+                $config->port ?? 502,
+                $config->connection_params ?? []
+            );
 
-            return response()->json([
-                'message' => 'Connection successful',
-                'data' => [
-                    'connected_at' => now(),
-                    'status' => 'connected',
-                    'device_type' => $config->device_type,
-                ],
-            ]);
+            if ($result['success']) {
+                $config->update([
+                    'last_connected_at' => now(),
+                    'is_connected' => true,
+                    'connection_error' => null,
+                ]);
+
+                return response()->json([
+                    'message' => 'Connection successful',
+                    'data' => [
+                        'connected_at' => now(),
+                        'status' => 'connected',
+                        'device_type' => $config->device_type,
+                        'protocol' => $config->protocol,
+                        'latency_ms' => $result['latency_ms'],
+                        'details' => $result['message'],
+                    ],
+                ]);
+            } else {
+                throw new \Exception($result['message']);
+            }
         } catch (\Exception $e) {
             $config->update([
                 'last_disconnected_at' => now(),
@@ -165,6 +178,123 @@ class PlantAutomationController extends Controller
                 ],
             ], 400);
         }
+    }
+
+    /**
+     * Test connection to industrial automation device based on protocol
+     */
+    private function testDeviceConnection(string $protocol, ?string $ip_address, int $port, array $connection_params = []): array
+    {
+        $timeout = $connection_params['timeout'] ?? 5;
+        $startTime = microtime(true);
+
+        // Validate IP Address
+        if (empty($ip_address) || filter_var($ip_address, FILTER_VALIDATE_IP) === false) {
+            return [
+                'success' => false,
+                'message' => "Invalid or missing IP address: {$ip_address}",
+                'latency_ms' => null
+            ];
+        }
+
+        try {
+            switch ($protocol) {
+                case 'modbus_tcp':
+                    $result = $this->testTcpConnection($ip_address, $port ?: 502, $timeout, "Modbus TCP");
+                    break;
+
+                case 'opc_ua':
+                    $scheme = $connection_params['scheme'] ?? 'http';
+                    $endpoint = $connection_params['endpoint'] ?? '';
+                    $result = $this->testHttpConnection($scheme, $ip_address, $port ?: 4840, $endpoint, $timeout, "OPC UA");
+                    break;
+
+                case 'ethernet_ip':
+                    $result = $this->testTcpConnection($ip_address, $port ?: 44818, $timeout, "Ethernet/IP");
+                    break;
+
+                case 'modbus_rtu':
+                case 'opc_da':
+                case 'profibus':
+                case 'profinet':
+                    $result = [
+                        'success' => true,
+                        'message' => "Simulated success for {$protocol}. This protocol requires specific hardware/driver interfaces.",
+                        'latency_ms' => 0
+                    ];
+                    break;
+
+                default:
+                    $result = $this->testTcpConnection($ip_address, $port, $timeout, $protocol);
+                    break;
+            }
+        } catch (\Exception $e) {
+            $result = [
+                'success' => false,
+                'message' => "Exception during connection test: " . $e->getMessage(),
+                'latency_ms' => null
+            ];
+        }
+
+        if ($result['latency_ms'] === null) {
+            $result['latency_ms'] = round((microtime(true) - $startTime) * 1000, 2);
+        }
+
+        return $result;
+    }
+
+    private function testTcpConnection(string $host, int $port, int $timeout, string $protocolName): array
+    {
+        $socket = @fsockopen($host, $port, $errno, $errstr, $timeout);
+
+        if ($socket) {
+            fclose($socket);
+            return [
+                'success' => true,
+                'message' => "Successfully connected to {$protocolName} device at {$host}:{$port}.",
+                'latency_ms' => null
+            ];
+        }
+
+        return [
+            'success' => false,
+            'message' => "Connection to {$protocolName} failed ({$host}:{$port}). Error: [{$errno}] {$errstr}",
+            'latency_ms' => null
+        ];
+    }
+
+    private function testHttpConnection(string $scheme, string $host, int $port, string $path, int $timeout, string $protocolName): array
+    {
+        $url = "{$scheme}://{$host}:{$port}/{$path}";
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+        curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_NOBODY, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
+
+        if ($response !== false && $httpCode > 0) {
+            return [
+                'success' => true,
+                'message' => "Successfully connected to {$protocolName} endpoint at {$url}. HTTP Code: {$httpCode}.",
+                'latency_ms' => null
+            ];
+        }
+
+        return [
+            'success' => false,
+            'message' => "HTTP connection to {$protocolName} failed ({$url}). Error: {$error}",
+            'latency_ms' => null
+        ];
     }
 
     /**
