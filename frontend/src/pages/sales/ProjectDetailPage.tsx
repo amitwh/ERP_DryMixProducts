@@ -4,12 +4,11 @@ import { useAuth } from '@/context/AuthContext'
 import { api } from '@/services/api'
 import { Card, CardContent } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { Skeleton } from '@/components/ui/Loading'
 import { Alert } from '@/components/ui/Alert'
-import { ArrowLeft, Download, Printer, MapPin, FileText, Package, CheckCircle, AlertTriangle } from 'lucide-react'
-import { formatDate, formatNumber, formatCurrency } from '@/utils'
+import { ArrowLeft, Download, Printer, MapPin, FileText, Package, CheckCircle, AlertTriangle, Plus, Edit, XCircle } from 'lucide-react'
+import { formatDate, formatCurrency } from '@/utils'
 
 interface ProjectDetail {
   id: number
@@ -150,47 +149,6 @@ export default function ProjectDetailPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-        <Card variant="bordered" padding="lg">
-          <div className="flex items-center gap-3 mb-4">
-            <FileText className="w-6 h-6 text-primary-600" />
-            <h3 className="text-lg font-semibold text-gray-900">
-              Project Activity
-            </h3>
-          </div>
-          <div className="space-y-3">
-            {project.activities && project.activities.length > 0 ? (
-              project.activities.map((activity, index) => (
-                <div key={activity.id || index} className="border-l-2 border-gray-200 pl-4 py-3 hover:bg-gray-50">
-                  <div className="flex items-start gap-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      activity.type === 'created' ? 'bg-primary-100' :
-                      activity.type === 'updated' ? 'bg-warning-100' :
-                      activity.type === 'completed' ? 'bg-success-100' :
-                      activity.type === 'cancelled' ? 'bg-error-100' :
-                      'bg-gray-100'
-                    }`}>
-                      {activity.type === 'created' && <Plus className="w-4 h-4 text-primary-600" />}
-                      {activity.type === 'updated' && <Edit className="w-4 h-4 text-warning-600" />}
-                      {activity.type === 'completed' && <CheckCircle className="w-4 h-4 text-success-600" />}
-                      {activity.type === 'cancelled' && <XCircle className="w-4 h-4 text-error-600" />}
-                      {activity.type === 'note' && <FileText className="w-4 h-4 text-gray-600" />}
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900">{activity.description}</p>
-                      <p className="text-sm text-gray-600">{formatDate(activity.created_at)}</p>
-                    </div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p>No activity recorded yet</p>
-              </div>
-            )}
-          </div>
-        </Card>
-
           <Card variant="bordered" padding="lg">
             <div className="flex items-center gap-3 mb-6">
               <Package className="w-6 h-6 text-primary-600" />
@@ -276,7 +234,7 @@ export default function ProjectDetailPage() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-600 mb-1">End Date</p>
-                  <p className="text-sm text-gray-900">{formatDate(project.end_date)}</p>
+                  <p className="text-sm text-gray-900">{project.end_date ? formatDate(project.end_date) : '-'}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-600 mb-1">Expected</p>
@@ -381,44 +339,6 @@ export default function ProjectDetailPage() {
           </Card>
         </div>
       </div>
-
-        <Card variant="bordered" padding="lg">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Project Activity
-          </h3>
-          <div className="space-y-3">
-            {project.activities && project.activities.length > 0 ? (
-              project.activities.map((activity, index) => (
-                <div key={activity.id || index} className="border-l-2 border-gray-200 pl-4 py-3 hover:bg-gray-50">
-                  <div className="flex items-start gap-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      activity.type === 'created' ? 'bg-primary-100' :
-                      activity.type === 'updated' ? 'bg-warning-100' :
-                      activity.type === 'completed' ? 'bg-success-100' :
-                      activity.type === 'cancelled' ? 'bg-error-100' :
-                      'bg-gray-100'
-                    }`}>
-                      {activity.type === 'created' && <Plus className="w-4 h-4 text-primary-600" />}
-                      {activity.type === 'updated' && <Edit className="w-4 h-4 text-warning-600" />}
-                      {activity.type === 'completed' && <CheckCircle className="w-4 h-4 text-success-600" />}
-                      {activity.type === 'cancelled' && <XCircle className="w-4 h-4 text-error-600" />}
-                      {activity.type === 'note' && <FileText className="w-4 h-4 text-gray-600" />}
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900">{activity.description}</p>
-                      <p className="text-sm text-gray-600">{formatDate(activity.created_at)}</p>
-                    </div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p>No activity recorded yet</p>
-              </div>
-            )}
-          </div>
-        </Card>
     </div>
   )
 }

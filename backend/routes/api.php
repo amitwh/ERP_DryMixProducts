@@ -32,6 +32,7 @@ use App\Http\Controllers\Api\SystemAdminController;
 use App\Http\Controllers\Api\PrintController;
 use App\Http\Controllers\Api\TestPageController;
 use App\Http\Controllers\Api\SystemSettingsController;
+use App\Http\Controllers\Api\GeolocationController;
 
 // Health check (outside v1 for docker health checks)
 Route::get('/health', function () {
@@ -284,6 +285,42 @@ Route::prefix('v1')->group(function () {
 
         // Statistics
         Route::get('statistics', [TestPageController::class, 'statistics']);
+    });
+
+    // Geolocation Module
+    Route::prefix('geolocation')->group(function () {
+        // Geocoding
+        Route::post('geocode', [GeolocationController::class, 'geocode']);
+        Route::post('reverse-geocode', [GeolocationController::class, 'reverseGeocode']);
+        Route::post('route', [GeolocationController::class, 'getRoute']);
+
+        // Location History
+        Route::post('record-location', [GeolocationController::class, 'recordLocation']);
+        Route::get('location-history/{entityType}/{entityId}', [GeolocationController::class, 'getLocationHistory']);
+
+        // Delivery Tracking
+        Route::post('delivery-tracking', [GeolocationController::class, 'createDeliveryTracking']);
+        Route::put('delivery-tracking/{tracking}', [GeolocationController::class, 'updateDeliveryTracking']);
+        Route::post('delivery-tracking/{tracking}/location', [GeolocationController::class, 'updateDeliveryLocation']);
+        Route::get('delivery-tracking/order/{orderId}', [GeolocationController::class, 'getDeliveryTrackingByOrder']);
+        Route::get('delivery-tracking', [GeolocationController::class, 'listActiveDeliveries']);
+
+        // Site Inspections with Geolocation
+        Route::post('site-inspections', [GeolocationController::class, 'createSiteInspection']);
+        Route::get('site-inspections/project/{projectId}', [GeolocationController::class, 'getProjectInspections']);
+        Route::post('site-inspections/{inspection}/validate-location', [GeolocationController::class, 'validateInspectionLocation']);
+
+        // GeoTags
+        Route::post('geo-tags', [GeolocationController::class, 'createGeoTag']);
+        Route::get('geo-tags', [GeolocationController::class, 'getGeoTags']);
+        Route::get('geo-tags/nearby', [GeolocationController::class, 'getNearbyGeoTags']);
+        Route::put('geo-tags/{geoTag}', [GeolocationController::class, 'updateGeoTag']);
+        Route::delete('geo-tags/{geoTag}', [GeolocationController::class, 'deleteGeoTag']);
+        Route::post('geo-tags/{geoTag}/verify', [GeolocationController::class, 'verifyGeoTag']);
+
+        // Geofencing
+        Route::post('check-geofence', [GeolocationController::class, 'checkGeofence']);
+        Route::get('entities-in-radius', [GeolocationController::class, 'getEntitiesInRadius']);
     });
     });
 });

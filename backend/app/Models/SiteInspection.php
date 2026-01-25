@@ -38,6 +38,15 @@ class SiteInspection extends Model
         'follow_up_target_date',
         'inspector_signature',
         'contractor_signature',
+        // Geolocation fields
+        'latitude',
+        'longitude',
+        'accuracy',
+        'altitude',
+        'geotagged_address',
+        'location_verified',
+        'location_verified_by',
+        'location_verified_at',
     ];
 
     protected $casts = [
@@ -51,6 +60,13 @@ class SiteInspection extends Model
         'follow_up_target_date' => 'date',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        // Geolocation casts
+        'latitude' => 'decimal:8',
+        'longitude' => 'decimal:8',
+        'accuracy' => 'decimal:2',
+        'altitude' => 'decimal:2',
+        'location_verified' => 'boolean',
+        'location_verified_at' => 'datetime',
     ];
 
     public function organization()

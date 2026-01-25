@@ -164,6 +164,13 @@ export const LoginPage: React.FC = () => {
           </CardContent>
 
           <CardFooter className="flex-col gap-4">
+            {/* Default Credentials Hint */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm">
+              <p className="font-medium text-blue-900 mb-2">Demo Credentials:</p>
+              <p className="text-blue-800">Email: admin@erp.com</p>
+              <p className="text-blue-800">Password: admin123</p>
+            </div>
+
             {/* Forgot Password */}
             <div className="text-center">
               <Link

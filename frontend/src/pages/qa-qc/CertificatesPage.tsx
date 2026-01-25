@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/Input'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { Skeleton } from '@/components/ui/Loading'
 import { Alert } from '@/components/ui/Alert'
-import { Search, Plus, Filter, Award, Calendar, Download, Printer, QRCode } from 'lucide-react'
+import { Search, Plus, Filter, Award, Calendar, Download, Printer, QrCode } from 'lucide-react'
 import { formatDate, formatNumber } from '@/utils'
 
 interface Certificate {

@@ -17,7 +17,9 @@
       "mcp__plugin_playwright_playwright__browser_snapshot",
       "mcp__glm-4-7-subagent__glm_frontend_generate",
       "WebFetch(domain:github.com)",
-      "mcp__glm-4-7-subagent__glm_brainstorm"
+      "mcp__glm-4-7-subagent__glm_brainstorm",
+      "mcp__glm-4-7-subagent__glm_generate_schema",
+      "mcp__glm-4-7-subagent__glm_code_generate"
     ]
   }
 }

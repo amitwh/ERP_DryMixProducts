@@ -18,8 +18,8 @@ class UserSeeder extends Seeder
         $superAdmin = User::create([
             'organization_id' => $organization1->id,
             'name' => 'Super Admin',
-            'email' => 'superadmin@erp.com',
-            'password' => Hash::make('password123'),
+            'email' => 'admin@erp.com',
+            'password' => Hash::make('admin123'),
             'phone' => '+91-9999999999',
             'status' => 'active',
         ]);
@@ -30,7 +30,7 @@ class UserSeeder extends Seeder
             'organization_id' => $organization1->id,
             'name' => 'John Doe',
             'email' => 'john.doe@concretesolutions.com',
-            'password' => Hash::make('password123'),
+            'password' => Hash::make('admin123'),
             'phone' => '+91-9876543210',
             'status' => 'active',
         ]);
@@ -41,7 +41,7 @@ class UserSeeder extends Seeder
             'organization_id' => $organization1->id,
             'name' => 'Jane Smith',
             'email' => 'jane.smith@concretesolutions.com',
-            'password' => Hash::make('password123'),
+            'password' => Hash::make('admin123'),
             'phone' => '+91-9876543211',
             'status' => 'active',
         ]);
@@ -52,7 +52,7 @@ class UserSeeder extends Seeder
             'organization_id' => $organization2->id,
             'name' => 'Robert Johnson',
             'email' => 'robert.johnson@drymixindustries.com',
-            'password' => Hash::make('password123'),
+            'password' => Hash::make('admin123'),
             'phone' => '+91-9876543212',
             'status' => 'active',
         ]);
@@ -63,7 +63,7 @@ class UserSeeder extends Seeder
             'organization_id' => $organization1->id,
             'name' => 'Alice Brown',
             'email' => 'alice.brown@concretesolutions.com',
-            'password' => Hash::make('password123'),
+            'password' => Hash::make('admin123'),
             'phone' => '+91-9876543213',
             'status' => 'active',
         ]);

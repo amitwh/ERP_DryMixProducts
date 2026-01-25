@@ -30,7 +30,6 @@ interface Project {
   assigned_team: number
   project_manager_id: number
   project_manager_name: string
-  notes?: string
   created_at: string
 }
 
@@ -319,7 +318,6 @@ export default function ProjectsPage() {
                     <p className="text-sm text-gray-900">{project.project_manager_name}</p>
                   </div>
                 </div>
-                </div>
 
                 <div className="flex items-center justify-between pt-3 border-t border-gray-200">
                   <div className="text-sm text-gray-600">
@@ -338,7 +336,6 @@ export default function ProjectsPage() {
           </div>
         )}
       </Card>
-    </div>
     </div>
   )
 }

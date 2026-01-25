@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Skeleton } from '@/components/ui/Loading'
 import { Alert } from '@/components/ui/Alert'
-import { ArrowLeft, Save, FileText, Package, Beaker2, Settings, Info, Plus, Minus } from 'lucide-react'
+import { ArrowLeft, Save, FileText, Package, Baker, Settings, Info, Plus, Minus } from 'lucide-react'
 
 export default function CreateProductPage() {
   const navigate = useNavigate()
