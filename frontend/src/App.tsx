@@ -7,6 +7,8 @@ import { FullPageLoading } from '@/components/ui/Loading'
 // Auth Pages
 import LoginPage from '@/pages/auth/LoginPage'
 import RegisterPage from '@/pages/auth/RegisterPage'
+import ForgotPasswordPage from '@/pages/auth/ForgotPasswordPage'
+import ResetPasswordPage from '@/pages/auth/ResetPasswordPage'
 
 // Dashboard
 import DashboardPage from '@/pages/DashboardPage'
@@ -82,6 +84,9 @@ import PayslipDetailPage from '@/pages/hr-payroll/PayslipDetailPage'
 // Credit Control
 import CreditCustomersPage from '@/pages/credit-control/CreditCustomersPage'
 import CreditLimitsPage from '@/pages/credit-control/CreditLimitsPage'
+import AgingReportsPage from '@/pages/credit-control/AgingReportsPage'
+import CollectionsPage from '@/pages/credit-control/CollectionsPage'
+import RecordCollectionPage from '@/pages/credit-control/RecordCollectionPage'
 
 // Planning
 import ProductionPlansPage from '@/pages/planning/ProductionPlansPage'
@@ -141,31 +146,6 @@ import SiteInspectionsPage from '@/pages/geolocation/SiteInspectionsPage'
 import CreateSiteInspectionPage from '@/pages/geolocation/CreateSiteInspectionPage'
 import GeoTagsPage from '@/pages/geolocation/GeoTagsPage'
 
-// Placeholder Pages (to be created)
-const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
-  <div className="space-y-6">
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
-      <p className="text-gray-600">This page is under development.</p>
-    </div>
-    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-      <div className="flex items-start gap-4">
-        <div className="flex-shrink-0">
-          <svg className="w-6 h-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-        </div>
-        <div>
-          <h3 className="text-lg font-medium text-yellow-900">Coming Soon</h3>
-          <p className="mt-2 text-yellow-800">
-            The {title} module is currently being developed. Please check back later.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-)
-
 // Protected Route Wrapper
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth()
@@ -221,7 +201,15 @@ function App() {
         path="/forgot-password"
         element={
           <PublicRoute>
-            <PlaceholderPage title="Forgot Password" />
+            <ForgotPasswordPage />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/reset-password"
+        element={
+          <PublicRoute>
+            <ResetPasswordPage />
           </PublicRoute>
         }
       />
@@ -321,9 +309,10 @@ function App() {
         <Route path="credit-control" element={<CreditCustomersPage />} />
         <Route path="credit-control/customers" element={<CreditCustomersPage />} />
         <Route path="credit-control/limits" element={<CreditLimitsPage />} />
-        <Route path="credit-control/aging" element={<PlaceholderPage title="Aging Reports" />} />
-        <Route path="credit-control/collections" element={<PlaceholderPage title="Collections" />} />
-        <Route path="credit-control/collections/create" element={<PlaceholderPage title="Record Collection" />} />
+        <Route path="credit-control/aging" element={<AgingReportsPage />} />
+        <Route path="credit-control/collections" element={<CollectionsPage />} />
+        <Route path="credit-control/collections/create" element={<RecordCollectionPage />} />
+        <Route path="credit-control/collections/:id" element={<CollectionsPage />} />
 
         {/* Procurement */}
         <Route path="procurement" element={<PurchaseOrdersPage />} />

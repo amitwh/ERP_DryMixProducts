@@ -57,6 +57,9 @@ Route::prefix('v1')->group(function () {
         Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:10,1');
         Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
         Route::post('/refresh', [AuthController::class, 'refresh'])->middleware('throttle:30,1');
+        Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:5,1');
+        Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:10,1');
+        Route::post('/verify-reset-token', [AuthController::class, 'verifyResetToken'])->middleware('throttle:20,1');
     });
 
     // Protected routes with rate limiting
