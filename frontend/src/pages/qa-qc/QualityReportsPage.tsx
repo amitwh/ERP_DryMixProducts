@@ -49,7 +49,7 @@ export default function QualityReportsPage() {
       setIsLoading(true)
       const response = await api.get<{ data: QualityReport[] }>('/qa/reports', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           start_date: startDate,
           end_date: endDate,
         },
@@ -65,7 +65,7 @@ export default function QualityReportsPage() {
   const handleGenerateReport = async () => {
     try {
       const response = await api.post<{ data: QualityReport }>('/qa/reports/generate', {
-        organization_id: user?.organizationId,
+        organization_id: user?.organization_id,
         report_type: 'custom',
         start_date: startDate,
         end_date: endDate,

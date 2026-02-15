@@ -15,7 +15,7 @@ class DeliveryTracking extends Model
     protected $table = 'delivery_tracking';
 
     protected $fillable = [
-        'org_id',
+        'organization_id',
         'sales_order_id',
         'vehicle_number',
         'driver_name',
@@ -83,7 +83,7 @@ class DeliveryTracking extends Model
     // Relationships
     public function organization()
     {
-        return $this->belongsTo(Organization::class, 'org_id');
+        return $this->belongsTo(Organization::class, 'organization_id');
     }
 
     public function salesOrder()
@@ -107,7 +107,7 @@ class DeliveryTracking extends Model
     // Scopes
     public function scopeByOrganization(Builder $query, int $organizationId): Builder
     {
-        return $query->where('org_id', $organizationId);
+        return $query->where('organization_id', $organizationId);
     }
 
     public function scopeByStatus(Builder $query, string $status): Builder
@@ -196,7 +196,7 @@ class DeliveryTracking extends Model
         ]);
 
         LocationHistory::create([
-            'org_id' => $this->org_id,
+            'organization_id' => $this->org_id,
             'entity_type' => 'delivery_tracking',
             'entity_id' => $this->id,
             'latitude' => $latitude,

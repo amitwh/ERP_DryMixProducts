@@ -6,7 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Skeleton } from '@/components/ui/Loading'
-import { Plus, Search, Lock, Unlock, Edit, DollarSign, TrendingUp } from 'lucide-react'
+import { Plus, Search, Lock, Unlock, Edit, DollarSign } from 'lucide-react'
 import { formatCurrency } from '@/utils'
 
 interface CreditLimit {
@@ -37,7 +37,7 @@ export const CreditLimitsPage: React.FC = () => {
       setIsLoading(true)
       const response = await api.get<{ data: CreditLimit[] }>('/credit-control/limits', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           per_page: 20,
           page,
         },

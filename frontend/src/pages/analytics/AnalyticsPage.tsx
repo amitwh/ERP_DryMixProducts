@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { api } from '@/services/api'
-import { Card, CardContent } from '@/components/ui/Card'
+import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Skeleton } from '@/components/ui/Loading'
 import { Alert } from '@/components/ui/Alert'
@@ -61,11 +61,11 @@ export default function AnalyticsPage() {
       setIsLoading(true)
       const response = await api.get<{ data: AnalyticsData }>('/analytics', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           time_range: timeRange,
         },
       })
-      setData(response.data)
+      setData(response.data.data || response.data as unknown as AnalyticsData)
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to fetch analytics')
     } finally {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { api } from '@/services/api'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
+import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { StatusBadge } from '@/components/ui/Badge'
@@ -17,9 +17,8 @@ import {
   FolderTree,
   Eye,
   Pencil,
-  Trash2,
 } from 'lucide-react'
-import { formatCurrency, formatDate } from '@/utils'
+import { formatCurrency } from '@/utils'
 
 interface ChartOfAccount {
   id: number
@@ -64,7 +63,7 @@ export const ChartOfAccountsPage: React.FC = () => {
     try {
       const response = await api.get<{ data: ChartOfAccount[] }>('/finance/chart-of-accounts', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
         },
       })
       setAccounts(response.data.data || [])

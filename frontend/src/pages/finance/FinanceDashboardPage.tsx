@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { api } from '@/services/api'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
-import { Button } from '@/components/ui/Button'
 import { Skeleton } from '@/components/ui/Loading'
 import {
   ArrowUpRight,
@@ -16,7 +15,7 @@ import {
   Receipt,
   Scale,
 } from 'lucide-react'
-import { formatCurrency, formatNumber } from '@/utils'
+import { formatCurrency } from '@/utils'
 
 interface FinanceStats {
   total_assets?: number
@@ -40,7 +39,7 @@ export const FinanceDashboardPage: React.FC = () => {
     try {
       const response = await api.get<FinanceStats>('/finance/balance-summary', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           as_of_date: new Date().toISOString().split('T')[0],
         },
       })

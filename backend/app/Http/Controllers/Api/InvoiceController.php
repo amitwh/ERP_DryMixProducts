@@ -102,19 +102,22 @@ class InvoiceController extends Controller
             ], 422);
         }
 
+        // Handle paid_amount separately to calculate derived fields
+        $updateData = $request->except(['paid_amount']);
+
         if ($request->has('paid_amount')) {
             $paidAmount = $request->paid_amount;
-            $invoice->paid_amount = $paidAmount;
-            $invoice->outstanding_amount = $invoice->total_amount - $paidAmount;
-            
+            $updateData['paid_amount'] = $paidAmount;
+            $updateData['outstanding_amount'] = $invoice->total_amount - $paidAmount;
+
             if ($paidAmount >= $invoice->total_amount) {
-                $invoice->status = 'paid';
+                $updateData['status'] = 'paid';
             } elseif ($paidAmount > 0) {
-                $invoice->status = 'partially_paid';
+                $updateData['status'] = 'partially_paid';
             }
         }
 
-        $invoice->update($request->except(['paid_amount']));
+        $invoice->update($updateData);
 
         return response()->json([
             'success' => true,

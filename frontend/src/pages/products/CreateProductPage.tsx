@@ -61,7 +61,7 @@ export default function CreateProductPage() {
 
     try {
       const response = await api.post('/products', {
-        organization_id: user?.organizationId,
+        organization_id: user?.organization_id,
         ...formData,
         base_price: parseFloat(formData.base_price) || 0,
         specifications,

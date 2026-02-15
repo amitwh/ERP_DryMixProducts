@@ -65,7 +65,7 @@ export const LeaveManagementPage: React.FC = () => {
       const [requestsRes, balancesRes, statsRes] = await Promise.all([
         api.get<{ data: LeaveRequest[] }>('/hr-payroll/leave-requests', {
           params: {
-            organization_id: user?.organizationId,
+            organization_id: user?.organization_id,
             employee_id: selectedEmployee || undefined,
             status: statusFilter === 'all' ? undefined : statusFilter,
             date: dateFilter || undefined,
@@ -75,13 +75,13 @@ export const LeaveManagementPage: React.FC = () => {
         }),
         api.get<LeaveBalance[]>('/hr-payroll/leave-balance', {
           params: {
-            organization_id: user?.organizationId,
+            organization_id: user?.organization_id,
             employee_id: selectedEmployee || undefined,
           },
         }),
         api.get<Stats>('/hr-payroll/leave-stats', {
           params: {
-            organization_id: user?.organizationId,
+            organization_id: user?.organization_id,
           },
         }),
       ])
@@ -111,7 +111,7 @@ export const LeaveManagementPage: React.FC = () => {
   const handleApprove = async (id: number) => {
     try {
       await api.patch(`/hr-payroll/leave-requests/${id}/approve`, {
-        organization_id: user?.organizationId,
+        organization_id: user?.organization_id,
       })
       fetchLeaveRequests()
     } catch (error) {
@@ -122,7 +122,7 @@ export const LeaveManagementPage: React.FC = () => {
   const handleReject = async (id: number, reason?: string) => {
     try {
       await api.patch(`/hr-payroll/leave-requests/${id}/reject`, {
-        organization_id: user?.organizationId,
+        organization_id: user?.organization_id,
         rejection_reason: reason,
       })
       fetchLeaveRequests()
@@ -134,7 +134,7 @@ export const LeaveManagementPage: React.FC = () => {
   const handleCancel = async (id: number) => {
     try {
       await api.patch(`/hr-payroll/leave-requests/${id}/cancel`, {
-        organization_id: user?.organizationId,
+        organization_id: user?.organization_id,
       })
       fetchLeaveRequests()
     } catch (error) {

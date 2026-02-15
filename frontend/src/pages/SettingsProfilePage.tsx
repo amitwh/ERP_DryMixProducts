@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { api } from '@/services/api'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
@@ -39,8 +39,8 @@ export const SettingsProfilePage: React.FC = () => {
   const fetchProfile = async () => {
     try {
       setIsLoading(true)
-      const response = await api.get<{ data: UserProfile }>('/settings/profile')
-      setProfile(response.data)
+      const response = await api.get<{ data: UserProfile }>('/auth/me')
+      setProfile(response.data?.data || response.data)
     } catch (error) {
       console.error('Failed to fetch profile:', error)
       showNotification('Failed to load profile', 'error')
@@ -92,14 +92,16 @@ export const SettingsProfilePage: React.FC = () => {
     }
   }
 
-  const handlePasswordChange = async (e: React.FormEvent) => {
+  const handlePasswordChange = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsSaving(true)
 
+    const formData = new FormData(e.currentTarget)
     try {
-      await api.post('/settings/change-password', {
-        current_password: e.currentTarget.current_password.value,
-        new_password: e.currentTarget.new_password.value,
+      await api.post('/auth/change-password', {
+        current_password: formData.get('current_password'),
+        password: formData.get('new_password'),
+        password_confirmation: formData.get('confirm_password'),
       })
 
       showNotification('Password changed successfully', 'success')

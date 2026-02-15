@@ -13,7 +13,7 @@ class LocationHistory extends Model
     protected $table = 'location_history';
 
     protected $fillable = [
-        'org_id',
+        'organization_id',
         'entity_type',
         'entity_id',
         'latitude',
@@ -42,7 +42,7 @@ class LocationHistory extends Model
     // Relationships
     public function organization()
     {
-        return $this->belongsTo(Organization::class, 'org_id');
+        return $this->belongsTo(Organization::class, 'organization_id');
     }
 
     /**
@@ -56,7 +56,7 @@ class LocationHistory extends Model
     // Scopes
     public function scopeByOrganization(Builder $query, int $organizationId): Builder
     {
-        return $query->where('org_id', $organizationId);
+        return $query->where('organization_id', $organizationId);
     }
 
     public function scopeByEntity(Builder $query, string $entityType, int $entityId): Builder

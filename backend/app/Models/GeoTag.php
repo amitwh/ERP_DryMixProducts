@@ -16,7 +16,7 @@ class GeoTag extends Model
     protected $table = 'geo_tags';
 
     protected $fillable = [
-        'org_id',
+        'organization_id',
         'entity_type',
         'entity_id',
         'tag_type',
@@ -78,7 +78,7 @@ class GeoTag extends Model
     // Relationships
     public function organization()
     {
-        return $this->belongsTo(Organization::class, 'org_id');
+        return $this->belongsTo(Organization::class, 'organization_id');
     }
 
     public function taggedByUser()
@@ -102,7 +102,7 @@ class GeoTag extends Model
     // Scopes
     public function scopeByOrganization(Builder $query, int $organizationId): Builder
     {
-        return $query->where('org_id', $organizationId);
+        return $query->where('organization_id', $organizationId);
     }
 
     public function scopeByEntity(Builder $query, string $entityType, ?int $entityId = null): Builder

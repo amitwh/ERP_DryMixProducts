@@ -2,11 +2,11 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { api } from '@/services/api'
-import { Card, CardContent } from '@/components/ui/Card'
+import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Alert } from '@/components/ui/Alert'
-import { ArrowLeft, Upload, FileText, Plus, CheckCircle } from 'lucide-react'
+import { ArrowLeft, Upload, FileText, Plus } from 'lucide-react'
 
 export default function UploadDocumentPage() {
   const navigate = useNavigate()
@@ -93,9 +93,9 @@ export default function UploadDocumentPage() {
 
     try {
       const formDataWithFiles = new FormData()
-      formDataWithFiles.append('organization_id', user?.organizationId?.toString() || '')
+      formDataWithFiles.append('organization_id', user?.organization_id?.toString() || '')
       Object.keys(formData).forEach(key => {
-        formDataWithFiles.append(key, formData[key as string])
+        formDataWithFiles.append(key, (formData as Record<string, any>)[key])
       })
 
       files.forEach((file, index) => {
@@ -272,34 +272,58 @@ export default function UploadDocumentPage() {
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 required
               />
-              <Input
-                name="description"
-                type="textarea"
-                label="Description"
-                placeholder="Enter document description"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                rows={3}
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Description
+                </label>
+                <textarea
+                  name="description"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                  placeholder="Enter document description"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  rows={3}
+                />
+              </div>
               <div className="grid grid-cols-2 gap-4">
-                <Input
-                  name="category"
-                  type="select"
-                  label="Category *"
-                  value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  options={categories}
-                  required
-                />
-                <Input
-                  name="module"
-                  type="select"
-                  label="Module *"
-                  value={formData.module}
-                  onChange={(e) => setFormData({ ...formData, module: e.target.value })}
-                  options={modules}
-                  required
-                />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Category *
+                  </label>
+                  <select
+                    name="category"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                    value={formData.category}
+                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    required
+                  >
+                    <option value="">Select category...</option>
+                    {categories.map((cat) => (
+                      <option key={cat.value} value={cat.value}>
+                        {cat.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Module *
+                  </label>
+                  <select
+                    name="module"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                    value={formData.module}
+                    onChange={(e) => setFormData({ ...formData, module: e.target.value })}
+                    required
+                  >
+                    <option value="">Select module...</option>
+                    {modules.map((mod) => (
+                      <option key={mod.value} value={mod.value}>
+                        {mod.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <Input
@@ -311,18 +335,21 @@ export default function UploadDocumentPage() {
                   onChange={(e) => setFormData({ ...formData, version: parseInt(e.target.value) || 1 })}
                   min="1"
                 />
-                <Input
-                  name="status"
-                  type="select"
-                  label="Status"
-                  value={formData.status}
-                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                  options={[
-                    { value: 'draft', label: 'Draft' },
-                    { value: 'published', label: 'Published' },
-                    { value: 'archived', label: 'Archived' },
-                  ]}
-                />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Status
+                  </label>
+                  <select
+                    name="status"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                    value={formData.status}
+                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                  >
+                    <option value="draft">Draft</option>
+                    <option value="published">Published</option>
+                    <option value="archived">Archived</option>
+                  </select>
+                </div>
               </div>
               <Input
                 name="tags"
@@ -352,18 +379,21 @@ export default function UploadDocumentPage() {
                   className="w-5 h-5 text-primary-600 rounded"
                 />
               </div>
-              <Input
-                name="access_level"
-                type="select"
-                label="Access Level"
-                value={formData.access_level}
-                onChange={(e) => setFormData({ ...formData, access_level: e.target.value })}
-                options={[
-                  { value: 'public', label: 'Public' },
-                  { value: 'restricted', label: 'Restricted' },
-                  { value: 'confidential', label: 'Confidential' },
-                ]}
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Access Level
+                </label>
+                <select
+                  name="access_level"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                  value={formData.access_level}
+                  onChange={(e) => setFormData({ ...formData, access_level: e.target.value })}
+                >
+                  <option value="public">Public</option>
+                  <option value="restricted">Restricted</option>
+                  <option value="confidential">Confidential</option>
+                </select>
+              </div>
               <Input
                 name="expiry_date"
                 type="date"

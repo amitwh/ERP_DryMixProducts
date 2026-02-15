@@ -31,7 +31,7 @@ export const FiscalYearsPage: React.FC = () => {
       setIsLoading(true)
       const response = await api.get<{ data: FiscalYear[] }>('/finance/fiscal-years', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
         },
       })
       setYears(response.data.data || [])

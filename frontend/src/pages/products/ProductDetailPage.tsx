@@ -42,7 +42,7 @@ export default function ProductDetailPage() {
   const fetchProduct = async () => {
     try {
       const response = await api.get<{ data: Product }>(`/products/${id}`, {
-        params: { organization_id: user?.organizationId }
+        params: { organization_id: user?.organization_id }
       })
       setProduct(response.data)
     } catch (err: any) {

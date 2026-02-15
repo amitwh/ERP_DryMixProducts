@@ -5,10 +5,8 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Skeleton } from '@/components/ui/Loading'
-import { StatusBadge } from '@/components/ui/Badge'
 import {
   Search,
-  Calendar,
   Download,
   RefreshCw,
   Filter,
@@ -19,8 +17,6 @@ import {
   CheckCircle,
   XCircle,
   Clock,
-  Trash2,
-  Eye,
   TrendingUp,
 } from 'lucide-react'
 import { formatDate, formatDateTime, formatCurrency } from '@/utils'
@@ -44,6 +40,7 @@ interface CommunicationLog {
   media_count?: number
   segment_count?: number
   created_by?: string
+  created_at?: string
 }
 
 interface LogsSummary {
@@ -82,7 +79,6 @@ export const CommunicationLogsPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<'all' | 'sent' | 'delivered' | 'read' | 'failed'>('all')
   const [dateFilter, setDateFilter] = useState('')
   const [page, setPage] = useState(1)
-  const [selectedLog, setSelectedLog] = useState<CommunicationLog | null>(null)
 
   const fetchLogs = async () => {
     try {
@@ -90,7 +86,7 @@ export const CommunicationLogsPage: React.FC = () => {
       const [logsRes, summaryRes, statsRes, costRes] = await Promise.all([
         api.get<{ data: CommunicationLog[] }>('/communication/logs', {
           params: {
-            organization_id: user?.organizationId,
+            organization_id: user?.organization_id,
             channel: channelFilter === 'all' ? undefined : channelFilter,
             status: statusFilter === 'all' ? undefined : statusFilter,
             date: dateFilter || undefined,
@@ -100,18 +96,18 @@ export const CommunicationLogsPage: React.FC = () => {
         }),
         api.get<LogsSummary>('/communication/logs/summary', {
           params: {
-            organization_id: user?.organizationId,
+            organization_id: user?.organization_id,
           },
         }),
         api.get<Stats>('/communication/logs/stats', {
           params: {
-            organization_id: user?.organizationId,
+            organization_id: user?.organization_id,
             period: 'today',
           },
         }),
         api.get<CostAnalysis[]>('/communication/logs/cost-analysis', {
           params: {
-            organization_id: user?.organizationId,
+            organization_id: user?.organization_id,
             period: 'month',
           },
         }),
@@ -148,7 +144,7 @@ export const CommunicationLogsPage: React.FC = () => {
       filteredLogs
         .map(
           (log) =>
-            `${formatDate(log.created_at || log.sent_at)},${log.channel},"${log.recipient_name}",${log.recipient_contact},${log.status},${log.cost || 0},${log.segment_count || 0}`
+            `${formatDate(log.created_at || log.sent_at || '')},${log.channel},"${log.recipient_name}",${log.recipient_contact},${log.status},${log.cost || 0},${log.segment_count || 0}`
         )
         .join('\n')
 
@@ -196,11 +192,6 @@ export const CommunicationLogsPage: React.FC = () => {
     }
   }
 
-  const channelCounts = {
-    sms: logs.filter((l) => l.channel === 'sms').length,
-    whatsApp: logs.filter((l) => l.channel === 'whatsapp').length,
-    email: logs.filter((l) => l.channel === 'email').length,
-  }
 
   return (
     <div className="space-y-6">
@@ -410,7 +401,7 @@ export const CommunicationLogsPage: React.FC = () => {
                         <span className="text-sm font-medium">{log.status.toUpperCase()}</span>
                       </div>
                       <span className="text-sm text-gray-600">
-                        {formatDateTime(log.created_at || log.sent_at)}
+                        {formatDateTime(log.created_at || log.sent_at || '')}
                       </span>
                     </div>
                   </div>

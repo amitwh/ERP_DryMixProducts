@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Input } from '@/components/ui/Input';
@@ -13,7 +13,6 @@ import {
   Trash2,
   Edit,
   Navigation,
-  Camera
 } from 'lucide-react';
 import { useCurrentLocation, useDistanceCalculator } from '@/hooks/useGeolocation';
 import api from '@/services/api';
@@ -70,8 +69,8 @@ export default function GeoTagsPage() {
       if (showNearby && coords) {
         url = '/geolocation/geo-tags/nearby';
         params = {
-          lat: coords.latitude,
-          lng: coords.longitude,
+          lat: coords.lat,
+          lng: coords.lng,
           radius: nearbyRadius,
         };
       }
@@ -161,7 +160,7 @@ export default function GeoTagsPage() {
                 </p>
                 {coords && (
                   <p className="text-sm text-gray-500 font-mono">
-                    {coords.latitude.toFixed(6)}, {coords.longitude.toFixed(6)}
+                    {coords.lat.toFixed(6)}, {coords.lng.toFixed(6)}
                   </p>
                 )}
               </div>
@@ -361,7 +360,7 @@ export default function GeoTagsPage() {
 
 // Simple Create Modal Component
 interface CreateGeoTagModalProps {
-  coords: { latitude: number; longitude: number } | null;
+  coords: { lat: number; lng: number } | null;
   onClose: () => void;
   onCreated: () => void;
 }
@@ -388,8 +387,8 @@ function CreateGeoTagModal({ coords, onClose, onCreated }: CreateGeoTagModalProp
       await api.post('/geolocation/geo-tags', {
         ...formData,
         location: {
-          lat: coords.latitude,
-          lng: coords.longitude,
+          lat: coords.lat,
+          lng: coords.lng,
         },
       });
       onCreated();
@@ -443,7 +442,7 @@ function CreateGeoTagModal({ coords, onClose, onCreated }: CreateGeoTagModalProp
             <p className="text-sm text-gray-600">Location</p>
             {coords ? (
               <p className="font-mono text-sm">
-                {coords.latitude.toFixed(6)}, {coords.longitude.toFixed(6)}
+                {coords.lat.toFixed(6)}, {coords.lng.toFixed(6)}
               </p>
             ) : (
               <p className="text-sm text-red-500">Location not available</p>

@@ -19,7 +19,13 @@
       "WebFetch(domain:github.com)",
       "mcp__glm-4-7-subagent__glm_brainstorm",
       "mcp__glm-4-7-subagent__glm_generate_schema",
-      "mcp__glm-4-7-subagent__glm_code_generate"
+      "mcp__glm-4-7-subagent__glm_code_generate",
+      "Bash(git stash:*)",
+      "Skill(superpowers:executing-plans)",
+      "Bash(find:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(grep:*)",
+      "Bash(npm run type-check:*)"
     ]
   }
 }

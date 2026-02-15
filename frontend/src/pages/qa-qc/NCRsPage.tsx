@@ -52,7 +52,7 @@ export default function NCRsPage() {
       setIsLoading(true)
       const response = await api.get<{ data: NCR[] }>('/qa/ncrs', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           status: statusFilter === 'all' ? undefined : statusFilter,
           severity: severityFilter === 'all' ? undefined : severityFilter,
         },

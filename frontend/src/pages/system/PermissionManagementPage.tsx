@@ -45,13 +45,13 @@ export const PermissionManagementPage: React.FC = () => {
       const [permRes, rolesRes] = await Promise.all([
         api.get<{ data: Permission[] }>('/system/permissions', {
           params: {
-            organization_id: user?.organizationId,
+            organization_id: user?.organization_id,
             per_page: 100,
           },
         }),
         api.get<{ data: Role[] }>('/system/roles', {
           params: {
-            organization_id: user?.organizationId,
+            organization_id: user?.organization_id,
             per_page: 50,
           },
         }),
@@ -115,7 +115,7 @@ export const PermissionManagementPage: React.FC = () => {
     try {
       setIsSaving(true)
       const response = await api.post<{ data: Role }>('/system/roles', {
-        organization_id: user?.organizationId,
+        organization_id: user?.organization_id,
         name: `New Role (${new Date().toISOString().split('T')[0]})`,
         description: 'Custom role created from permissions',
         permission_ids: Array.from(selectedPermissions),

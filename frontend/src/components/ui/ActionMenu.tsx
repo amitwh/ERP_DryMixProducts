@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { Download, Printer, MoreVertical, Pencil, Trash2, Eye, RefreshCw } from 'lucide-react'
-import { Button } from './Button'
 
 type ActionItem = {
   id: string
@@ -40,10 +39,10 @@ export function ActionMenu({ items, position = 'right' }: ActionMenuProps) {
                   item.onClick?.()
                   setIsOpen(false)
                 }}
-                disabled={disabled || item.disabled}
+                disabled={item.disabled}
                 className={`w-full px-4 py-2 text-left text-sm transition-colors ${
                   item.danger ? 'text-red-600' : 'text-gray-700'
-                } ${disabled || item.disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'}`}
+                } ${item.disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'}`}
               >
                 {item.icon && (
                   <item.icon className="mr-3 h-4 w-4 text-gray-400 flex-shrink-0" />

@@ -39,7 +39,7 @@ export const EmployeesPage: React.FC = () => {
       setIsLoading(true)
       const response = await api.get<{ data: Employee[] }>('/hr-payroll/employees', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           per_page: 20,
           page,
         },

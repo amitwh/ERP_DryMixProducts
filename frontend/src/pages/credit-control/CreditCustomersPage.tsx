@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { api } from '@/services/api'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import { StatusBadge } from '@/components/ui/Badge'
 import { Skeleton } from '@/components/ui/Loading'
-import { Search, CreditCard, DollarSign, AlertTriangle, ShieldCheck, ShieldAlert } from 'lucide-react'
+import { Search, CreditCard, DollarSign, AlertTriangle, ShieldCheck } from 'lucide-react'
 import { formatCurrency } from '@/utils'
 
 interface CreditCustomer {
@@ -27,7 +25,6 @@ interface CreditCustomer {
 
 export const CreditCustomersPage: React.FC = () => {
   const { user } = useAuth()
-  const navigate = useNavigate()
   const [customers, setCustomers] = useState<CreditCustomer[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
@@ -39,7 +36,7 @@ export const CreditCustomersPage: React.FC = () => {
       setIsLoading(true)
       const response = await api.get<{ data: CreditCustomer[] }>('/credit-control/customers', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           per_page: 20,
           page,
         },

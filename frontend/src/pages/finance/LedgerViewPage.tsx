@@ -4,15 +4,12 @@ import { api } from '@/services/api'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import { StatusBadge } from '@/components/ui/Badge'
 import { Skeleton } from '@/components/ui/Loading'
 import {
   Download,
   Printer,
   Calendar,
   RefreshCw,
-  ArrowUp,
-  ArrowDown,
   Search,
 } from 'lucide-react'
 import { formatCurrency, formatDate } from '@/utils'
@@ -47,7 +44,7 @@ export const LedgerViewPage: React.FC = () => {
 
   const [data, setData] = useState<LedgerData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [startDate, setStartDate] = useState(formatDate(new Date().setMonth(0), 'YYYY-MM-DD'))
+  const [startDate, setStartDate] = useState(formatDate(String(new Date().setMonth(0)), 'YYYY-MM-DD'))
   const [endDate, setEndDate] = useState(formatDate(new Date(), 'YYYY-MM-DD'))
   const [searchTerm, setSearchTerm] = useState('')
 
@@ -56,7 +53,7 @@ export const LedgerViewPage: React.FC = () => {
       setIsLoading(true)
       const response = await api.get<LedgerData>('/finance/ledgers', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           account_id: 1,
           start_date: startDate,
           end_date: endDate,
@@ -178,7 +175,7 @@ export const LedgerViewPage: React.FC = () => {
             <div className="text-center">
               <p className="text-sm font-medium text-gray-600 mb-1">Total Debit</p>
               <h3 className="text-2xl font-bold text-primary-600">
-                {formatCurrency(filteredTransactions.reduce((sum, t) => sum + t.debit_amount, 0))}
+                {formatCurrency(filteredTransactions?.reduce((sum, t) => sum + t.debit_amount, 0) || 0)}
               </h3>
             </div>
           </Card>
@@ -186,7 +183,7 @@ export const LedgerViewPage: React.FC = () => {
             <div className="text-center">
               <p className="text-sm font-medium text-gray-600 mb-1">Total Credit</p>
               <h3 className="text-2xl font-bold text-secondary-600">
-                {formatCurrency(filteredTransactions.reduce((sum, t) => sum + t.credit_amount, 0))}
+                {formatCurrency(filteredTransactions?.reduce((sum, t) => sum + t.credit_amount, 0) || 0)}
               </h3>
             </div>
           </Card>

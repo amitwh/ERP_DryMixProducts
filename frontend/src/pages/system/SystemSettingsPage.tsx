@@ -53,7 +53,7 @@ export const SystemSettingsPage: React.FC = () => {
 
       const response = await api.get<{ data: SystemSetting[] }>('/system/settings', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           per_page: 100,
         },
       })
@@ -92,7 +92,7 @@ export const SystemSettingsPage: React.FC = () => {
           id: setting?.id,
           setting_key: key,
           setting_value: value,
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
         }
       })
 
@@ -115,7 +115,7 @@ export const SystemSettingsPage: React.FC = () => {
     try {
       setIsSaving(true)
       await api.post(`/system/settings/${settingId}/reset`, {
-        organization_id: user?.organizationId,
+        organization_id: user?.organization_id,
       })
       setModifiedSettings({ ...modifiedSettings, [settingKey]: '' })
       fetchSettings()
@@ -228,7 +228,7 @@ export const SystemSettingsPage: React.FC = () => {
         </div>
       </div>
 
-      {error && <Alert variant="error" message={error} />}
+      {error && <Alert type="error" message={error} />}
 
       <div className="flex items-center gap-2 border-b border-gray-200">
         {categories.map((category) => (

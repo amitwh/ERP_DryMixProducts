@@ -6,7 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Skeleton } from '@/components/ui/Loading'
-import { Plus, Search, FileText, Send, Mail, MessageSquare, Filter } from 'lucide-react'
+import { Plus, Search, FileText, Mail, MessageSquare, Filter } from 'lucide-react'
 import { formatDate } from '@/utils'
 
 interface Template {
@@ -37,7 +37,7 @@ export const TemplatesPage: React.FC = () => {
       setIsLoading(true)
       const response = await api.get<{ data: Template[] }>('/communication/templates', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           per_page: 20,
           page,
         },

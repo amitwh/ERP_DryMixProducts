@@ -70,8 +70,8 @@ export default function CreateInspectionPage() {
     try {
       setIsLoading(true)
       const [productsRes, batchesRes] = await Promise.all([
-        api.get('/products', { params: { organization_id: user?.organizationId } }),
-        api.get('/production/batches', { params: { organization_id: user?.organizationId } }),
+        api.get('/products', { params: { organization_id: user?.organization_id } }),
+        api.get('/production/batches', { params: { organization_id: user?.organization_id } }),
       ])
       setProducts(productsRes.data.data || [])
       setBatches(batchesRes.data.data || [])
@@ -122,7 +122,7 @@ export default function CreateInspectionPage() {
 
     try {
       const response = await api.post('/qa/inspections', {
-        organization_id: user?.organizationId,
+        organization_id: user?.organization_id,
         ...formData,
         product_id: parseInt(formData.product_id),
         batch_id: formData.batch_id ? parseInt(formData.batch_id) : null,

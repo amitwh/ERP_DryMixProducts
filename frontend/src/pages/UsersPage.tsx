@@ -36,7 +36,7 @@ export const UsersPage: React.FC = () => {
       setIsLoading(true)
       const response = await api.get<{ data: SystemUser[] }>('/system/users', {
         params: {
-          organization_id: currentUser?.organizationId,
+          organization_id: currentUser?.organization_id,
           per_page: 20,
           page,
         },

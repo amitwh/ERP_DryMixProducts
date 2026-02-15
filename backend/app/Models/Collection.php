@@ -166,7 +166,7 @@ class Collection extends Model
             $this->balance_remaining = 0;
         }
 
-        $this->collection_notes .= "\nWaived {$amount}: {$reason}";
+        $this->collection_notes = ($this->collection_notes ?? '') . "\nWaived {$amount}: {$reason}";
         $this->save();
 
         // Update credit control balance

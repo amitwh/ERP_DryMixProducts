@@ -66,10 +66,10 @@ export const RoleDetailPage: React.FC = () => {
 
       const [roleRes, permissionsRes] = await Promise.all([
         api.get<Role>(`/system/roles/${id}`, {
-          params: { organization_id: user?.organizationId },
+          params: { organization_id: user?.organization_id },
         }),
         api.get<{ data: Permission[] }>('/system/permissions', {
-          params: { organization_id: user?.organizationId, per_page: 100 },
+          params: { organization_id: user?.organization_id, per_page: 100 },
         }),
       ])
 
@@ -97,12 +97,12 @@ export const RoleDetailPage: React.FC = () => {
     try {
       if (hasPermission) {
         await api.delete(`/system/roles/${id}/permissions/${permissionId}`, {
-          params: { organization_id: user?.organizationId },
+          params: { organization_id: user?.organization_id },
         })
       } else {
         await api.post(`/system/roles/${id}/permissions`, {
           permission_id: permissionId,
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
         })
       }
       toast.success(hasPermission ? 'Permission removed' : 'Permission added')
@@ -119,7 +119,7 @@ export const RoleDetailPage: React.FC = () => {
 
     try {
       await api.delete(`/system/roles/${id}`, {
-        params: { organization_id: user?.organizationId },
+        params: { organization_id: user?.organization_id },
       })
       toast.success('Role deleted successfully')
       navigate('/system/roles')
@@ -161,7 +161,7 @@ export const RoleDetailPage: React.FC = () => {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Role Details</h1>
         </div>
-        <Alert variant="error" message={error || 'Role not found'} />
+        <Alert type="error" message={error || 'Role not found'} />
         <Button variant="outline" onClick={() => navigate('/system/roles')}>
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Roles

@@ -50,7 +50,7 @@ export default function CertificatesPage() {
       setIsLoading(true)
       const response = await api.get<{ data: Certificate[] }>('/qa/certificates', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           status: statusFilter === 'all' ? undefined : statusFilter,
           certificate_type: typeFilter || undefined,
         },

@@ -98,32 +98,60 @@ export interface Product {
   id: number
   name: string
   code?: string
+  sku?: string
   type?: string
   category?: string
+  sub_category?: string
   description?: string
+  unit_of_measure?: string
+  /** @deprecated use unit_of_measure */
   unit?: string
+  selling_price?: number
+  /** @deprecated use selling_price */
   price?: number
+  standard_cost?: number
+  /** @deprecated use standard_cost */
   cost?: number
+  weight_per_unit?: number
+  minimum_stock?: number
+  reorder_level?: number
+  maximum_stock?: number
+  gst_rate?: number
+  hsn_code?: string
+  specifications?: Record<string, any>
+  quality_parameters?: Record<string, any>
   organization_id?: number
   manufacturing_unit_id?: number
-  attributes?: Record<string, any>
-  images?: string[]
-  is_active?: boolean
+  status?: string
   created_at?: string
 }
 
 export interface Customer {
   id: number
   name: string
+  code?: string
+  /** @deprecated use code */
   customer_code?: string
+  customer_type?: string
+  billing_address?: string
+  shipping_address?: string
+  /** @deprecated use billing_address */
   address?: string
+  city?: string
+  state?: string
+  country?: string
+  postal_code?: string
   phone?: string
   email?: string
   contact_person?: string
+  gstin?: string
+  pan?: string
   payment_terms?: string
   credit_limit?: number
+  credit_days?: number
   outstanding_balance?: number
   organization_id?: number
+  status?: string
   sales_orders?: SalesOrder[]
   invoices?: Invoice[]
   created_at?: string
@@ -136,15 +164,29 @@ export interface SalesOrder {
   order_date: string
   customer_id: number
   customer?: Customer
+  project_id?: number
   items?: SalesOrderItem[]
-  total_amount: number
+  subtotal?: number
+  discount_percent?: number
+  discount_amount?: number
   tax_amount?: number
+  total_amount: number
+  /** @deprecated use total_amount */
   grand_total?: number
+  paid_amount?: number
   status: Status
+  payment_status?: string
+  payment_terms?: string
   shipping_address?: string
+  expected_delivery_date?: string
+  actual_delivery_date?: string
+  notes?: string
+  /** @deprecated use notes */
   remarks?: string
+  metadata?: Record<string, any>
   organization_id?: number
   manufacturing_unit_id?: number
+  sales_person_id?: number
   created_at?: string
 }
 
@@ -166,15 +208,22 @@ export interface Invoice {
   due_date?: string
   customer_id: number
   customer?: Customer
+  sales_order_id?: number
+  /** @deprecated use sales_order_id */
   order_id?: number
   order?: SalesOrder
+  sales_order?: SalesOrder
   items?: InvoiceItem[]
-  total_amount: number
+  subtotal?: number
+  discount_amount?: number
   tax_amount?: number
+  total_amount: number
+  /** @deprecated use total_amount */
   grand_total?: number
   paid_amount?: number
   balance_amount?: number
   status: Status
+  notes?: string
   organization_id?: number
   created_at?: string
 }

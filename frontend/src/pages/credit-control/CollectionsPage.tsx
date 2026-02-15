@@ -2,16 +2,15 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { DataTable, Column } from '@/components/ui/DataTable'
+import { DataTable } from '@/components/ui/DataTable'
 import { Badge } from '@/components/ui/Badge'
 import { Input } from '@/components/ui/Input'
 import { Modal } from '@/components/ui/Modal'
-import { Form, FormField } from '@/components/ui/Form'
-import { Loader2, FileDown, RefreshCw, Plus, Search, DollarSign, CheckCircle, Clock, XCircle } from 'lucide-react'
+import { Loader2, FileDown, RefreshCw, Search, DollarSign, CheckCircle, Clock, XCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import creditControlService from '@/services/credit-control.service'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Select } from '@/components/ui/Form'
+import { ColumnDef } from '@tanstack/react-table'
 
 // Types
 interface Collection {
@@ -92,7 +91,7 @@ export const CollectionsPage: React.FC = () => {
     avg_collection_days: 0,
   }
 
-  const collections: Collection[] = collectionsData?.data || []
+  const collections = (collectionsData || []) as any as Collection[]
 
   // Record payment mutation
   const recordPaymentMutation = useMutation({
@@ -215,83 +214,83 @@ export const CollectionsPage: React.FC = () => {
   }
 
   // Table columns
-  const columns: Column<Collection>[] = [
+  const columns: ColumnDef<Collection, any>[] = [
     {
       header: 'Invoice',
       accessorKey: 'invoice_number',
-      cell: (item) => (
+      cell: ({ row }) => (
         <div>
-          <div className="font-medium text-gray-900">{item.invoice_number}</div>
-          <div className="text-sm text-gray-500">Due: {item.due_date}</div>
+          <div className="font-medium text-gray-900">{row.original.invoice_number}</div>
+          <div className="text-sm text-gray-500">Due: {row.original.due_date}</div>
         </div>
       ),
     },
     {
       header: 'Customer',
       accessorKey: 'customer_name',
-      cell: (item) => (
+      cell: ({ row }) => (
         <div>
-          <div className="font-medium text-gray-900">{item.customer_name}</div>
-          <div className="text-sm text-gray-500">{item.customer_code}</div>
+          <div className="font-medium text-gray-900">{row.original.customer_name}</div>
+          <div className="text-sm text-gray-500">{row.original.customer_code}</div>
         </div>
       ),
     },
     {
       header: 'Amount',
       accessorKey: 'amount',
-      cell: (item) => (
+      cell: ({ row }) => (
         <div>
-          <div className="font-medium">{formatCurrency(item.amount)}</div>
-          <div className="text-sm text-green-600">Paid: {formatCurrency(item.amount_paid)}</div>
+          <div className="font-medium">{formatCurrency(row.original.amount)}</div>
+          <div className="text-sm text-green-600">Paid: {formatCurrency(row.original.amount_paid)}</div>
         </div>
       ),
     },
     {
       header: 'Balance',
       accessorKey: 'balance_amount',
-      cell: (item) => (
+      cell: ({ row }) => (
         <span className="font-semibold text-gray-900">
-          {formatCurrency(item.balance_amount)}
+          {formatCurrency(row.original.balance_amount)}
         </span>
       ),
     },
     {
       header: 'Days Overdue',
       accessorKey: 'days_overdue',
-      cell: (item) => (
+      cell: ({ row }) => (
         <span
           className={`font-medium ${
-            item.days_overdue > 90
+            row.original.days_overdue > 90
               ? 'text-red-600'
-              : item.days_overdue > 60
+              : row.original.days_overdue > 60
               ? 'text-orange-600'
-              : item.days_overdue > 30
+              : row.original.days_overdue > 30
               ? 'text-yellow-600'
               : 'text-gray-600'
           }`}
         >
-          {item.days_overdue > 0 ? `${item.days_overdue} days` : 'Current'}
+          {row.original.days_overdue > 0 ? `${row.original.days_overdue} days` : 'Current'}
         </span>
       ),
     },
     {
       header: 'Status',
       accessorKey: 'status',
-      cell: (item) => (
-        <Badge variant={getStatusBadge(item.status)}>
-          {getStatusLabel(item.status)}
+      cell: ({ row }) => (
+        <Badge variant={getStatusBadge(row.original.status)}>
+          {getStatusLabel(row.original.status)}
         </Badge>
       ),
     },
     {
       header: 'Actions',
-      cell: (item) => (
+      cell: ({ row }) => (
         <div className="flex gap-2">
-          {(item.status === 'pending' || item.status === 'partial') && (
+          {(row.original.status === 'pending' || row.original.status === 'partial') && (
             <Button
               variant="primary"
               size="sm"
-              onClick={() => handleRecordPayment(item)}
+              onClick={() => handleRecordPayment(row.original)}
             >
               Record Payment
             </Button>
@@ -299,7 +298,7 @@ export const CollectionsPage: React.FC = () => {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate(`/credit-control/collections/${item.id}`)}
+            onClick={() => navigate(`/credit-control/collections/${row.original.id}`)}
           >
             View
           </Button>
@@ -459,11 +458,7 @@ export const CollectionsPage: React.FC = () => {
               <p className="text-gray-500">No collections found</p>
             </div>
           ) : (
-            <DataTable
-              data={collections}
-              columns={columns}
-              pagination={{ pageSize: 20 }}
-            />
+            <DataTable data={collections} columns={columns} />
           )}
         </CardContent>
       </Card>
@@ -499,8 +494,9 @@ export const CollectionsPage: React.FC = () => {
               </div>
             </div>
 
-            <Form onSubmit={handleSubmitPayment}>
-              <FormField label="Payment Amount" required>
+<form onSubmit={(e) => { e.preventDefault(); handleSubmitPayment(); }} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Amount *</label>
                 <Input
                   name="amount"
                   type="number"
@@ -512,27 +508,29 @@ export const CollectionsPage: React.FC = () => {
                   placeholder="Enter amount"
                   required
                 />
-              </FormField>
+              </div>
 
-              <FormField label="Payment Method" required>
-                <Select
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method *</label>
+                <select
                   name="payment_method"
                   value={paymentForm.payment_method}
                   onChange={(e) =>
                     setPaymentForm({ ...paymentForm, payment_method: e.target.value })
                   }
-                  options={[
-                    { value: 'cash', label: 'Cash' },
-                    { value: 'bank_transfer', label: 'Bank Transfer' },
-                    { value: 'cheque', label: 'Cheque' },
-                    { value: 'card', label: 'Card' },
-                    { value: 'upi', label: 'UPI' },
-                  ]}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   required
-                />
-              </FormField>
+                >
+                  <option value="cash">Cash</option>
+                  <option value="bank_transfer">Bank Transfer</option>
+                  <option value="cheque">Cheque</option>
+                  <option value="card">Card</option>
+                  <option value="upi">UPI</option>
+                </select>
+              </div>
 
-              <FormField label="Reference Number">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Reference Number</label>
                 <Input
                   name="reference_number"
                   value={paymentForm.reference_number}
@@ -541,9 +539,10 @@ export const CollectionsPage: React.FC = () => {
                   }
                   placeholder="Enter reference number (transaction ID, cheque number, etc.)"
                 />
-              </FormField>
+              </div>
 
-              <FormField label="Notes">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
                 <Input
                   name="notes"
                   value={paymentForm.notes}
@@ -552,7 +551,7 @@ export const CollectionsPage: React.FC = () => {
                   }
                   placeholder="Add notes (optional)"
                 />
-              </FormField>
+              </div>
 
               <div className="flex gap-3 pt-4">
                 <Button
@@ -572,7 +571,7 @@ export const CollectionsPage: React.FC = () => {
                   Record Payment
                 </Button>
               </div>
-            </Form>
+            </form>
           </div>
         )}
       </Modal>

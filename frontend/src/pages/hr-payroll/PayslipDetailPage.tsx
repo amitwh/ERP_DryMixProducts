@@ -87,7 +87,7 @@ export const PayslipDetailPage: React.FC = () => {
 
       const response = await api.get<PayslipDetails>(`/hr-payroll/payslips/${id}`, {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
         },
       })
 
@@ -114,7 +114,7 @@ export const PayslipDetailPage: React.FC = () => {
     try {
       const response = await api.get(`/hr-payroll/payslips/${id}/pdf`, {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
         },
         responseType: 'blob',
       })
@@ -151,7 +151,7 @@ export const PayslipDetailPage: React.FC = () => {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Payslip</h1>
         </div>
-        <Alert variant="error" message={error || 'Payslip not found'} />
+        <Alert type="error" message={error || 'Payslip not found'} />
         <Button variant="outline" onClick={() => navigate('/hr-payroll/payslips')}>
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Payslips

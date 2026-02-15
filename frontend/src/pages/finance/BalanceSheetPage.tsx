@@ -42,7 +42,7 @@ export const BalanceSheetPage: React.FC = () => {
       setIsLoading(true)
       const response = await api.get<BalanceSheetData>('/finance/balance-sheet', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           as_of_date: asOfDate,
         },
       })

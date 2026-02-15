@@ -7,8 +7,8 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { StatusBadge } from '@/components/ui/Badge'
 import { Skeleton } from '@/components/ui/Loading'
-import { Plus, Search, Users, Eye, Pencil, Trash2, MapPin, Phone, Mail } from 'lucide-react'
-import { formatCurrency, formatDate } from '@/utils'
+import { Plus, Search, Users, Eye, Pencil, Phone, Mail } from 'lucide-react'
+import { formatCurrency } from '@/utils'
 
 interface Customer {
   id: number
@@ -40,7 +40,7 @@ export const CustomersListPage: React.FC = () => {
       setIsLoading(true)
       const response = await api.get<{ data: Customer[] }>('/customers', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           per_page: 20,
           page,
         },
@@ -214,6 +214,7 @@ export const CustomersListPage: React.FC = () => {
                             variant="ghost"
                             size="sm"
                             leftIcon={<Pencil className="w-4 h-4" />}
+                            onClick={() => navigate(`/customers/${customer.id}`)}
                           >
                             Edit
                           </Button>

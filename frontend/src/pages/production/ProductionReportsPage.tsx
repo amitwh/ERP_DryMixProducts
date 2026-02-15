@@ -67,13 +67,13 @@ export default function ProductionReportsPage() {
       const [reportsRes, summaryRes] = await Promise.all([
         api.get<{ data: ProductionReport[] }>('/production/reports', {
           params: {
-            organization_id: user?.organizationId,
+            organization_id: user?.organization_id,
             start_date: startDate,
             end_date: endDate,
           },
         }),
         api.get<ReportSummary>('/production/reports/summary', {
-          params: { organization_id: user?.organizationId },
+          params: { organization_id: user?.organization_id },
         }),
       ])
 
@@ -89,7 +89,7 @@ export default function ProductionReportsPage() {
   const handleGenerateReport = async () => {
     try {
       const response = await api.post<{ data: ProductionReport }>('/production/reports/generate', {
-        organization_id: user?.organizationId,
+        organization_id: user?.organization_id,
         report_type: 'custom',
         start_date: startDate,
         end_date: endDate,

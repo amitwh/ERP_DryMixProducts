@@ -7,8 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Skeleton } from '@/components/ui/Loading'
 import { Alert } from '@/components/ui/Alert'
-import { Send, MessageSquare, Image, FileText, Search, Filter, Plus, RefreshCw } from 'lucide-react'
-import { formatDate, formatDateTime } from '@/utils'
+import { Send, MessageSquare, Image, FileText, Search, Plus, RefreshCw } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface Template {
@@ -30,20 +29,6 @@ interface WhatsAppRecipient {
   phone_number: string
   type: 'customer' | 'employee' | 'supplier'
   whatsapp_number?: string
-}
-
-interface WhatsAppMessage {
-  id: number
-  recipient_name: string
-  phone_number: string
-  message?: string
-  media_type?: 'image' | 'document' | 'video' | 'audio'
-  media_url?: string
-  status: 'pending' | 'sent' | 'delivered' | 'read' | 'failed'
-  sent_at?: string
-  delivered_at?: string
-  read_at?: string
-  error_message?: string
 }
 
 interface WhatsAppQueue {
@@ -71,7 +56,7 @@ export const WhatsAppComposePage: React.FC = () => {
   const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([])
   const [scheduledDate, setScheduledDate] = useState('')
   const [scheduledTime, setScheduledTime] = useState('')
-  const [isLoading, setIsLoading] = useState(true)
+  const [_isLoading, _setIsLoading] = useState(true)
   const [isSending, setIsSending] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
@@ -81,7 +66,7 @@ export const WhatsAppComposePage: React.FC = () => {
     try {
       const response = await api.get<{ data: Template[] }>('/communication/templates', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           template_type: 'whatsapp',
         },
       })
@@ -95,7 +80,7 @@ export const WhatsAppComposePage: React.FC = () => {
     try {
       const response = await api.get<{ data: WhatsAppRecipient[] }>('/communication/whatsapp/recipients', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           type: recipientFilter === 'all' ? undefined : recipientFilter,
         },
       })
@@ -180,7 +165,7 @@ export const WhatsAppComposePage: React.FC = () => {
       setError(null)
 
       const formData = new FormData()
-      formData.append('organization_id', user!.organizationId!.toString())
+      formData.append('organization_id', user!.organization_id!.toString())
       selectedRecipients.forEach((r) => formData.append('recipient_ids[]', r.id.toString()))
       if (selectedTemplate) {
         formData.append('template_id', selectedTemplate.id.toString())
@@ -196,7 +181,7 @@ export const WhatsAppComposePage: React.FC = () => {
       })
 
       toast.success(`WhatsApp message sent to ${selectedRecipients.length} recipients`)
-      navigate(`/communication/whatsapp/queue/${response.data.id}`)
+      navigate(`/communication/whatsapp/queue/${response.data.data.id}`)
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to send WhatsApp message')
       toast.error('Failed to send WhatsApp message')
@@ -214,7 +199,7 @@ export const WhatsAppComposePage: React.FC = () => {
     return colors[type] || 'bg-gray-100 text-gray-800'
   }
 
-  if (isLoading) {
+  if (_isLoading) {
     return (
       <div className="space-y-6">
         <div>
@@ -252,7 +237,7 @@ export const WhatsAppComposePage: React.FC = () => {
         </div>
       </div>
 
-      {error && <Alert variant="error" message={error} />}
+      {error && <Alert type="error" message={error} />}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card variant="bordered" padding="lg">

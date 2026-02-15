@@ -129,7 +129,7 @@ apiClient.interceptors.response.use(
 
       try {
         // Attempt to refresh token
-        const refreshResponse = await apiClient.post('/auth/refresh')
+        await apiClient.post('/auth/refresh')
 
         // Retry original request
         return apiClient(request)

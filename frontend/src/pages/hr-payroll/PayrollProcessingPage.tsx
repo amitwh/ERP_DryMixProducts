@@ -85,13 +85,13 @@ export const PayrollProcessingPage: React.FC = () => {
       const [runsRes, statsRes] = await Promise.all([
         api.get<{ data: PayrollRun[] }>('/hr-payroll/payroll-runs', {
           params: {
-            organization_id: user?.organizationId,
+            organization_id: user?.organization_id,
             per_page: 10,
           },
         }),
         api.get<PayrollStats>('/hr-payroll/payroll-stats', {
           params: {
-            organization_id: user?.organizationId,
+            organization_id: user?.organization_id,
           },
         }),
       ])
@@ -114,7 +114,7 @@ export const PayrollProcessingPage: React.FC = () => {
     try {
       const response = await api.get<{ data: PayrollEmployee[] }>(`/hr-payroll/payroll-runs/${runId}/employees`, {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
         },
       })
       setEmployees(response.data.data || [])
@@ -129,7 +129,7 @@ export const PayrollProcessingPage: React.FC = () => {
       setError(null)
 
       const response = await api.post<{ data: PayrollEmployee[] }>('/hr-payroll/payroll-runs/preview', {
-        organization_id: user?.organizationId,
+        organization_id: user?.organization_id,
         pay_period_start: startDate,
         pay_period_end: endDate,
       })
@@ -155,7 +155,7 @@ export const PayrollProcessingPage: React.FC = () => {
       setError(null)
 
       const response = await api.post<{ data: PayrollRun }>('/hr-payroll/payroll-runs', {
-        organization_id: user?.organizationId,
+        organization_id: user?.organization_id,
         pay_period_start: startDate,
         pay_period_end: endDate,
         pay_date: new Date().toISOString().split('T')[0],
@@ -233,7 +233,7 @@ export const PayrollProcessingPage: React.FC = () => {
         </div>
       </div>
 
-      {error && <Alert variant="error" message={error} />}
+      {error && <Alert type="error" message={error} />}
 
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

@@ -51,7 +51,7 @@ export default function AdjustmentsPage() {
       setIsLoading(true)
       const response = await api.get<{ data: Adjustment[] }>('/inventory/adjustments', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           adjustment_type: typeFilter === 'all' ? undefined : typeFilter,
           status: statusFilter === 'all' ? undefined : statusFilter,
         },

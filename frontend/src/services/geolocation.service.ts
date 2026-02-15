@@ -386,7 +386,7 @@ class GeolocationService {
    */
   async geocodeAddress(address: string): Promise<Coordinates> {
     try {
-      const response = await api.post<{ lat: number; lng: number }>('/geo/geocode', { address });
+      const response = await api.post<{ lat: number; lng: number }>('/geolocation/geocode', { address });
       return response.data;
     } catch (error) {
       console.error('Geocoding failed:', error);
@@ -400,7 +400,7 @@ class GeolocationService {
   async reverseGeocode(coords: Coordinates): Promise<Address> {
     try {
       this.validateCoordinates(coords);
-      const response = await api.post<Address>('/geo/reverse-geocode', coords);
+      const response = await api.post<Address>('/geolocation/reverse-geocode', coords);
       return response.data;
     } catch (error) {
       console.error('Reverse geocoding failed:', error);
@@ -415,7 +415,7 @@ class GeolocationService {
     try {
       this.validateCoordinates(origin);
       this.validateCoordinates(destination);
-      const response = await api.post<GeoRoute>('/geo/route', { origin, destination });
+      const response = await api.post<GeoRoute>('/geolocation/route', { origin, destination });
       return response.data;
     } catch (error) {
       console.error('Route calculation failed:', error);
@@ -432,7 +432,7 @@ class GeolocationService {
     location: Coordinates
   ): Promise<void> {
     try {
-      await api.post('/geo/location-history', {
+      await api.post('/geolocation/record-location', {
         entityType,
         entityId,
         location,
@@ -457,7 +457,12 @@ class GeolocationService {
       if (startDate) params.startDate = startDate.toISOString();
       if (endDate) params.endDate = endDate.toISOString();
 
-      const response = await api.get<LocationTrackingData[]>('/geo/location-history', { params });
+      const response = await api.get<LocationTrackingData[]>(`/geolocation/location-history/${entityType}/${entityId}`, {
+        params: {
+          ...(startDate && { startDate: startDate.toISOString() }),
+          ...(endDate && { endDate: endDate.toISOString() }),
+        },
+      });
       return response.data;
     } catch (error) {
       console.error('Failed to get location history:', error);
@@ -473,7 +478,7 @@ class GeolocationService {
    * Create delivery tracking
    */
   async createDeliveryTracking(data: Partial<DeliveryTracking>): Promise<DeliveryTracking> {
-    const response = await api.post<DeliveryTracking>('/delivery-tracking', data);
+    const response = await api.post<DeliveryTracking>('/geolocation/delivery-tracking', data);
     return response.data;
   }
 
@@ -481,7 +486,7 @@ class GeolocationService {
    * Update delivery tracking
    */
   async updateDeliveryTracking(id: string, data: Partial<DeliveryTracking>): Promise<DeliveryTracking> {
-    const response = await api.put<DeliveryTracking>(`/delivery-tracking/${id}`, data);
+    const response = await api.put<DeliveryTracking>(`/geolocation/delivery-tracking/${id}`, data);
     return response.data;
   }
 
@@ -490,7 +495,7 @@ class GeolocationService {
    */
   async getDeliveryTracking(salesOrderId: string): Promise<DeliveryTracking | null> {
     try {
-      const response = await api.get<DeliveryTracking>(`/delivery-tracking/order/${salesOrderId}`);
+      const response = await api.get<DeliveryTracking>(`/geolocation/delivery-tracking/order/${salesOrderId}`);
       return response.data;
     } catch {
       return null;
@@ -501,7 +506,7 @@ class GeolocationService {
    * Update delivery current location
    */
   async updateDeliveryLocation(trackingId: string, location: Coordinates): Promise<void> {
-    await api.post(`/delivery-tracking/${trackingId}/location`, { location });
+    await api.post(`/geolocation/delivery-tracking/${trackingId}/location`, { location });
   }
 
   // ==========================================================================
@@ -512,7 +517,7 @@ class GeolocationService {
    * Create site inspection with geolocation
    */
   async createSiteInspection(data: Partial<SiteInspection>): Promise<SiteInspection> {
-    const response = await api.post<SiteInspection>('/site-inspections', data);
+    const response = await api.post<SiteInspection>('/geolocation/site-inspections', data);
     return response.data;
   }
 
@@ -520,7 +525,7 @@ class GeolocationService {
    * Get site inspections for a project
    */
   async getProjectInspections(projectId: string): Promise<SiteInspection[]> {
-    const response = await api.get<SiteInspection[]>(`/projects/${projectId}/inspections`);
+    const response = await api.get<SiteInspection[]>(`/geolocation/site-inspections/project/${projectId}`);
     return response.data;
   }
 
@@ -532,7 +537,7 @@ class GeolocationService {
     location: Coordinates
   ): Promise<{ isValid: boolean; distance: number }> {
     const response = await api.post<{ isValid: boolean; distance: number }>(
-      `/projects/${projectId}/validate-location`,
+      `/geolocation/site-inspections/${projectId}/validate-location`,
       { location }
     );
     return response.data;
@@ -546,7 +551,7 @@ class GeolocationService {
    * Create a geotag
    */
   async createGeoTag(data: Partial<GeoTag>): Promise<GeoTag> {
-    const response = await api.post<GeoTag>('/geotags', data);
+    const response = await api.post<GeoTag>('/geolocation/geo-tags', data);
     return response.data;
   }
 
@@ -554,7 +559,7 @@ class GeolocationService {
    * Get geotags for an entity
    */
   async getGeoTags(taggableType: string, taggableId: string): Promise<GeoTag[]> {
-    const response = await api.get<GeoTag[]>('/geotags', {
+    const response = await api.get<GeoTag[]>('/geolocation/geo-tags', {
       params: { taggableType, taggableId },
     });
     return response.data;
@@ -575,7 +580,7 @@ class GeolocationService {
     };
     if (tagType) params.tagType = tagType;
 
-    const response = await api.get<GeoTag[]>('/geotags/nearby', { params });
+    const response = await api.get<GeoTag[]>('/geolocation/geo-tags/nearby', { params });
     return response.data;
   }
 }

@@ -56,7 +56,7 @@ export default function ProjectDetailPage() {
   const fetchProject = async () => {
     try {
       const response = await api.get<{ data: ProjectDetail }>(`/sales/projects/${id}`, {
-        params: { organization_id: user?.organizationId }
+        params: { organization_id: user?.organization_id }
       })
       setProject(response.data)
     } catch (err: any) {

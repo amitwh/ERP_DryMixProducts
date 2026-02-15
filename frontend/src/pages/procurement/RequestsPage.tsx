@@ -51,7 +51,7 @@ export default function RequestsPage() {
       setIsLoading(true)
       const response = await api.get<{ data: Request[] }>('/procurement/requests', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           status: statusFilter === 'all' ? undefined : statusFilter,
           urgency: urgencyFilter === 'all' ? undefined : urgencyFilter,
         },

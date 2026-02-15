@@ -102,16 +102,16 @@ export const ProductionPlanDetailPage: React.FC = () => {
 
       const [planRes, itemsRes, capacityRes, summaryRes] = await Promise.all([
         api.get<ProductionPlan>(`/planning/production-plans/${id}`, {
-          params: { organization_id: user?.organizationId },
+          params: { organization_id: user?.organization_id },
         }),
         api.get<{ data: PlanItem[] }>(`/planning/production-plans/${id}/items`, {
-          params: { organization_id: user?.organizationId },
+          params: { organization_id: user?.organization_id },
         }),
         api.get<CapacityAnalysis>(`/planning/production-plans/${id}/capacity-analysis`, {
-          params: { organization_id: user?.organizationId },
+          params: { organization_id: user?.organization_id },
         }),
         api.get<PlanSummary>(`/planning/production-plans/${id}/summary`, {
-          params: { organization_id: user?.organizationId },
+          params: { organization_id: user?.organization_id },
         }),
       ])
 
@@ -141,7 +141,7 @@ export const ProductionPlanDetailPage: React.FC = () => {
     try {
       await api.patch(`/planning/production-plans/${id}`, {
         status: newStatus,
-        organization_id: user?.organizationId,
+        organization_id: user?.organization_id,
       })
       fetchPlanDetails()
     } catch (error) {
@@ -187,7 +187,7 @@ export const ProductionPlanDetailPage: React.FC = () => {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Production Plan Details</h1>
         </div>
-        <Alert variant="error" message={error || 'Production plan not found'} />
+        <Alert type="error" message={error || 'Production plan not found'} />
         <Button variant="outline" onClick={() => navigate('/planning/production-plans')}>
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Plans
@@ -233,7 +233,7 @@ export const ProductionPlanDetailPage: React.FC = () => {
         </div>
       </div>
 
-      <Alert variant={plan.status === 'in_progress' ? 'info' : plan.status === 'completed' ? 'success' : 'warning'} message={`Plan Status: ${plan.status.toUpperCase().replace(/_/g, ' ')}`} />
+      <Alert type={plan.status === 'in_progress' ? 'info' : plan.status === 'completed' ? 'success' : 'warning'} message={`Plan Status: ${plan.status.toUpperCase().replace(/_/g, ' ')}`} />
 
       {summary && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

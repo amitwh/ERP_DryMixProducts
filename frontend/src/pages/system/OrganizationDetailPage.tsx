@@ -99,13 +99,13 @@ export const OrganizationDetailPage: React.FC = () => {
 
       const [orgRes, usageRes, modulesRes] = await Promise.all([
         api.get<Organization>(`/system/organizations/${id}`, {
-          params: { organization_id: user?.organizationId },
+          params: { organization_id: user?.organization_id },
         }),
         api.get<UsageStats>(`/system/organizations/${id}/usage`, {
-          params: { organization_id: user?.organizationId },
+          params: { organization_id: user?.organization_id },
         }),
         api.get<{ data: ModuleConfig[] }>(`/system/organizations/${id}/modules`, {
-          params: { organization_id: user?.organizationId },
+          params: { organization_id: user?.organization_id },
         }),
       ])
 
@@ -135,7 +135,7 @@ export const OrganizationDetailPage: React.FC = () => {
       setIsUpdating(true)
       await api.patch(`/system/organizations/${id}/modules/${moduleId}`, {
         is_enabled: !isEnabled,
-        organization_id: user?.organizationId,
+        organization_id: user?.organization_id,
       })
       toast.success('Module status updated')
       fetchOrganizationDetails()
@@ -174,7 +174,7 @@ export const OrganizationDetailPage: React.FC = () => {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Organization Details</h1>
         </div>
-        <Alert variant="error" message={error || 'Organization not found'} />
+        <Alert type="error" message={error || 'Organization not found'} />
         <Button variant="outline" onClick={() => navigate('/system/organizations')}>
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Organizations
@@ -210,7 +210,7 @@ export const OrganizationDetailPage: React.FC = () => {
         </div>
       </div>
 
-      <Alert variant={organization.status === 'active' ? 'success' : 'warning'} message={`Status: ${organization.status.toUpperCase()}`} />
+      <Alert type={organization.status === 'active' ? 'success' : 'warning'} message={`Status: ${organization.status.toUpperCase()}`} />
 
       <div className="flex items-center gap-2 border-b border-gray-200">
         {tabs.map((tab) => (

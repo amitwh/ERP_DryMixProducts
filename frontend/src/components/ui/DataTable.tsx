@@ -11,7 +11,6 @@ import {
 import { Button } from './Button'
 import { Input } from './Input'
 
-type FlexRender<TData, TValue> = flexRender<ColumnDef<TData, TValue>, 'td' | 'th'>
 type TableProps<TData> = {
   data: TData[]
   columns: ColumnDef<TData>[]
@@ -148,8 +147,8 @@ export function DataTable<TData extends object>({
 
       <div className="flex items-center justify-between px-2">
         <div className="text-sm text-gray-600">
-          Showing {table.getState().pagination.rowStartIndex + 1} to{' '}
-          {Math.min(table.getState().pagination.rowEndIndex, filteredData.length)} of{' '}
+          Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} to{' '}
+          {Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize, filteredData.length)} of{' '}
           {filteredData.length} entries
         </div>
         <div className="flex gap-2">

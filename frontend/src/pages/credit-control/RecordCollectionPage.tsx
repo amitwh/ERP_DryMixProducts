@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import { Form, FormField } from '@/components/ui/Form'
-import { Select } from '@/components/ui/Form'
 import { Alert } from '@/components/ui/Alert'
 import { ArrowLeft, CheckCircle2, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -54,7 +52,7 @@ export const RecordCollectionPage: React.FC = () => {
         status: 'pending',
       })
       // Extract unique customers from collections
-      const collections = response.data.data || []
+      const collections = response.data || []
       const uniqueCustomers = Array.from(
         new Map(
           collections.map((c: any) => [
@@ -67,7 +65,7 @@ export const RecordCollectionPage: React.FC = () => {
           ])
         ).values()
       )
-      return uniqueCustomers
+      return uniqueCustomers as Customer[]
     },
     enabled: true,
   })
@@ -82,7 +80,7 @@ export const RecordCollectionPage: React.FC = () => {
         customer_id: formData.customer_id,
         status: 'pending',
       })
-      return response.data.data || []
+      return response.data || []
     },
     enabled: !!formData.customer_id,
   })
@@ -215,24 +213,11 @@ export const RecordCollectionPage: React.FC = () => {
 
       {/* Summary Card (if customer and invoice selected) */}
       {selectedCustomer && selectedInvoice && (
-        <Alert variant="info">
-          <Alert.Content>
-            <div className="flex justify-between items-center">
-              <div>
-                <p className="font-medium">{selectedCustomer.name}</p>
-                <p className="text-sm text-gray-600">
-                  Invoice: {selectedInvoice.invoice_number} | Due: {selectedInvoice.due_date}
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="text-sm text-gray-600">Balance Due</p>
-                <p className="text-xl font-bold">
-                  {formatCurrency(selectedInvoice.balance_amount)}
-                </p>
-              </div>
-            </div>
-          </Alert.Content>
-        </Alert>
+        <Alert
+          type="info"
+          title={selectedCustomer.name}
+          message={`Invoice: ${selectedInvoice.invoice_number} | Due: ${selectedInvoice.due_date} | Balance: ${formatCurrency(selectedInvoice.balance_amount)}`}
+        />
       )}
 
       {/* Form Card */}
@@ -241,52 +226,55 @@ export const RecordCollectionPage: React.FC = () => {
           <CardTitle>Collection Details</CardTitle>
         </CardHeader>
         <CardContent>
-          <Form onSubmit={handleSubmit}>
-            {/* Customer Selection */}
-            <FormField label="Customer" required error={errors.customer_id}>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Customer *</label>
               {customersLoading ? (
                 <div className="flex items-center gap-2 text-gray-500">
                   <Loader2 className="w-4 h-4 animate-spin" />
                   Loading customers...
                 </div>
               ) : (
-                <Select
+                <select
                   name="customer_id"
                   value={formData.customer_id}
                   onChange={handleCustomerChange}
-                  options={[
-                    { value: '', label: 'Select a customer' },
-                    ...customers.map((c) => ({ value: String(c.id), label: `${c.name} (${c.code})` })),
-                  ]}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   required
-                />
+                >
+                  <option value="">Select a customer</option>
+                  {customers.map((c) => (
+                    <option key={c.id} value={String(c.id)}>{c.name} ({c.code})</option>
+                  ))}
+                </select>
               )}
-            </FormField>
+              {errors.customer_id && <p className="mt-1 text-sm text-red-600">{errors.customer_id}</p>}
+            </div>
 
-            {/* Invoice Selection */}
-            <FormField label="Invoice" required error={errors.invoice_id}>
-              <Select
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Invoice *</label>
+              <select
                 name="invoice_id"
                 value={formData.invoice_id}
                 onChange={handleInvoiceChange}
                 disabled={!formData.customer_id}
-                options={[
-                  { value: '', label: 'Select an invoice' },
-                  ...invoices.map((i) => ({
-                    value: String(i.id),
-                    label: `${i.invoice_number} - Due: ${i.due_date} - Balance: ${formatCurrency(i.balance_amount)}`,
-                  })),
-                ]}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled:opacity-50"
                 required
-              />
-            </FormField>
+              >
+                <option value="">Select an invoice</option>
+                {invoices.map((i) => (
+                  <option key={i.id} value={String(i.id)}>
+                    {i.invoice_number} - Due: {i.due_date} - Balance: {formatCurrency(i.balance_amount)}
+                  </option>
+                ))}
+              </select>
+              {errors.invoice_id && <p className="mt-1 text-sm text-red-600">{errors.invoice_id}</p>}
+            </div>
 
-            {/* Payment Amount */}
-            <FormField label="Payment Amount" required error={errors.amount}>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Payment Amount *</label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
-                  ₹
-                </span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
                 <Input
                   name="amount"
                   type="number"
@@ -303,40 +291,40 @@ export const RecordCollectionPage: React.FC = () => {
                   Outstanding balance: {formatCurrency(selectedInvoice.balance_amount)}
                 </p>
               )}
-            </FormField>
+              {errors.amount && <p className="mt-1 text-sm text-red-600">{errors.amount}</p>}
+            </div>
 
-            {/* Payment Method */}
-            <FormField label="Payment Method" required error={errors.payment_method}>
-              <Select
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method *</label>
+              <select
                 name="payment_method"
                 value={formData.payment_method}
-                onChange={(e) =>
-                  setFormData({ ...formData, payment_method: e.target.value })
-                }
-                options={[
-                  { value: 'cash', label: 'Cash' },
-                  { value: 'bank_transfer', label: 'Bank Transfer' },
-                  { value: 'cheque', label: 'Cheque' },
-                  { value: 'card', label: 'Credit/Debit Card' },
-                  { value: 'upi', label: 'UPI' },
-                  { value: 'online', label: 'Online Payment' },
-                ]}
+                onChange={(e) => setFormData({ ...formData, payment_method: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 required
-              />
-            </FormField>
+              >
+                <option value="cash">Cash</option>
+                <option value="bank_transfer">Bank Transfer</option>
+                <option value="cheque">Cheque</option>
+                <option value="card">Credit/Debit Card</option>
+                <option value="upi">UPI</option>
+                <option value="online">Online Payment</option>
+              </select>
+              {errors.payment_method && <p className="mt-1 text-sm text-red-600">{errors.payment_method}</p>}
+            </div>
 
-            {/* Reference Number */}
-            <FormField label="Reference Number">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Reference Number</label>
               <Input
                 name="reference_number"
                 placeholder="Transaction ID, Cheque number, etc."
                 value={formData.reference_number}
                 onChange={handleChange}
               />
-            </FormField>
+            </div>
 
-            {/* Collection Date */}
-            <FormField label="Collection Date" required>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Collection Date *</label>
               <Input
                 name="collection_date"
                 type="date"
@@ -344,19 +332,18 @@ export const RecordCollectionPage: React.FC = () => {
                 onChange={handleChange}
                 required
               />
-            </FormField>
+            </div>
 
-            {/* Notes */}
-            <FormField label="Notes">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
               <Input
                 name="notes"
                 placeholder="Add any additional notes..."
                 value={formData.notes}
                 onChange={handleChange}
               />
-            </FormField>
+            </div>
 
-            {/* Submit Buttons */}
             <div className="flex gap-3 pt-4">
               <Button
                 type="button"
@@ -369,12 +356,12 @@ export const RecordCollectionPage: React.FC = () => {
                 type="submit"
                 variant="primary"
                 isLoading={createCollectionMutation.isPending}
-                leftIcon={!createCollectionMutation.isPending && <CheckCircle2 className="w-5 h-5" />}
+                leftIcon={!createCollectionMutation.isPending ? <CheckCircle2 className="w-5 h-5" /> : undefined}
               >
                 Record Collection
               </Button>
             </div>
-          </Form>
+          </form>
         </CardContent>
       </Card>
     </div>

@@ -77,7 +77,7 @@ export default function CreateSupplierPage() {
 
     try {
       const response = await api.post('/procurement/suppliers', {
-        organization_id: user?.organizationId,
+        organization_id: user?.organization_id,
         ...formData,
         contacts,
       })

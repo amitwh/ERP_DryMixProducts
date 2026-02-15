@@ -44,7 +44,7 @@ export default function ReportsPage() {
       setIsLoading(true)
       const response = await api.get<{ data: Report[] }>('/reports', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           report_type: typeFilter || undefined,
         },
       })

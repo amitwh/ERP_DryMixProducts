@@ -4,7 +4,7 @@ import { useAuth } from '@/context/AuthContext'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/Card'
-import { Loader2, Building2, Mail, Lock, ArrowRight } from 'lucide-react'
+import { Building2, Mail, Lock, ArrowRight } from 'lucide-react'
 import { toast } from 'sonner'
 
 // Login Page

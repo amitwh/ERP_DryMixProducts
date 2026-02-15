@@ -11,13 +11,11 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   TrendingUp,
-  TrendingDown,
   Users,
   ShoppingCart,
   Package,
   AlertTriangle,
   Activity,
-  Calendar,
   MoreHorizontal,
   Plus,
   RefreshCw,
@@ -51,8 +49,8 @@ export const DashboardPage: React.FC = () => {
           {
             label: 'Sales (₹)',
             data: [4500000, 5200000, 4800000, 6100000, 5900000, 7200000, 6800000, 7500000, 8200000, 7800000, 8500000, 9200000],
-            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-            borderColor: 'rgba(59, 130, 246, 1)',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)' as any,
+            borderColor: 'rgba(59, 130, 246, 1)' as any,
           },
         ],
       })
@@ -64,8 +62,8 @@ export const DashboardPage: React.FC = () => {
           {
             label: 'Produced (MT)',
             data: [1200, 1450, 1320, 1580, 1490],
-            backgroundColor: 'rgba(16, 185, 129, 0.5)',
-            borderColor: 'rgba(16, 185, 129, 1)',
+            backgroundColor: 'rgba(16, 185, 129, 0.5)' as any,
+            borderColor: 'rgba(16, 185, 129, 1)' as any,
           },
         ],
       })
@@ -267,8 +265,8 @@ export const DashboardPage: React.FC = () => {
                   <Line
                     type="monotone"
                     dataKey="sales"
-                    stroke={salesData.datasets[0].borderColor}
-                    fill={salesData.datasets[0].backgroundColor}
+                    stroke={(salesData.datasets[0].borderColor as string[])?.[0] || '#3B82F6'}
+                    fill={(salesData.datasets[0].backgroundColor as string[])?.[0] || '#93C5FD'}
                     strokeWidth={2}
                     dot={{ r: 4 }}
                   />
@@ -308,7 +306,7 @@ export const DashboardPage: React.FC = () => {
                   <Legend />
                   <Bar
                     dataKey="produced"
-                    fill={productionData.datasets[0].backgroundColor}
+                    fill={(productionData.datasets[0].backgroundColor as string[])?.[0] || '#10B981'}
                     radius={[8, 8, 0, 0]}
                   />
                 </BarChart>

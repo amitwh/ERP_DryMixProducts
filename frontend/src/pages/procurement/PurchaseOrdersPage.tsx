@@ -38,7 +38,7 @@ export const PurchaseOrdersPage: React.FC = () => {
       setIsLoading(true)
       const response = await api.get<{ data: PurchaseOrder[] }>('/procurement/purchase-orders', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           per_page: 20,
           page,
         },

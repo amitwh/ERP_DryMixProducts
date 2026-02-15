@@ -46,7 +46,7 @@ export default function WorkstationsPage() {
       setIsLoading(true)
       const response = await api.get<{ data: Workstation[] }>('/production/workstations', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           status: statusFilter === 'all' ? undefined : statusFilter,
           type: typeFilter === 'all' ? undefined : typeFilter,
         },

@@ -77,9 +77,9 @@ export default function CreateProductionOrderPage() {
     try {
       setIsLoading(true)
       const [productsRes, warehousesRes, plansRes] = await Promise.all([
-        api.get<{ data: Product[] }>('/products', { params: { organization_id: user?.organizationId } }),
-        api.get<{ data: Warehouse[] }>('/inventory/warehouses', { params: { organization_id: user?.organizationId } }),
-        api.get<{ data: ProductionPlan[] }>('/planning/production-plans', { params: { organization_id: user?.organizationId } }),
+        api.get<{ data: Product[] }>('/products', { params: { organization_id: user?.organization_id } }),
+        api.get<{ data: Warehouse[] }>('/inventory/warehouses', { params: { organization_id: user?.organization_id } }),
+        api.get<{ data: ProductionPlan[] }>('/planning/production-plans', { params: { organization_id: user?.organization_id } }),
       ])
       setProducts(productsRes.data.data || [])
       setWarehouses(warehousesRes.data.data || [])
@@ -113,7 +113,7 @@ export default function CreateProductionOrderPage() {
 
     try {
       const response = await api.post('/production/production-orders', {
-        organization_id: user?.organizationId,
+        organization_id: user?.organization_id,
         ...formData,
         product_id: parseInt(formData.product_id),
         plan_id: formData.plan_id ? parseInt(formData.plan_id) : null,

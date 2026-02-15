@@ -1,5 +1,5 @@
 import React from 'react'
-import { Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react'
+import { Eye, EyeOff, AlertCircle } from 'lucide-react'
 import { cn } from '@/utils'
 
 // Input Props

@@ -41,7 +41,7 @@ export const ProductionBatchesPage: React.FC = () => {
       setIsLoading(true)
       const response = await api.get<{ data: ProductionBatch[] }>('/production/batches', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           per_page: 20,
           page,
         },

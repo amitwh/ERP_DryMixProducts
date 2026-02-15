@@ -40,7 +40,7 @@ export const CreateUserPage: React.FC = () => {
     password: '',
     confirm_password: '',
     role_id: 0,
-    organization_id: user?.organizationId || 0,
+    organization_id: user?.organization_id || 0,
     status: 'active' as const,
     department: '',
     designation: '',
@@ -55,7 +55,7 @@ export const CreateUserPage: React.FC = () => {
   const fetchRoles = async () => {
     try {
       const response = await api.get<{ data: Role[] }>('/system/roles', {
-        params: { organization_id: user?.organizationId, per_page: 50 },
+        params: { organization_id: user?.organization_id, per_page: 50 },
       })
       setRoles(response.data.data || [])
     } catch (error) {
@@ -129,7 +129,7 @@ export const CreateUserPage: React.FC = () => {
         </Button>
       </div>
 
-      {error && <Alert variant="error" message={error} />}
+      {error && <Alert type="error" message={error} />}
 
       <Card variant="bordered" padding="lg">
         <CardHeader>

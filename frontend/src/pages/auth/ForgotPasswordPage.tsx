@@ -11,7 +11,7 @@ import { authService } from '@/services/auth.service'
 export const ForgotPasswordPage: React.FC = () => {
   // Form State
   const [email, setEmail] = useState('')
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<string | undefined>(undefined)
   const [isLoading, setIsLoading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
 
@@ -25,7 +25,7 @@ export const ForgotPasswordPage: React.FC = () => {
       setError('Invalid email format')
       return false
     }
-    setError(null)
+    setError(undefined)
     return true
   }
 
@@ -140,7 +140,7 @@ export const ForgotPasswordPage: React.FC = () => {
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value)
-                  setError(null)
+                  setError(undefined)
                 }}
                 error={error}
                 leftIcon={<Mail className="w-5 h-5" />}

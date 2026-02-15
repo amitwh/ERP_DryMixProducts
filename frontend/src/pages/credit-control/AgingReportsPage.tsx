@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { DataTable, Column } from '@/components/ui/DataTable'
+import { DataTable } from '@/components/ui/DataTable'
 import { Badge } from '@/components/ui/Badge'
 import { Alert } from '@/components/ui/Alert'
 import { Loader2, FileDown, RefreshCw, TrendingUp, AlertTriangle, DollarSign } from 'lucide-react'
 import { toast } from 'sonner'
 import creditControlService from '@/services/credit-control.service'
 import { useQuery } from '@tanstack/react-query'
+import { ColumnDef } from '@tanstack/react-table'
 
 // Types
 interface AgingBuckets {
@@ -52,7 +53,7 @@ interface AgingSummary {
 // Aging Reports Page
 export const AgingReportsPage: React.FC = () => {
   const navigate = useNavigate()
-  const [filters, setFilters] = useState({
+  const [filters, _setFilters] = useState({
     risk_level: '',
     search: '',
   })
@@ -143,85 +144,85 @@ export const AgingReportsPage: React.FC = () => {
   }
 
   // Table columns
-  const columns: Column<AgingReportItem>[] = [
+  const columns: ColumnDef<AgingReportItem, any>[] = [
     {
       header: 'Customer',
       accessorKey: 'customer_name',
-      cell: (item) => (
+      cell: ({ row }) => (
         <div>
-          <div className="font-medium text-gray-900">{item.customer_name}</div>
-          <div className="text-sm text-gray-500">{item.customer_code}</div>
+          <div className="font-medium text-gray-900">{row.original.customer_name}</div>
+          <div className="text-sm text-gray-500">{row.original.customer_code}</div>
         </div>
       ),
     },
     {
       header: 'Current',
       accessorKey: 'aging.current',
-      cell: (item) => (
+      cell: ({ row }) => (
         <span className="font-medium text-green-600">
-          {formatCurrency(item.aging.current)}
+          {formatCurrency(row.original.aging.current)}
         </span>
       ),
     },
     {
       header: '1-30 Days',
       accessorKey: 'aging.days30',
-      cell: (item) => (
-        <span className={item.aging.days30 > 0 ? 'font-medium text-yellow-600' : ''}>
-          {formatCurrency(item.aging.days30)}
+      cell: ({ row }) => (
+        <span className={row.original.aging.days30 > 0 ? 'font-medium text-yellow-600' : ''}>
+          {formatCurrency(row.original.aging.days30)}
         </span>
       ),
     },
     {
       header: '31-60 Days',
       accessorKey: 'aging.days60',
-      cell: (item) => (
-        <span className={item.aging.days60 > 0 ? 'font-medium text-orange-600' : ''}>
-          {formatCurrency(item.aging.days60)}
+      cell: ({ row }) => (
+        <span className={row.original.aging.days60 > 0 ? 'font-medium text-orange-600' : ''}>
+          {formatCurrency(row.original.aging.days60)}
         </span>
       ),
     },
     {
       header: '61-90 Days',
       accessorKey: 'aging.days90',
-      cell: (item) => (
-        <span className={item.aging.days90 > 0 ? 'font-medium text-red-600' : ''}>
-          {formatCurrency(item.aging.days90)}
+      cell: ({ row }) => (
+        <span className={row.original.aging.days90 > 0 ? 'font-medium text-red-600' : ''}>
+          {formatCurrency(row.original.aging.days90)}
         </span>
       ),
     },
     {
       header: '90+ Days',
       accessorKey: 'aging.days120',
-      cell: (item) => (
-        <span className={item.aging.days120 > 0 ? 'font-bold text-red-700' : ''}>
-          {formatCurrency(item.aging.days120)}
+      cell: ({ row }) => (
+        <span className={row.original.aging.days120 > 0 ? 'font-bold text-red-700' : ''}>
+          {formatCurrency(row.original.aging.days120)}
         </span>
       ),
     },
     {
       header: 'Total Balance',
       accessorKey: 'current_balance',
-      cell: (item) => (
-        <span className="font-semibold">{formatCurrency(item.current_balance)}</span>
+      cell: ({ row }) => (
+        <span className="font-semibold">{formatCurrency(row.original.current_balance)}</span>
       ),
     },
     {
       header: 'Risk Level',
       accessorKey: 'risk_level',
-      cell: (item) => (
-        <Badge variant={getRiskBadge(item.risk_level)}>
-          {item.risk_level.charAt(0).toUpperCase() + item.risk_level.slice(1)}
+      cell: ({ row }) => (
+        <Badge variant={getRiskBadge(row.original.risk_level)}>
+          {row.original.risk_level.charAt(0).toUpperCase() + row.original.risk_level.slice(1)}
         </Badge>
       ),
     },
     {
       header: 'Actions',
-      cell: (item) => (
+      cell: ({ row }) => (
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => navigate(`/credit-control/customers/${item.customer_id}`)}
+          onClick={() => navigate(`/credit-control/customers/${row.original.customer_id}`)}
         >
           View Details
         </Button>
@@ -289,7 +290,7 @@ export const AgingReportsPage: React.FC = () => {
                   {formatCurrency(summary.total_current)}
                 </p>
                 <p className="text-sm text-gray-500 mt-1">
-                  {((summary.total_current / summary.total_receivables) * 100).toFixed(1)}% of total
+                  {summary.total_receivables ? ((summary.total_current / summary.total_receivables) * 100).toFixed(1) : '0.0'}% of total
                 </p>
               </div>
               <div className="p-3 bg-green-100 rounded-lg">
@@ -383,16 +384,11 @@ export const AgingReportsPage: React.FC = () => {
 
       {/* High Risk Alert */}
       {summary.high_risk_count > 0 && (
-        <Alert variant="warning">
-          <AlertTriangle className="w-5 h-5" />
-          <Alert.Content>
-            <p className="font-medium">High Risk Customers Detected</p>
-            <p className="text-sm">
-              {summary.high_risk_count} customers have overdue payments exceeding 90 days.
-              Immediate action recommended.
-            </p>
-          </Alert.Content>
-        </Alert>
+        <Alert
+          type="warning"
+          title="High Risk Customers Detected"
+          message={`${summary.high_risk_count} customers have overdue payments exceeding 90 days. Immediate action recommended.`}
+        />
       )}
 
       {/* Aging Report Table */}
@@ -413,7 +409,6 @@ export const AgingReportsPage: React.FC = () => {
             <DataTable
               data={agingItems}
               columns={columns}
-              pagination={{ pageSize: 20 }}
             />
           )}
         </CardContent>

@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
-  UsersIcon,
-  BuildingOfficeIcon,
-  ClipboardDocumentListIcon,
-  FactoryIcon,
-  ShoppingCartIcon,
-  TrendingUpIcon,
-  QualityIcon,
-  SettingsIcon,
-  BarChart3Icon
+  Users,
+  Building2,
+  ClipboardList,
+  Factory,
+  ShoppingCart,
+  TrendingUp,
+  CheckSquare,
+  Settings,
+  BarChart3
 } from 'lucide-react';
-import { DashboardCard, KPICard, ActivityTimeline, NotificationPanel } from '../components';
+import { DashboardCard, KPICard, ActivityTimeline, NotificationPanel } from './components';
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -23,7 +23,7 @@ export default function Dashboard() {
     totalKPIs: 0,
   });
 
-  const [kpiData, setKpiData] = useState([]);
+  const [kpiData, setKpiData] = useState<any[]>([]);
 
   useEffect(() => {
     fetchDashboardData();
@@ -69,43 +69,43 @@ export default function Dashboard() {
 
           <nav className="space-y-2">
             <a href="/dashboard" className="flex items-center px-4 py-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition">
-              <BarChart3Icon className="w-5 h-5 mr-3" />
+              <BarChart3 className="w-5 h-5 mr-3" />
               <span>Dashboard</span>
             </a>
             <a href="/organizations" className="flex items-center px-4 py-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition">
-              <BuildingOfficeIcon className="w-5 h-5 mr-3" />
+              <Building2 className="w-5 h-5 mr-3" />
               <span>Organizations</span>
             </a>
             <a href="/users" className="flex items-center px-4 py-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition">
-              <UsersIcon className="w-5 h-5 mr-3" />
+              <Users className="w-5 h-5 mr-3" />
               <span>Users</span>
             </a>
             <a href="/products" className="flex items-center px-4 py-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition">
-              <FactoryIcon className="w-5 h-5 mr-3" />
+              <Factory className="w-5 h-5 mr-3" />
               <span>Products</span>
             </a>
             <a href="/customers" className="flex items-center px-4 py-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition">
-              <ShoppingCartIcon className="w-5 h-5 mr-3" />
+              <ShoppingCart className="w-5 h-5 mr-3" />
               <span>Customers</span>
             </a>
             <a href="/suppliers" className="flex items-center px-4 py-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition">
-              <ClipboardDocumentListIcon className="w-5 h-5 mr-3" />
+              <ClipboardList className="w-5 h-5 mr-3" />
               <span>Suppliers</span>
             </a>
             <a href="/qaqc" className="flex items-center px-4 py-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition">
-              <QualityIcon className="w-5 h-5 mr-3" />
+              <CheckSquare className="w-5 h-5 mr-3" />
               <span>QA/QC</span>
             </a>
             <a href="/inventory" className="flex items-center px-4 py-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition">
-              <TrendingUpIcon className="w-5 h-5 mr-3" />
+              <TrendingUp className="w-5 h-5 mr-3" />
               <span>Inventory</span>
             </a>
             <a href="/production" className="flex items-center px-4 py-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition">
-              <FactoryIcon className="w-5 h-5 mr-3" />
+              <Factory className="w-5 h-5 mr-3" />
               <span>Production</span>
             </a>
             <a href="/settings" className="flex items-center px-4 py-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition">
-              <SettingsIcon className="w-5 h-5 mr-3" />
+              <Settings className="w-5 h-5 mr-3" />
               <span>Settings</span>
             </a>
           </nav>
@@ -126,49 +126,49 @@ export default function Dashboard() {
               <DashboardCard
                 title="Total Organizations"
                 value={stats.totalOrganizations}
-                icon={<BuildingOfficeIcon />}
+                icon={Building2}
                 color="blue"
                 link="/organizations"
               />
               <DashboardCard
                 title="Active Users"
                 value={stats.totalUsers}
-                icon={<UsersIcon />}
+                icon={Users}
                 color="green"
                 link="/users"
               />
               <DashboardCard
                 title="Manufacturing Units"
                 value={stats.activeManufacturingUnits}
-                icon={<FactoryIcon />}
+                icon={Factory}
                 color="purple"
                 link="/units"
               />
               <DashboardCard
                 title="Production Orders"
                 value={stats.totalProductionOrders}
-                icon={<FactoryIcon />}
+                icon={Factory}
                 color="orange"
                 link="/production"
               />
               <DashboardCard
                 title="Pending Inspections"
                 value={stats.pendingInspections}
-                icon={<QualityIcon />}
+                icon={CheckSquare}
                 color="yellow"
                 link="/inspections"
               />
               <DashboardCard
                 title="Open NCRs"
                 value={stats.openNCRs}
-                icon={<ClipboardDocumentListIcon />}
+                icon={ClipboardList}
                 color="red"
                 link="/ncr"
               />
               <DashboardCard
                 title="Active KPIs"
                 value={stats.totalKPIs}
-                icon={<TrendingUpIcon />}
+                icon={TrendingUp}
                 color="indigo"
                 link="/kpi"
               />

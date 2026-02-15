@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Badge } from '@/components/ui/Badge';
 import {
   MapPin,
   ArrowLeft,
@@ -86,8 +84,8 @@ export default function CreateSiteInspectionPage() {
       setValidating(true);
       const response = await api.post(`/geolocation/site-inspections/${formData.projectId}/validate-location`, {
         location: {
-          lat: coords.latitude,
-          lng: coords.longitude,
+          lat: coords.lat,
+          lng: coords.lng,
         },
       });
       setLocationValid(response.data.isValid);
@@ -118,8 +116,8 @@ export default function CreateSiteInspectionPage() {
         projectId: parseInt(formData.projectId),
         inspectionType: formData.inspectionType,
         gpsLocation: {
-          lat: coords.latitude,
-          lng: coords.longitude,
+          lat: coords.lat,
+          lng: coords.lng,
         },
         weatherConditions: formData.weatherConditions,
         siteConditions: formData.siteConditions,
@@ -175,7 +173,7 @@ export default function CreateSiteInspectionPage() {
                 ) : coords ? (
                   <div>
                     <p className="font-mono text-lg">
-                      {coords.latitude.toFixed(6)}, {coords.longitude.toFixed(6)}
+                      {coords.lat.toFixed(6)}, {coords.lng.toFixed(6)}
                     </p>
                     {coords.accuracy && (
                       <p className="text-sm text-gray-500">

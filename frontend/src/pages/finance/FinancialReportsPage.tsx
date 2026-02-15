@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { api } from '@/services/api'
-import { Card, CardContent } from '@/components/ui/Card'
+import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Skeleton } from '@/components/ui/Loading'
 import { Alert } from '@/components/ui/Alert'
-import { BarChart3, Download, Printer, Filter, DollarSign, TrendingUp, TrendingDown, PieChart } from 'lucide-react'
-import { formatDate, formatNumber, formatCurrency } from '@/utils'
+import { BarChart3, Download, Printer, Filter, DollarSign, TrendingDown, PieChart } from 'lucide-react'
+import { formatDate, formatCurrency } from '@/utils'
 
 interface FinancialReport {
   id: number
@@ -39,8 +39,8 @@ export default function FinancialReportsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [reportType, setReportType] = useState<'all' | 'profit_loss' | 'balance_sheet' | 'trial_balance' | 'cash_flow' | 'aged_receivables' | 'aged_payables'>('all')
-  const [fiscalYear, setFiscalYear] = useState('')
-  const [startDate, setStartDate] = useState(formatDate(new Date().setDate(1), 'YYYY-MM-DD'))
+  const [fiscalYear, _setFiscalYear] = useState('')
+  const [startDate, setStartDate] = useState(formatDate(String(new Date().setDate(1)), 'YYYY-MM-DD'))
   const [endDate, setEndDate] = useState(formatDate(new Date(), 'YYYY-MM-DD'))
 
   useEffect(() => {
@@ -52,7 +52,7 @@ export default function FinancialReportsPage() {
       setIsLoading(true)
       const response = await api.get<{ data: FinancialReport[] }>('/finance/reports', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           report_type: reportType === 'all' ? undefined : reportType,
           fiscal_year_id: fiscalYear || undefined,
           start_date: startDate,
@@ -70,14 +70,14 @@ export default function FinancialReportsPage() {
   const handleGenerateReport = async () => {
     try {
       const response = await api.post<{ data: FinancialReport }>('/finance/reports/generate', {
-        organization_id: user?.organizationId,
+        organization_id: user?.organization_id,
         report_type: reportType === 'all' ? 'profit_loss' : reportType,
         fiscal_year_id: fiscalYear || undefined,
         start_date: startDate,
         end_date: endDate,
       })
 
-      navigate(`/finance/reports/${response.data.id}`)
+      navigate(`/finance/reports/${response.data.data.id}`)
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to generate report')
     }

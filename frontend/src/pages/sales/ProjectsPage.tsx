@@ -52,7 +52,7 @@ export default function ProjectsPage() {
       setIsLoading(true)
       const response = await api.get<{ data: Project[] }>('/sales/projects', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           status: statusFilter === 'all' ? undefined : statusFilter,
           project_manager_id: managerFilter || undefined,
         },

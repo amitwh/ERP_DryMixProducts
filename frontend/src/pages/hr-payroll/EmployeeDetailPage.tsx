@@ -113,16 +113,16 @@ export const EmployeeDetailPage: React.FC = () => {
 
       const [employeeRes, leaveRes, attendanceRes, payrollRes] = await Promise.all([
         api.get<Employee>(`/hr-payroll/employees/${id}`, {
-          params: { organization_id: user?.organizationId },
+          params: { organization_id: user?.organization_id },
         }),
         api.get<LeaveBalance[]>(`/hr-payroll/employees/${id}/leave-balance`, {
-          params: { organization_id: user?.organizationId },
+          params: { organization_id: user?.organization_id },
         }),
         api.get<AttendanceSummary>(`/hr-payroll/employees/${id}/attendance-summary`, {
-          params: { organization_id: user?.organizationId },
+          params: { organization_id: user?.organization_id },
         }),
         api.get<PayrollSummary>(`/hr-payroll/employees/${id}/payroll-summary`, {
-          params: { organization_id: user?.organizationId },
+          params: { organization_id: user?.organization_id },
         }),
       ])
 
@@ -152,7 +152,7 @@ export const EmployeeDetailPage: React.FC = () => {
     try {
       await api.patch(`/hr-payroll/employees/${id}`, {
         employment_status: newStatus,
-        organization_id: user?.organizationId,
+        organization_id: user?.organization_id,
       })
       toast.success('Employee status updated successfully')
       fetchEmployee()
@@ -183,7 +183,7 @@ export const EmployeeDetailPage: React.FC = () => {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Employee Details</h1>
         </div>
-        <Alert variant="error" message={error || 'Employee not found'} />
+        <Alert type="error" message={error || 'Employee not found'} />
         <Button variant="outline" onClick={() => navigate('/hr-payroll/employees')}>
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Employees

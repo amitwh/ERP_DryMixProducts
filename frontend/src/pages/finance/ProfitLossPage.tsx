@@ -39,7 +39,7 @@ export const ProfitLossPage: React.FC = () => {
 
   const [data, setData] = useState<ProfitLossData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [startDate, setStartDate] = useState(formatDate(new Date().setDate(1), 'YYYY-MM-DD'))
+  const [startDate, setStartDate] = useState(formatDate(String(new Date().setDate(1)), 'YYYY-MM-DD'))
   const [endDate, setEndDate] = useState(formatDate(new Date(), 'YYYY-MM-DD'))
 
   const fetchProfitLoss = async () => {
@@ -47,7 +47,7 @@ export const ProfitLossPage: React.FC = () => {
       setIsLoading(true)
       const response = await api.get<ProfitLossData>('/finance/profit-and-loss', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           start_date: startDate,
           end_date: endDate,
         },

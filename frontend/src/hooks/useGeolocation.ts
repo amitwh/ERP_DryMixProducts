@@ -8,7 +8,6 @@ import geolocationService, {
   Coordinates,
   GeoPoint,
   GeolocationOptions,
-  GeolocationError,
 } from '@/services/geolocation.service';
 
 // =============================================================================
@@ -128,13 +127,16 @@ export const useGeofence = (
 ): UseGeofenceResult => {
   const [isInside, setIsInside] = useState<boolean>(false);
   const [distance, setDistance] = useState<number>(0);
-  const { coords, startTracking } = useWatchLocation({ enableHighAccuracy: true });
+  const { coords, startTracking, stopTracking } = useWatchLocation({ enableHighAccuracy: true });
 
   useEffect(() => {
     if (autoWatch) {
       startTracking();
     }
-  }, [autoWatch, startTracking]);
+    return () => {
+      stopTracking();
+    };
+  }, [autoWatch, startTracking, stopTracking]);
 
   useEffect(() => {
     if (coords && center) {
@@ -263,7 +265,7 @@ export const useLocationTracking = ({
   const [isTracking, setIsTracking] = useState(false);
   const [lastLocation, setLastLocation] = useState<Coordinates | null>(null);
   const [error, setError] = useState<Error | null>(null);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const watchIdRef = useRef<number | null>(null);
 
   const recordLocation = useCallback(async (coords: Coordinates) => {

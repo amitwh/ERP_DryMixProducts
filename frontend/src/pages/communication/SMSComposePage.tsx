@@ -7,8 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Skeleton } from '@/components/ui/Loading'
 import { Alert } from '@/components/ui/Alert'
-import { Send, Users, MessageCircle, Clock, Search, Filter, Plus, FileText, Eye, RefreshCw } from 'lucide-react'
-import { formatDate, formatDateTime } from '@/utils'
+import { Send, Users, Search, Plus, RefreshCw } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface Template {
@@ -24,19 +23,6 @@ interface Recipient {
   name: string
   phone_number?: string
   type: 'customer' | 'employee' | 'supplier'
-}
-
-interface SMSMessage {
-  id: number
-  recipient_name: string
-  phone_number: string
-  message: string
-  status: 'pending' | 'sent' | 'delivered' | 'failed'
-  sent_at?: string
-  delivered_at?: string
-  error_message?: string
-  cost?: number
-  segment_count?: number
 }
 
 interface SMSQueue {
@@ -59,7 +45,6 @@ interface SMSComposeProps {
 
 export const SMSComposePage: React.FC<SMSComposeProps> = ({
   templateId,
-  recipientType,
   defaultMessage,
 }) => {
   const { user } = useAuth()
@@ -72,7 +57,7 @@ export const SMSComposePage: React.FC<SMSComposeProps> = ({
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null)
   const [scheduledDate, setScheduledDate] = useState('')
   const [scheduledTime, setScheduledTime] = useState('')
-  const [isLoading, setIsLoading] = useState(true)
+  const [_isLoading, _setIsLoading] = useState(true)
   const [isSending, setIsSending] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
@@ -82,7 +67,7 @@ export const SMSComposePage: React.FC<SMSComposeProps> = ({
     try {
       const response = await api.get<{ data: Template[] }>('/communication/templates', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           template_type: 'sms',
         },
       })
@@ -96,7 +81,7 @@ export const SMSComposePage: React.FC<SMSComposeProps> = ({
     try {
       const response = await api.get<{ data: Recipient[] }>('/communication/recipients', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           type: recipientFilter === 'all' ? undefined : recipientFilter,
         },
       })
@@ -182,7 +167,7 @@ export const SMSComposePage: React.FC<SMSComposeProps> = ({
       setError(null)
 
       const payload = {
-        organization_id: user?.organizationId,
+        organization_id: user?.organization_id,
         recipient_ids: selectedRecipients.map((r) => r.id),
         template_id: selectedTemplate?.id,
         custom_message: message,
@@ -192,7 +177,7 @@ export const SMSComposePage: React.FC<SMSComposeProps> = ({
       const response = await api.post<{ data: SMSQueue }>('/communication/sms/send', payload)
 
       toast.success(`SMS sent to ${selectedRecipients.length} recipients`)
-      navigate(`/communication/sms/queue/${response.data.id}`)
+      navigate(`/communication/sms/queue/${response.data.data.id}`)
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to send SMS')
       toast.error('Failed to send SMS')
@@ -215,7 +200,7 @@ export const SMSComposePage: React.FC<SMSComposeProps> = ({
     return segments * 0.05 // Example: ₹0.05 per segment
   }
 
-  if (isLoading) {
+  if (_isLoading) {
     return (
       <div className="space-y-6">
         <div>
@@ -253,7 +238,7 @@ export const SMSComposePage: React.FC<SMSComposeProps> = ({
         </div>
       </div>
 
-      {error && <Alert variant="error" message={error} />}
+      {error && <Alert type="error" message={error} />}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card variant="bordered" padding="lg">

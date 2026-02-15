@@ -49,7 +49,7 @@ export default function QualityTestsPage() {
       setIsLoading(true)
       const response = await api.get<{ data: QualityTest[] }>('/qa/tests', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           status: statusFilter === 'all' ? undefined : statusFilter,
           test_type: testTypeFilter || undefined,
         },

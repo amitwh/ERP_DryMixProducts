@@ -112,16 +112,16 @@ export const CapacityPlanningPage: React.FC = () => {
 
       const [planRes, resourcesRes, allocationsRes, metricsRes] = await Promise.all([
         api.get<CapacityPlan>(`/planning/capacity-plans/${id}`, {
-          params: { organization_id: user?.organizationId },
+          params: { organization_id: user?.organization_id },
         }),
         api.get<{ data: Resource[] }>(`/planning/capacity-plans/${id}/resources`, {
-          params: { organization_id: user?.organizationId },
+          params: { organization_id: user?.organization_id },
         }),
         api.get<{ data: ResourceAllocation[] }>(`/planning/capacity-plans/${id}/allocations`, {
-          params: { organization_id: user?.organizationId },
+          params: { organization_id: user?.organization_id },
         }),
         api.get<CapacityMetrics>(`/planning/capacity-plans/${id}/metrics`, {
-          params: { organization_id: user?.organizationId },
+          params: { organization_id: user?.organization_id },
         }),
       ])
 
@@ -148,7 +148,7 @@ export const CapacityPlanningPage: React.FC = () => {
       setIsSaving(true)
       await api.patch(`/planning/resources/${resourceId}`, {
         capacity: newCapacity,
-        organization_id: user?.organizationId,
+        organization_id: user?.organization_id,
       })
       fetchCapacityPlan()
     } catch (error) {
@@ -201,7 +201,7 @@ export const CapacityPlanningPage: React.FC = () => {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Capacity Planning</h1>
         </div>
-        <Alert variant="error" message={error || 'Capacity plan not found'} />
+        <Alert type="error" message={error || 'Capacity plan not found'} />
         <Button variant="outline" onClick={() => navigate('/planning/capacity-plans')}>
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Plans
@@ -284,7 +284,7 @@ export const CapacityPlanningPage: React.FC = () => {
       )}
 
       {plan.bottleneck_resources && plan.bottleneck_resources.length > 0 && (
-        <Alert variant="warning" message={`Bottleneck Resources: ${plan.bottleneck_resources.join(', ')}`} />
+        <Alert type="warning" message={`Bottleneck Resources: ${plan.bottleneck_resources.join(', ')}`} />
       )}
 
       <div className="flex items-center gap-2 border-b border-gray-200">

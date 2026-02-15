@@ -1,6 +1,4 @@
-import React from 'react'
 import { AlertCircle, CheckCircle, Info, XCircle, X } from 'lucide-react'
-import { Button } from './Button'
 
 export type AlertType = 'success' | 'error' | 'warning' | 'info'
 

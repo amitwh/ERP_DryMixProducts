@@ -68,6 +68,8 @@ Route::prefix('v1')->group(function () {
         Route::prefix('auth')->group(function () {
             Route::post('/logout', [AuthController::class, 'logout']);
             Route::get('/me', [AuthController::class, 'me']);
+            Route::post('/change-password', [AuthController::class, 'changePassword']);
+            Route::put('/profile', [AuthController::class, 'updateProfile']);
         });
     
     // Dashboard & Analytics
@@ -83,6 +85,25 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('manufacturing-units', ManufacturingUnitController::class);
     Route::apiResource('users', UserController::class);
     
+    // Roles & Permissions Management
+    Route::apiResource('roles', \App\Http\Controllers\Api\UserController::class)->only(['index', 'show', 'store', 'update', 'destroy'])->names([
+        'index' => 'roles.index',
+        'show' => 'roles.show',
+        'store' => 'roles.store',
+        'update' => 'roles.update',
+        'destroy' => 'roles.destroy',
+    ]);
+    Route::get('permissions', [\App\Http\Controllers\Api\UserController::class, 'permissions']);
+
+    // Production Batches
+    Route::apiResource('production-batches', ProductionOrderController::class)->only(['index', 'show', 'store', 'update', 'destroy'])->names([
+        'index' => 'production-batches.index',
+        'show' => 'production-batches.show',
+        'store' => 'production-batches.store',
+        'update' => 'production-batches.update',
+        'destroy' => 'production-batches.destroy',
+    ]);
+
     // Product & Business Entities
     Route::apiResource('products', ProductController::class);
     Route::apiResource('customers', CustomerController::class);

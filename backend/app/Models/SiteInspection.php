@@ -12,7 +12,7 @@ class SiteInspection extends Model
     use HasFactory, LogsActivity;
 
     protected $fillable = [
-        'org_id',
+        'organization_id',
         'unit_id',
         'project_id',
         'activity_id',
@@ -101,7 +101,7 @@ class SiteInspection extends Model
 
     public function scopeByOrganization($query, $organizationId)
     {
-        return $query->where('org_id', $organizationId);
+        return $query->where('organization_id', $organizationId);
     }
 
     public function scopeByProject($query, $projectId)

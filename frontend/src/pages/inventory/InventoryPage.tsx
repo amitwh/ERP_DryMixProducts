@@ -49,7 +49,7 @@ export default function InventoryPage() {
       setIsLoading(true)
       const response = await api.get<{ data: InventoryItem[] }>('/inventory/stock', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           status: statusFilter === 'all' ? undefined : statusFilter,
           warehouse_id: warehouseFilter || undefined,
         },
@@ -65,7 +65,7 @@ export default function InventoryPage() {
   const fetchWarehouses = async () => {
     try {
       const response = await api.get<{ data: any[] }>('/inventory/warehouses', {
-        params: { organization_id: user?.organizationId },
+        params: { organization_id: user?.organization_id },
       })
       setWarehouses(response.data.data || [])
     } catch (err: any) {

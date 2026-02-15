@@ -45,7 +45,7 @@ export const TrialBalancePage: React.FC = () => {
       setIsLoading(true)
       const response = await api.get<TrialBalanceData>('/finance/trial-balance', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           as_of_date: asOfDate,
         },
       })

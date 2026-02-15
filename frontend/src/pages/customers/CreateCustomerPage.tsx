@@ -29,7 +29,7 @@ export const CreateCustomerPage: React.FC = () => {
       await api.post('/customers', {
         ...formData,
         credit_limit: parseFloat(formData.credit_limit),
-        organization_id: user?.organizationId,
+        organization_id: user?.organization_id,
       })
       navigate('/customers')
     } catch (error) {

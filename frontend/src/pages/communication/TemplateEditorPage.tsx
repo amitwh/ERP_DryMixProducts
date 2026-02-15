@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/Input'
 import { Skeleton } from '@/components/ui/Loading'
 import { Alert } from '@/components/ui/Alert'
 import { ArrowLeft, Save, Send, Eye, Code, FileText, Type, Zap, Settings, Plus } from 'lucide-react'
-import { formatDate } from '@/utils'
 import { toast } from 'sonner'
 
 interface Variable {
@@ -80,7 +79,7 @@ export const TemplateEditorPage: React.FC = () => {
       setIsLoading(true)
       const [templateRes, variablesRes] = await Promise.all([
         api.get<Template>(`/communication/templates/${id}`, {
-          params: { organization_id: user?.organizationId },
+          params: { organization_id: user?.organization_id },
         }),
         api.get<AvailableVariable[]>('/communication/templates/variables'),
       ])
@@ -118,7 +117,7 @@ export const TemplateEditorPage: React.FC = () => {
       setError(null)
 
       const payload = {
-        organization_id: user?.organizationId,
+        organization_id: user?.organization_id,
         name: template.name,
         template_type: template.template_type || 'sms',
         category: template.category,
@@ -148,7 +147,7 @@ export const TemplateEditorPage: React.FC = () => {
     try {
       setIsSaving(true)
       await api.post(`/communication/templates/${id || 'new'}/test`, {
-        organization_id: user?.organizationId,
+        organization_id: user?.organization_id,
         body: template.body,
       })
       toast.success('Test message sent successfully')
@@ -228,7 +227,7 @@ export const TemplateEditorPage: React.FC = () => {
         </div>
       </div>
 
-      {error && <Alert variant="error" message={error} />}
+      {error && <Alert type="error" message={error} />}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card variant="bordered" padding="lg">

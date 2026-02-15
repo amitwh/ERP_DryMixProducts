@@ -8,6 +8,7 @@ import { StatusBadge } from '@/components/ui/Badge'
 import { Skeleton } from '@/components/ui/Loading'
 import { Plus, Eye, CheckCircle, XCircle, RefreshCw, Search } from 'lucide-react'
 import { formatCurrency, formatDate } from '@/utils'
+import { toast } from 'sonner'
 
 interface JournalVoucher {
   id: number
@@ -36,7 +37,7 @@ export const JournalVouchersPage: React.FC = () => {
       setIsLoading(true)
       const response = await api.get<{ data: JournalVoucher[] }>('/finance/journal-vouchers', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           per_page: 20,
           page: page,
           ...(statusFilter !== 'all' && { status: statusFilter }),
@@ -65,10 +66,12 @@ export const JournalVouchersPage: React.FC = () => {
 
   const handlePostVoucher = async (voucherId: number) => {
     try {
-      await api.post(`/finance/journal-vouchers/${voucherId}/post`)
+      await api.post(`/journal-vouchers/${voucherId}/post`)
+      toast.success('Voucher posted successfully')
       fetchVouchers()
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to post voucher:', error)
+      toast.error(error?.response?.data?.message || 'Failed to post voucher')
     }
   }
 
@@ -76,10 +79,12 @@ export const JournalVouchersPage: React.FC = () => {
     if (!confirm('Are you sure you want to cancel this voucher?')) return
 
     try {
-      await api.post(`/finance/journal-vouchers/${voucherId}/cancel`)
+      await api.post(`/journal-vouchers/${voucherId}/cancel`)
+      toast.success('Voucher cancelled successfully')
       fetchVouchers()
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to cancel voucher:', error)
+      toast.error(error?.response?.data?.message || 'Failed to cancel voucher')
     }
   }
 

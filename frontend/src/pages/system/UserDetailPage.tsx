@@ -100,13 +100,13 @@ export const UserDetailPage: React.FC = () => {
 
       const [userRes, rolesRes, activityRes] = await Promise.all([
         api.get<User>(`/system/users/${id}`, {
-          params: { organization_id: user?.organizationId },
+          params: { organization_id: user?.organization_id },
         }),
         api.get<{ data: Role[] }>('/system/roles', {
-          params: { organization_id: user?.organizationId, per_page: 50 },
+          params: { organization_id: user?.organization_id, per_page: 50 },
         }),
         api.get<{ data: ActivityLog[] }>(`/system/users/${id}/activity-logs`, {
-          params: { organization_id: user?.organizationId, per_page: 20 },
+          params: { organization_id: user?.organization_id, per_page: 20 },
         }),
       ])
 
@@ -136,7 +136,7 @@ export const UserDetailPage: React.FC = () => {
       setIsUpdating(true)
       await api.patch(`/system/users/${id}`, {
         status: newStatus,
-        organization_id: user?.organizationId,
+        organization_id: user?.organization_id,
       })
       toast.success('User status updated successfully')
       fetchUserDetails()
@@ -155,7 +155,7 @@ export const UserDetailPage: React.FC = () => {
     try {
       setIsUpdating(true)
       await api.delete(`/system/users/${id}`, {
-        params: { organization_id: user?.organizationId },
+        params: { organization_id: user?.organization_id },
       })
       toast.success('User deleted successfully')
       navigate('/system/users')
@@ -174,7 +174,7 @@ export const UserDetailPage: React.FC = () => {
     try {
       setIsUpdating(true)
       await api.post(`/system/users/${id}/reset-password`, {
-        organization_id: user?.organizationId,
+        organization_id: user?.organization_id,
       })
       toast.success('Password reset email sent successfully')
     } catch (error) {
@@ -206,7 +206,7 @@ export const UserDetailPage: React.FC = () => {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">User Details</h1>
         </div>
-        <Alert variant="error" message={error || 'User not found'} />
+        <Alert type="error" message={error || 'User not found'} />
         <Button variant="outline" onClick={() => navigate('/system/users')}>
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Users
@@ -246,7 +246,7 @@ export const UserDetailPage: React.FC = () => {
         </div>
       </div>
 
-      <Alert variant={userData.status === 'active' ? 'success' : 'warning'} message={`User Status: ${userData.status.toUpperCase()}`} />
+      <Alert type={userData.status === 'active' ? 'success' : 'warning'} message={`User Status: ${userData.status.toUpperCase()}`} />
 
       <div className="flex items-center gap-2 border-b border-gray-200">
         {tabs.map((tab) => (

@@ -78,13 +78,13 @@ export const ModuleManagementPage: React.FC = () => {
       const [modulesRes, statsRes] = await Promise.all([
         api.get<{ data: Module[] }>('/system/modules', {
           params: {
-            organization_id: user?.organizationId,
+            organization_id: user?.organization_id,
             per_page: 50,
           },
         }),
         api.get<ModuleStats>('/system/modules/stats', {
           params: {
-            organization_id: user?.organizationId,
+            organization_id: user?.organization_id,
           },
         }),
       ])
@@ -119,7 +119,7 @@ export const ModuleManagementPage: React.FC = () => {
       setIsSaving(true)
       await api.patch(`/system/modules/${moduleId}`, {
         is_enabled: !isEnabled,
-        organization_id: user?.organizationId,
+        organization_id: user?.organization_id,
       })
       toast.success(`Module ${isEnabled ? 'disabled' : 'enabled'} successfully`)
       fetchModules()
@@ -180,7 +180,7 @@ export const ModuleManagementPage: React.FC = () => {
         </div>
       </div>
 
-      {error && <Alert variant="error" message={error} />}
+      {error && <Alert type="error" message={error} />}
 
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

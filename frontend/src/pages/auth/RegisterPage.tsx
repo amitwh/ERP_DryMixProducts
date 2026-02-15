@@ -1,10 +1,10 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useState } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { Button } from '@/components/ui/Button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
-import { Loader2, User, Mail, Lock, Phone, ArrowRight } from 'lucide-react'
+import { User, Mail, Lock, Phone, ArrowRight, Building2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 // Register Page
@@ -19,6 +19,7 @@ export const RegisterPage: React.FC = () => {
     phone: '',
     password: '',
     password_confirmation: '',
+    organization_id: '',
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isLoading, setIsLoading] = useState(false)
@@ -91,10 +92,12 @@ export const RegisterPage: React.FC = () => {
     setIsLoading(true)
     try {
       await register({
+        organization_id: Number(formData.organization_id) || 1,
         name: formData.name,
         email: formData.email,
         password: formData.password,
         password_confirmation: formData.password_confirmation,
+        phone: formData.phone,
       })
       toast.success('Registration successful! Welcome to ERP.')
       navigate('/dashboard')
@@ -248,10 +251,5 @@ export const RegisterPage: React.FC = () => {
     </div>
   )
 }
-
-// Add missing imports
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Building2 } from 'lucide-react'
 
 export default RegisterPage

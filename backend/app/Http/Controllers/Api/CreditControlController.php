@@ -276,12 +276,14 @@ class CreditControlController extends Controller
 
     public function approveReview(Request $request, CreditReview $review): JsonResponse
     {
+        $review->load('creditControl');
+
         $review->update([
             'approved' => true,
             'approved_by' => auth()->id(),
-            'new_credit_score' => $review->creditControl->credit_score,
-            'new_risk_level' => $review->creditControl->risk_level,
-            'new_status' => $review->creditControl->credit_status,
+            'new_credit_score' => $review->creditControl->credit_score ?? null,
+            'new_risk_level' => $review->creditControl->risk_level ?? null,
+            'new_status' => $review->creditControl->credit_status ?? null,
         ]);
 
         // Update credit control if approved
@@ -306,6 +308,8 @@ class CreditControlController extends Controller
             'message' => 'nullable|string',
         ]);
 
+        $creditControl->load('customer');
+
         $reminder = PaymentReminder::create([
             'organization_id' => $creditControl->organization_id,
             'customer_id' => $creditControl->customer_id,
@@ -314,8 +318,8 @@ class CreditControlController extends Controller
             'scheduled_at' => now(),
             'method' => $validated['method'],
             'message' => $validated['message'] ?? null,
-            'recipient_email' => $creditControl->customer->email,
-            'recipient_phone' => $creditControl->customer->phone,
+            'recipient_email' => $creditControl->customer->email ?? null,
+            'recipient_phone' => $creditControl->customer->phone ?? null,
             'created_by' => auth()->id(),
         ]);
 

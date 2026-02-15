@@ -76,7 +76,7 @@ export const MRPPage: React.FC = () => {
       const [materialsRes, analysisRes] = await Promise.all([
         api.get<{ data: MaterialRequirement[] }>('/planning/mrp/requirements', {
           params: {
-            organization_id: user?.organizationId,
+            organization_id: user?.organization_id,
             production_plan_id: selectedPlanId || undefined,
             status: statusFilter === 'all' ? undefined : statusFilter,
             per_page: 50,
@@ -84,7 +84,7 @@ export const MRPPage: React.FC = () => {
         }),
         api.get<MRPAnalysis>('/planning/mrp/latest-analysis', {
           params: {
-            organization_id: user?.organizationId,
+            organization_id: user?.organization_id,
           },
         }),
       ])
@@ -109,7 +109,7 @@ export const MRPPage: React.FC = () => {
       setError(null)
 
       const input: MaterialRequirementInput = {
-        organization_id: user!.organizationId!,
+        organization_id: user!.organization_id!,
         production_plan_id: selectedPlanId || undefined,
         start_date: startDate,
         end_date: endDate,
@@ -129,7 +129,7 @@ export const MRPPage: React.FC = () => {
   const handleCreatePurchaseOrder = async (material: MaterialRequirement) => {
     try {
       const response = await api.post('/procurement/purchase-orders', {
-        organization_id: user?.organizationId,
+        organization_id: user?.organization_id,
         supplier_id: material.suppliers?.[0]?.id,
         items: [
           {
@@ -192,7 +192,7 @@ export const MRPPage: React.FC = () => {
         </div>
       </div>
 
-      {error && <Alert variant="error" message={error} />}
+      {error && <Alert type="error" message={error} />}
 
       <Card variant="bordered" padding="lg">
         <CardHeader>

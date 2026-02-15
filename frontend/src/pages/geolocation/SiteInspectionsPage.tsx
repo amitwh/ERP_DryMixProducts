@@ -133,7 +133,7 @@ export default function SiteInspectionsPage() {
               </p>
               {coords && (
                 <p className="text-sm text-gray-500 font-mono">
-                  {coords.latitude.toFixed(6)}, {coords.longitude.toFixed(6)}
+                  {coords.lat.toFixed(6)}, {coords.lng.toFixed(6)}
                   {coords.accuracy && ` (±${Math.round(coords.accuracy)}m)`}
                 </p>
               )}

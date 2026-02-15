@@ -25,27 +25,10 @@ import {
   Search,
   Building2,
   Database,
-  Link as LinkIcon,
-  Printer,
-  AlertOctagon,
-  Shield,
   BarChart3,
-  Brain,
-  Cloud,
-  Network,
-  Zap,
-  CreditCard as PaymentIcon,
-  Wrench,
   Truck,
-  Microscope,
-  Leaf,
-  Cpu,
-  Scale,
   FileCheck,
-  Layers,
   Gauge,
-  Activity,
-  TrendingUp,
 } from 'lucide-react'
 import { getInitials } from '@/utils'
 
@@ -90,7 +73,7 @@ export const MainLayout: React.FC = () => {
         },
         {
           title: 'Documents',
-          href: '/system/documents',
+          href: '/documents',
           icon: <FileText className="w-5 h-5" />,
         },
       ],
@@ -170,9 +153,9 @@ export const MainLayout: React.FC = () => {
           icon: <BarChart3 className="w-5 h-5" />,
         },
         {
-          title: 'AI/ML',
-          href: '/ai-ml',
-          icon: <Brain className="w-5 h-5" />,
+          title: 'Geolocation',
+          href: '/geolocation',
+          icon: <Gauge className="w-5 h-5" />,
         },
         {
           title: 'Communication',
@@ -183,62 +166,17 @@ export const MainLayout: React.FC = () => {
       ],
     },
     {
-      title: 'Integrations',
+      title: 'Reports & Documents',
       items: [
         {
-          title: 'Cloud Storage',
-          href: '/cloud-storage',
-          icon: <Cloud className="w-5 h-5" />,
+          title: 'Reports',
+          href: '/reports',
+          icon: <FileCheck className="w-5 h-5" />,
         },
         {
-          title: 'ERP Integration',
-          href: '/erp-integration',
-          icon: <Network className="w-5 h-5" />,
-        },
-        {
-          title: 'Plant Automation',
-          href: '/plant-automation',
-          icon: <Zap className="w-5 h-5" />,
-        },
-        {
-          title: 'Payment Gateway',
-          href: '/payment-gateway',
-          icon: <PaymentIcon className="w-5 h-5" />,
-        },
-      ],
-    },
-    {
-      title: 'Enterprise',
-      items: [
-        {
-          title: 'Maintenance',
-          href: '/maintenance',
-          icon: <Wrench className="w-5 h-5" />,
-        },
-        {
-          title: 'Transport',
-          href: '/transport',
+          title: 'Suppliers',
+          href: '/suppliers',
           icon: <Truck className="w-5 h-5" />,
-        },
-        {
-          title: 'Quality Intel',
-          href: '/quality-intel',
-          icon: <Microscope className="w-5 h-5" />,
-        },
-        {
-          title: 'Sustainability',
-          href: '/sustainability',
-          icon: <Leaf className="w-5 h-5" />,
-        },
-        {
-          title: 'Digital Twin',
-          href: '/digital-twin',
-          icon: <Cpu className="w-5 h-5" />,
-        },
-        {
-          title: 'Compliance',
-          href: '/compliance',
-          icon: <Shield className="w-5 h-5" />,
         },
       ],
     },
@@ -262,7 +200,7 @@ export const MainLayout: React.FC = () => {
       '/system/roles': 'Role Management',
       '/system/permissions': 'Permissions',
       '/settings': 'Settings & Configuration',
-      '/system/documents': 'Document Management',
+      '/documents': 'Document Management',
       '/quality': 'Quality Assurance & Control',
       '/quality/inspections': 'Quality Inspections',
       '/quality/ncrs': 'Non-Conformance Reports',
@@ -309,22 +247,14 @@ export const MainLayout: React.FC = () => {
       '/hr-payroll/leave': 'Leave Management',
       '/hr-payroll/payroll': 'Payroll',
       '/analytics': 'Analytics & Reporting',
-      '/ai-ml': 'AI/ML Predictions',
+      '/geolocation': 'Geolocation & Tracking',
       '/communication': 'Communications',
       '/communication/templates': 'Message Templates',
       '/communication/sms': 'SMS Messages',
       '/communication/whatsapp': 'WhatsApp Messages',
       '/communication/logs': 'Communication Logs',
-      '/cloud-storage': 'Cloud Storage',
-      '/erp-integration': 'External ERP Integration',
-      '/plant-automation': 'Plant Automation',
-      '/payment-gateway': 'Payment Gateway',
-      '/maintenance': 'Maintenance Management',
-      '/transport': 'Transportation & Logistics',
-      '/quality-intel': 'Quality Intelligence',
-      '/sustainability': 'Sustainability',
-      '/digital-twin': 'Digital Transformation',
-      '/compliance': 'Compliance & Regulatory',
+      '/reports': 'Reports',
+      '/suppliers': 'Suppliers',
       '/system': 'System Administration',
       '/system/modules': 'Module Management',
       '/system/api-keys': 'API Keys',
@@ -483,7 +413,7 @@ export const MainLayout: React.FC = () => {
                   </div>
                   <div className="hidden sm:block text-left">
                     <p className="text-sm font-medium text-gray-900">{user?.name}</p>
-                    <p className="text-xs text-gray-600">{user?.role}</p>
+                    <p className="text-xs text-gray-600">{user?.roles?.map(r => r.name).join(', ')}</p>
                   </div>
                 </button>
 
@@ -495,7 +425,7 @@ export const MainLayout: React.FC = () => {
                     />
                     <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                       <NavLink
-                        to="/profile"
+                        to="/settings/profile"
                         className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-100"
                         onClick={() => setUserMenuOpen(false)}
                       >

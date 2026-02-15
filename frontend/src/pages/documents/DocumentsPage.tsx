@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { api } from '@/services/api'
-import { Card, CardContent } from '@/components/ui/Card'
+import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { Skeleton } from '@/components/ui/Loading'
 import { Alert } from '@/components/ui/Alert'
-import { Search, Plus, Filter, FileText, Download, Printer, Eye, Trash2, Edit } from 'lucide-react'
+import { Search, Plus, Filter, FileText, Download, Printer, Eye, Edit } from 'lucide-react'
 import { formatDate, formatNumber } from '@/utils'
 
 interface Document {
@@ -53,7 +53,7 @@ export default function DocumentsPage() {
       setIsLoading(true)
       const response = await api.get<{ data: Document[] }>('/documents', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           category: categoryFilter || undefined,
           module: moduleFilter || undefined,
         },
@@ -79,15 +79,6 @@ export default function DocumentsPage() {
   const draftCount = documents.filter(d => d.status === 'draft').length
   const publishedCount = documents.filter(d => d.status === 'published').length
   const totalSize = documents.reduce((sum, d) => sum + d.file_size, 0)
-
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, string> = {
-      draft: 'bg-gray-100 text-gray-800',
-      published: 'bg-green-100 text-green-800',
-      archived: 'bg-orange-100 text-orange-800',
-    }
-    return colors[status] || 'bg-gray-100 text-gray-800'
-  }
 
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes'

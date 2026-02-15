@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Activity, Clock } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Activity as ActivityIcon, Clock } from 'lucide-react';
 
-interface Activity {
+interface ActivityItem {
   id: number;
   action: string;
   module: string;
@@ -14,7 +14,7 @@ interface ActivityTimelineProps {
 }
 
 export default function ActivityTimeline({ title }: ActivityTimelineProps) {
-  const [activities, setActivities] = useState<Activity[]>([]);
+  const [activities, setActivities] = useState<ActivityItem[]>([]);
 
   useEffect(() => {
     fetchActivities();
@@ -47,7 +47,7 @@ export default function ActivityTimeline({ title }: ActivityTimelineProps) {
       <div className="space-y-4 max-h-96 overflow-y-auto">
         {activities.length === 0 ? (
           <div className="text-center text-gray-500 py-8">
-            <Activity className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+            <ActivityIcon className="w-12 h-12 mx-auto mb-4 text-gray-400" />
             <p>No recent activities</p>
           </div>
         ) : (

@@ -55,7 +55,7 @@ export default function ApprovalsPage() {
       setIsLoading(true)
       const response = await api.get<{ data: Approval[] }>('/procurement/approvals', {
         params: {
-          organization_id: user?.organizationId,
+          organization_id: user?.organization_id,
           status: statusFilter === 'all' ? undefined : statusFilter,
           type: typeFilter === 'all' ? undefined : typeFilter,
         },
