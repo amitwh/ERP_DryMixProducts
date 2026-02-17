@@ -1,0 +1,73 @@
+version: '3.8'
+services:
+  drymix-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.coolify
+    image: amitwh/drymix-erp-backend:latest
+    container_name: drymix-erp-backend
+    restart: unless-stopped
+    expose:
+      - "8000"
+    environment:
+      - APP_NAME=ERP DryMix Products
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - APP_KEY=base64:2Y3eR9vC5fE7gT1hJ8kL0mN4oP6qR2sU=
+      - APP_URL=https://drymix-api.concreteinfo.co.in
+      - DB_CONNECTION=mysql
+      - DB_HOST=dowsgw8c0w04gkc4ksw8c804
+      - DB_PORT=3306
+      - DB_DATABASE=db_erp_drymix_prod
+      - DB_USERNAME=mariadb
+      - DB_PASSWORD=gIM09PnYi7xCZe0t0CDoIU5xZcK8ZcFbdU3LMpvNUf7Wksi4iQsEoGRP1KhpBMgj
+      - REDIS_HOST=wgsowosokgo80kgccow0048c
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=XfVXt5HFrbnabHEXouzW9I1Png1wzW8hFIYKrb16ciTZOpkb05fja9frLP4Gd4Az
+      - CACHE_DRIVER=redis
+      - SESSION_DRIVER=redis
+      - QUEUE_CONNECTION=redis
+      - FRONTEND_URL=https://drymix.concreteinfo.co.in
+    networks:
+      - coolify
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.drymix-backend.rule=Host(`drymix-api.concreteinfo.co.in`)"
+      - "traefik.http.routers.drymix-backend.entrypoints=https"
+      - "traefik.http.routers.drymix-backend.tls=true"
+      - "traefik.http.routers.drymix-backend.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.drymix-backend.service=drymix-backend"
+      - "traefik.http.services.drymix-backend.loadbalancer.server.port=8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  drymix-frontend:
+    image: amitwh/drymix-erp-frontend:latest
+    container_name: drymix-erp-frontend
+    restart: unless-stopped
+    expose:
+      - "80"
+    networks:
+      - coolify
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.drymix-frontend.rule=Host(`drymix.concreteinfo.co.in`)"
+      - "traefik.http.routers.drymix-frontend.entrypoints=https"
+      - "traefik.http.routers.drymix-frontend.tls=true"
+      - "traefik.http.routers.drymix-frontend.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.drymix-frontend.service=drymix-frontend"
+      - "traefik.http.services.drymix-frontend.loadbalancer.server.port=80"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health.json"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
+networks:
+  coolify:
+    external: true
