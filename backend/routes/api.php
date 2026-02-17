@@ -33,6 +33,8 @@ use App\Http\Controllers\Api\PrintController;
 use App\Http\Controllers\Api\TestPageController;
 use App\Http\Controllers\Api\SystemSettingsController;
 use App\Http\Controllers\Api\GeolocationController;
+use App\Http\Controllers\Api\PredictionController;
+use App\Http\Controllers\Api\ExportImportController;
 
 // Health check (outside v1 for docker health checks)
 Route::get('/health', function () {
@@ -74,6 +76,16 @@ Route::prefix('v1')->group(function () {
     Route::get('dashboard/top-products', [DashboardController::class, 'topProducts']);
     Route::get('dashboard/quality-metrics', [DashboardController::class, 'qualityMetrics']);
     Route::get('dashboard/production-metrics', [DashboardController::class, 'productionMetrics']);
+
+    // AI/ML Predictions
+    Route::prefix('predictions')->group(function () {
+        Route::get('/demand-forecast', [PredictionController::class, 'demandForecast']);
+        Route::get('/inventory-optimization', [PredictionController::class, 'inventoryOptimization']);
+        Route::get('/production-prediction', [PredictionController::class, 'productionPrediction']);
+        Route::get('/quality-prediction', [PredictionController::class, 'qualityPrediction']);
+        Route::get('/anomaly-detection', [PredictionController::class, 'anomalyDetection']);
+        Route::get('/sales-trend', [PredictionController::class, 'salesTrend']);
+    });
     
     // Core Management
     Route::apiResource('organizations', OrganizationController::class);
@@ -225,6 +237,13 @@ Route::prefix('v1')->group(function () {
     Route::post('scheduled-tasks/{task}/resume', [SystemAdminController::class, 'resumeScheduledTask']);
     Route::get('system/health', [SystemAdminController::class, 'systemHealth']);
     Route::get('system/statistics', [SystemAdminController::class, 'statistics']);
+
+    // Export/Import
+    Route::prefix('export-import')->group(function () {
+        Route::get('/export', [ExportImportController::class, 'export']);
+        Route::post('/import', [ExportImportController::class, 'import']);
+        Route::get('/template', [ExportImportController::class, 'downloadTemplate']);
+    });
 
     // Print & Export
     Route::prefix('print')->group(function () {

@@ -7,6 +7,7 @@ import { FullPageLoading } from '@/components/ui/Loading'
 // Auth Pages
 import LoginPage from '@/pages/auth/LoginPage'
 import RegisterPage from '@/pages/auth/RegisterPage'
+import ForgotPasswordPage from '@/pages/auth/ForgotPasswordPage'
 
 // Dashboard
 import DashboardPage from '@/pages/DashboardPage'
@@ -82,6 +83,9 @@ import PayslipDetailPage from '@/pages/hr-payroll/PayslipDetailPage'
 // Credit Control
 import CreditCustomersPage from '@/pages/credit-control/CreditCustomersPage'
 import CreditLimitsPage from '@/pages/credit-control/CreditLimitsPage'
+import AgingReportsPage from '@/pages/credit-control/AgingReportsPage'
+import CollectionsPage from '@/pages/credit-control/CollectionsPage'
+import CreateCollectionPage from '@/pages/credit-control/CreateCollectionPage'
 
 // Planning
 import ProductionPlansPage from '@/pages/planning/ProductionPlansPage'
@@ -217,14 +221,14 @@ function App() {
           </PublicRoute>
         }
       />
-      <Route
-        path="/forgot-password"
-        element={
-          <PublicRoute>
-            <PlaceholderPage title="Forgot Password" />
-          </PublicRoute>
-        }
-      />
+        <Route
+          path="/forgot-password"
+          element={
+            <PublicRoute>
+              <ForgotPasswordPage />
+            </PublicRoute>
+          }
+        />
 
       {/* Protected Routes */}
       <Route
@@ -321,9 +325,9 @@ function App() {
         <Route path="credit-control" element={<CreditCustomersPage />} />
         <Route path="credit-control/customers" element={<CreditCustomersPage />} />
         <Route path="credit-control/limits" element={<CreditLimitsPage />} />
-        <Route path="credit-control/aging" element={<PlaceholderPage title="Aging Reports" />} />
-        <Route path="credit-control/collections" element={<PlaceholderPage title="Collections" />} />
-        <Route path="credit-control/collections/create" element={<PlaceholderPage title="Record Collection" />} />
+        <Route path="credit-control/aging" element={<AgingReportsPage />} />
+        <Route path="credit-control/collections" element={<CollectionsPage />} />
+        <Route path="credit-control/collections/create" element={<CreateCollectionPage />} />
 
         {/* Procurement */}
         <Route path="procurement" element={<PurchaseOrdersPage />} />

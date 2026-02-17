@@ -171,6 +171,8 @@ class AuthController extends Controller
             'message' => 'Login successful',
             'data' => [
                 'user' => $user->load(['organization', 'manufacturingUnit']),
+                'token' => $token,
+                'refresh_token' => $refreshToken,
             ],
         ])->withCookie($cookie)->withCookie($refreshCookie);
     }

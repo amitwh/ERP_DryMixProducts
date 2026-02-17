@@ -24,10 +24,12 @@ Thumbs.db
 *.temp
 
 # Configuration
+.env
 .env.local
-.env.production
 *.bak
 *.swp
+!.env.example
+!.env.production.example
 
 # Dependencies
 node_modules/
