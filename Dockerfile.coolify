@@ -1,0 +1,54 @@
+# This Dockerfile is for Coolify deployment
+# It delegates to the actual backend Dockerfile
+FROM php:8.2-fpm-alpine
+
+WORKDIR /var/www/html
+
+RUN apk add --no-cache \
+    nginx \
+    supervisor \
+    curl \
+    git \
+    zip \
+    unzip \
+    libzip-dev \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    libxml2-dev \
+    oniguruma-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) \
+        pdo_mysql \
+        mysqli \
+        zip \
+        gd \
+        mbstring \
+        xml \
+        bcmath \
+        pcntl \
+        opcache
+
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+COPY backend/ /var/www/html/
+
+RUN composer install --no-dev --optimize-autoloader --no-interaction || true
+
+RUN php artisan route:cache 2>/dev/null || true && php artisan config:cache 2>/dev/null || true
+
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html/storage \
+    && chmod -R 755 /var/www/html/bootstrap/cache
+
+COPY .coolify/nginx.conf /etc/nginx/http.d/default.conf
+COPY .coolify/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+RUN mkdir -p /var/log/supervisor
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8000/api/health || exit 1
+
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
